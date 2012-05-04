@@ -287,7 +287,7 @@ static void ensure_sequential(File_and_index fis[], int nfiles){
  */
 void order_indexed_files(const char *files[], int nfiles){
     int  prefix_len, i;
-    char prefix_buffer[256];
+    char prefix_buffer[MAX_FILENAME_LENGTH];
     File_and_index *fis;
 
     prefix_of_all(files, nfiles, prefix_buffer);
