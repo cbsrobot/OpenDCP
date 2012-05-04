@@ -2,70 +2,82 @@
 #include <string.h>
 #include <stdlib.h>
 
-void common_prefix(const char *s1, const char *s2, char *prefix){
-  int i;
+/* Populates prefix with the longest common prefix of s1 and s2. */
+static void common_prefix(const char *s1, const char *s2, char *prefix){
+    int i;
 
-  for(i = 0; s1[i] && s2[i] && s1[i] == s2[i]; i++)
-    prefix[i] = s1[i];
-  prefix[i] = '\0';
+    for(i = 0; s1[i] && s2[i] && s1[i] == s2[i]; i++){
+        prefix[i] = s1[i];
+    }
+    prefix[i] = '\0';
 }
 
-/* Assumes nfiles is >= 2. */
-void prefix_of_all(const char *files[], int nfiles, char *prefix){
-  int i;
+/* Populates prefix with the longest common prefix of all the files.
+ * Assumes nfiles >= 2. */
+static void prefix_of_all(const char *files[], int nfiles, char *prefix){
+    int i;
 
-  common_prefix(files[0], files[1], prefix);
-  for(i = 2; i < nfiles; i++)
-    common_prefix(files[i], prefix, prefix);
+    common_prefix(files[0], files[1], prefix);
+    for(i = 2; i < nfiles; i++){
+        common_prefix(files[i], prefix, prefix);
+    }
 }
 
+/* A filename of the form <prefix>N*.tif paired with its index. */
 typedef struct {
-  const char *file;
-  int original_index;
-  int num;
-}*foo;
+    const char *file;
+    int         index;
+} File_index;
 
-int file_cmp(const void *a, const void *b){
-  foo *fa, *fb;
-  fa = a;
-  fb = b;
+static int file_cmp(const void *a, const void *b){
+    File_index *fa, *fb;
+    fa = a;
+    fb = b;
 
-  fa = a;
-  fb = b;
-
-  return ((*fa)->num) - ((*fb)->num);
+    return (fa->index) - (fb->index);
 }
 
+/* Given an array of pointers to filenames of the form:
+ *
+ *   <prefix>N*.tif
+ *
+ * where:
+ *  * <prefix> is the longest (though possibly empty) common prefix of all the
+ *    files.
+ *  * N is some decimal number which I'll refer to as it's "index".
+ *  * N is unique among all the files.
+ *
+ * Sorts the files in order of increasing index.
+ */
 void order_tiff_files(const char *files[], int nfiles){
-  int prefix_len, i;
-  char prefix_buffer[100];
+    int prefix_len, i;
+    char prefix_buffer[100];
 
-  prefix_of_all(files, nfiles, prefix_buffer);
-  prefix_len = strlen(prefix_buffer);
+    prefix_of_all(files, nfiles, prefix_buffer);
+    prefix_len = strlen(prefix_buffer);
 
-  foo *fs = malloc(sizeof(*fs) * nfiles);
-  for(i = 0; i < nfiles; i++){
-    fs[i] = malloc(sizeof(**fs));
-    fs[i]->file = files[i];
-    fs[i]->original_index = i;
-    fs[i]->num = atoi(files[i] + prefix_len);
-  }
-  qsort(fs, nfiles, sizeof(*fs), file_cmp);
+    File_index *fns = malloc(sizeof(*fns) * nfiles);
+    for(i = 0; i < nfiles; i++){
+        fns[i].file  = files[i];
+        fns[i].index = atoi(files[i] + prefix_len);
+    }
+    qsort(fns, nfiles, sizeof(*fns), file_cmp);
 
-  for(i = 0; i < nfiles; i++){
-    files[i] = fs[i]->file;
-    free(fs[i]);
-  }
+    for(i = 0; i < nfiles; i++){
+        files[i] = fns[i].file;
+    }
 
-  free(fs);
+    free(fns);
 }
 
+/* For some quick command-line testing. */
 int main(int argc, char *argv[]){
-  int i;
+    int i;
 
-  order_tiff_files(argv+1, argc-1);
-  for(i = 1; i < argc; i++)
-    puts(argv[i]);
+    order_tiff_files(argv+1, argc-1);
+    for(i = 1; i < argc; i++){
+        puts(argv[i]);
+    }
 
-  return 0;
+    return 0;
 }
