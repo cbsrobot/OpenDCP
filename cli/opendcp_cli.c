@@ -259,7 +259,7 @@ static void ensure_sequential(File_and_index fis[], int nfiles){
     int i;
 
     if(fis[0].index != 1){
-      dcp_log(LOG_WARN, "The first file: %s does not have index 1", fis[0].file);
+        dcp_log(LOG_WARN, "The first file: %s does not have index 1", fis[0].file);
     }
 
     for(i = 0; i < nfiles-1; i++){
