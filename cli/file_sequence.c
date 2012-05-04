@@ -23,14 +23,16 @@ static void prefix_of_all(const char *files[], int nfiles, char *prefix){
     }
 }
 
-/* A filename of the form <prefix>N*.tif paired with its index. */
+/* A filename of the form <prefix>N*.tif paired with its index.
+ * (used only for sorting) */
 typedef struct {
     const char *file;
     int         index;
-} File_index;
+} File_and_index;
 
+/* Compare 2 File_and_index structs by their index. */
 static int file_cmp(const void *a, const void *b){
-    File_index *fa, *fb;
+    const File_and_index *fa, *fb;
     fa = a;
     fb = b;
 
@@ -44,30 +46,33 @@ static int file_cmp(const void *a, const void *b){
  * where:
  *  * <prefix> is the longest (though possibly empty) common prefix of all the
  *    files.
- *  * N is some decimal number which I'll refer to as it's "index".
+ *  * N is some decimal number refered to as an "index".
  *  * N is unique among all the files.
+ *  * 1 <= N <= nfiles
  *
  * Sorts the files in order of increasing index.
  */
 void order_tiff_files(const char *files[], int nfiles){
-    int prefix_len, i;
+    int  prefix_len, i;
     char prefix_buffer[100];
+    File_and_index *fis;
 
     prefix_of_all(files, nfiles, prefix_buffer);
     prefix_len = strlen(prefix_buffer);
 
-    File_index *fns = malloc(sizeof(*fns) * nfiles);
+    /* Create an array of files and their indices to sort. */
+    fis = malloc(sizeof(*fis) * nfiles);
     for(i = 0; i < nfiles; i++){
-        fns[i].file  = files[i];
-        fns[i].index = atoi(files[i] + prefix_len);
+        fis[i].file  = files[i];
+        fis[i].index = atoi(files[i] + prefix_len);
     }
-    qsort(fns, nfiles, sizeof(*fns), file_cmp);
+    qsort(fis, nfiles, sizeof(*fis), file_cmp);
 
     for(i = 0; i < nfiles; i++){
-        files[i] = fns[i].file;
+        files[i] = fis[i].file;
     }
 
-    free(fns);
+    free(fis);
 }
 
 /* For some quick command-line testing. */
