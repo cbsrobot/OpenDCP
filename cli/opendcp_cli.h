@@ -35,5 +35,6 @@ int check_increment(char *str[], int index,int str_size);
 int check_sequential(char str1[],char str2[]);
 int check_file_sequence(char *str[], int count);
 int build_filelist(char *input, char *output, filelist_t *filelist, int file_type);
+void order_tiff_files(const char *files[], int nfiles);
 
 #endif

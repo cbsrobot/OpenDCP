@@ -54,7 +54,7 @@ static int file_cmp(const void *a, const void *b){
  */
 void order_tiff_files(const char *files[], int nfiles){
     int  prefix_len, i;
-    char prefix_buffer[100];
+    char prefix_buffer[256];
     File_and_index *fis;
 
     prefix_of_all(files, nfiles, prefix_buffer);
