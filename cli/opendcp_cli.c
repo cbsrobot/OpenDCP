@@ -217,64 +217,6 @@ int find_ext_offset(char str[]) {
     return 0;
 }
 
-int check_increment(char *str[], int index,int str_size) {
-    long x;
-    int seq_offset, ext_offset;
-
-    seq_offset = find_seq_offset(str[0], str[str_size-1]);
-    ext_offset = find_ext_offset(str[0]);
-
-    x = strtol(str[index]+seq_offset,NULL,10);
-
-    if (x == index) {
-        return 0;
-    } else {
-        return 1;
-    }
-}
-
-/* check if two strings are sequential */
-int check_sequential(char str1[],char str2[]) {
-    long i,x,y;
-    int  offset = 0;
-
-    if (strlen(str1) != strlen(str2)) {
-        return STRING_LENGTH_NOTEQUAL;
-    }
-
-    for (i = 0; i < strlen(str1); i++) {
-        if(str1[i] != str2[i]) {
-            offset = i;
-            break;
-        }
-    }
-
-    x = strtol(str1+offset,NULL,10);
-    y = strtol(str2+offset,NULL,10);
-
-    if ((y - x) == 1) {
-        return DCP_SUCCESS;
-    } else {
-        return STRING_NOTSEQUENTIAL;
-    }
-}
-
-int check_file_sequence(char *str[], int count) {
-    int sequential = 0;
-    int x = 0;
-
-    while (x<(count-1) && sequential == DCP_SUCCESS) {
-        sequential = check_sequential(str[x], str[x+1]);
-        x++;
-    }
-
-    if (sequential == DCP_SUCCESS) {
-        return 0;
-    } else {
-        return x+DCP_ERROR_MAX;
-    }
-}
-
 /* Populates prefix with the longest common prefix of s1 and s2. */
 static void common_prefix(const char *s1, const char *s2, char *prefix){
     int i;
@@ -312,6 +254,24 @@ static int file_cmp(const void *a, const void *b){
     return (fa->index) - (fb->index);
 }
 
+/* Ensure fis[i].index == i+1 for all i. */
+static void ensure_sequential(File_and_index fis[], int nfiles){
+    int i;
+
+    if(fis[0].index != 1){
+      dcp_log(LOG_WARN, "The first file: %s does not have index 1", fis[0].file);
+    }
+
+    for(i = 0; i < nfiles-1; i++){
+        if(fis[i].index+1 != fis[i+1].index){
+            dcp_log(LOG_WARN,
+                    "file sequence mismatch between %s and %s",
+                    fis[i].file,
+                    fis[i+1].file);
+        }
+    }
+}
+
 /* Given an array of pointers to filenames of the form:
  *
  *   <prefix>N*.tif
@@ -340,6 +300,7 @@ void order_tiff_files(const char *files[], int nfiles){
         fis[i].index = atoi(files[i] + prefix_len);
     }
     qsort(fis, nfiles, sizeof(*fis), file_cmp);
+    ensure_sequential(fis, nfiles);
 
     for(i = 0; i < nfiles; i++){
         files[i] = fis[i].file;
