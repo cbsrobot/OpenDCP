@@ -274,20 +274,20 @@ static void ensure_sequential(File_and_index fis[], int nfiles){
 
 /* Given an array of pointers to filenames of the form:
  *
- *   <prefix>N*.tif
+ *   <prefix>N*
  *
  * where:
  *  * <prefix> is the longest (though possibly empty) common prefix of all the
  *    files.
  *  * N is some decimal number refered to as an "index".
- *  * N is unique among all the files.
- *  * 1 <= N <= nfiles
+ *  * N is unique for each file.
+ *  * 1 <= N <= nfiles  OR  0 <= N < nfiles
  *
  * Sorts the files in order of increasing index.
  */
-void order_tiff_files(const char *files[], int nfiles){
+void order_indexed_files(const char *files[], int nfiles){
     int  prefix_len, i;
-    char prefix_buffer[256];
+    char prefix_buffer[MAX_FILENAME_LENGTH];
     File_and_index *fis;
 
     prefix_of_all(files, nfiles, prefix_buffer);
