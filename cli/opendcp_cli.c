@@ -258,7 +258,7 @@ static int file_cmp(const void *a, const void *b){
 static void ensure_sequential(File_and_index fis[], int nfiles){
     int i;
 
-    if(fis[0].index != 1){
+    if(fis[0].index != 1 && fis[0].index != 0){
         dcp_log(LOG_WARN, "The first file: %s does not have index 1", fis[0].file);
     }
 
@@ -279,7 +279,7 @@ static void ensure_sequential(File_and_index fis[], int nfiles){
  * where:
  *  * <prefix> is the longest (though possibly empty) common prefix of all the
  *    files.
- *  * N is some decimal number refered to as an "index".
+ *  * N is some decimal number which I call its "index".
  *  * N is unique for each file.
  *  * 1 <= N <= nfiles  OR  0 <= N < nfiles
  *
@@ -289,6 +289,11 @@ void order_indexed_files(const char *files[], int nfiles){
     int  prefix_len, i;
     char prefix_buffer[MAX_FILENAME_LENGTH];
     File_and_index *fis;
+
+    /* A single file is trivially sorted. */
+    if(nfiles < 2){
+      return
+    }
 
     prefix_of_all(files, nfiles, prefix_buffer);
     prefix_len = strlen(prefix_buffer);
@@ -300,11 +305,12 @@ void order_indexed_files(const char *files[], int nfiles){
         fis[i].index = atoi(files[i] + prefix_len);
     }
     qsort(fis, nfiles, sizeof(*fis), file_cmp);
-    ensure_sequential(fis, nfiles);
 
+    /* Reorder the original file array. */
     for(i = 0; i < nfiles; i++){
         files[i] = fis[i].file;
     }
 
     free(fis);
+    return ensure_sequential(fis, nfiles);
 }
