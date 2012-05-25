@@ -414,24 +414,10 @@ int main (int argc, char **argv) {
         dcp_fatal(opendcp,"Start frame must be less than end frame");
     }
 
-    /* check file name lengths are equal */
-    if (filelist->file_count > 1) {
-        int x,f = 0;
-        int len = strlen(filelist->in[0]);
-        for (x=1;x<filelist->file_count;x++) {
-            if (strlen(filelist->in[x]) != len) {
-                f = 1;
-            }
-        }
-        if (f) {
-            dcp_log(LOG_WARN,"all file names must be same length");
-        }
-    }
-
     dcp_log(LOG_DEBUG,"%-15.15s: checking file sequence","opendcp_j2k_cmd",in_path);
 
     /* Sort files by index, and make sure they're sequential. */
-    order_indexed_files(filelist->in, filelist->file_count);
+    error = order_indexed_files(filelist->in, filelist->file_count);
 
     if (opendcp->log_level>0 && opendcp->log_level<3) { progress_bar(0,0); }
 
