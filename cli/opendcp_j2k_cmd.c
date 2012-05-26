@@ -374,8 +374,8 @@ int main (int argc, char **argv) {
     }
 
     /* bandwidth check */
-    if (opendcp->j2k.bw < 50 || opendcp->j2k.bw > 250) {
-        dcp_fatal(opendcp,"Bandwidth must be between 50 and 250");
+    if (opendcp->j2k.bw < 10 || opendcp->j2k.bw > 250) {
+        dcp_fatal(opendcp,"Bandwidth must be between 10 and 250");
     } else {
         opendcp->j2k.bw *= 1000000;
     }
