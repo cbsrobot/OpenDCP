@@ -195,8 +195,8 @@ void filelist_free(filelist_t *filelist) {
 }
 
 int find_seq_offset(char str1[], char str2[]) {
-    int i;
-    int offset = 0;
+    unsigned int i;
+    unsigned int offset = 0;
 
     for (i = 0; (i < strlen(str1)) && (offset == 0); i++) {
         if(str1[i] != str2[i])
