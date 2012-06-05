@@ -225,7 +225,7 @@ static void common_prefix(const char *s1, const char *s2, char *prefix){
 
 /* Populates prefix with the longest common prefix of all the files.
  * Assumes nfiles >= 2. */
-static void prefix_of_all(const char *files[], int nfiles, char *prefix){
+static void prefix_of_all(char *files[], int nfiles, char *prefix){
     int i;
 
     common_prefix(files[0], files[1], prefix);
@@ -237,8 +237,8 @@ static void prefix_of_all(const char *files[], int nfiles, char *prefix){
 /* A filename of the form <prefix>N*.tif paired with its index.
  * (used only for sorting) */
 typedef struct {
-    const char *file;
-    int         index;
+    char *file;
+    int   index;
 } File_and_index;
 
 /* Compare 2 File_and_index structs by their index. */
@@ -251,7 +251,7 @@ static int file_cmp(const void *a, const void *b){
 }
 
 /* Ensure fis[i].index == i+1 for all i. */
-static void ensure_sequential(File_and_index fis[], int nfiles){
+int ensure_sequential(File_and_index fis[], int nfiles){
     int i;
 
     if(fis[0].index != 1 && fis[0].index != 0){
@@ -266,6 +266,8 @@ static void ensure_sequential(File_and_index fis[], int nfiles){
                     fis[i+1].file);
         }
     }
+
+    return 0;
 }
 
 /* Given an array of pointers to filenames of the form:
@@ -280,15 +282,17 @@ static void ensure_sequential(File_and_index fis[], int nfiles){
  *  * 1 <= N <= nfiles  OR  0 <= N < nfiles
  *
  * Sorts the files in order of increasing index.
+ *
+ * Returns: DCP error code.
  */
-void order_indexed_files(const char *files[], int nfiles){
+int order_indexed_files(char *files[], int nfiles){
     int  prefix_len, i;
     char prefix_buffer[MAX_FILENAME_LENGTH];
     File_and_index *fis;
 
     /* A single file is trivially sorted. */
     if(nfiles < 2){
-      return
+      return 0;
     }
 
     prefix_of_all(files, nfiles, prefix_buffer);
