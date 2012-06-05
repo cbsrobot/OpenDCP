@@ -409,7 +409,7 @@ int main (int argc, char **argv) {
     dcp_log(LOG_DEBUG,"%-15.15s: checking file sequence","opendcp_j2k_cmd",in_path);
 
     /* Sort files by index, and make sure they're sequential. */
-    error = order_indexed_files(filelist->in, filelist->file_count);
+    result = order_indexed_files(filelist->in, filelist->file_count);
 
     if (opendcp->log_level>0 && opendcp->log_level<3) { progress_bar(0,0); }
 
