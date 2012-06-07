@@ -37,9 +37,8 @@ IF(WIN32)
              ${SYSROOT_PATH}/bin/QtCore4.dll
     )
     SET(COMMON_DLLS 
-             #${SYSROOT_PATH}/bin/mingwm10.dll
              ${SYSROOT_PATH}/bin/libgomp-1.dll
-             ${SYSROOT_PATH}/bin/libwinpthread-1.dll
+             ${SYSROOT_PATH}/bin/pthreadGC2.dll
              ${SYSROOT_PATH}/bin/libgcc_s_sjlj-1.dll
              ${SYSROOT_PATH}/bin/libstdc++-6.dll
              ${SYSROOT_PATH}/bin/libcrypto-10.dll
