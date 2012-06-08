@@ -254,20 +254,13 @@ static int file_cmp(const void *a, const void *b){
 int ensure_sequential(File_and_index fis[], int nfiles){
     int i;
 
-    if(fis[0].index != 1 && fis[0].index != 0){
-        dcp_log(LOG_WARN, "The first file: %s does not have index 1", fis[0].file);
-    }
-
     for(i = 0; i < nfiles-1; i++){
         if(fis[i].index+1 != fis[i+1].index){
-            dcp_log(LOG_WARN,
-                    "file sequence mismatch between %s and %s",
-                    fis[i].file,
-                    fis[i+1].file);
+            return STRING_NOTSEQUENTIAL;
         }
     }
 
-    return 0;
+    return DCP_SUCCESS;
 }
 
 /* Given an array of pointers to filenames of the form:
@@ -292,7 +285,7 @@ int order_indexed_files(char *files[], int nfiles){
 
     /* A single file is trivially sorted. */
     if(nfiles < 2){
-      return 0;
+      return DCP_SUCCESS;
     }
 
     prefix_of_all(files, nfiles, prefix_buffer);
@@ -301,8 +294,12 @@ int order_indexed_files(char *files[], int nfiles){
     /* Create an array of files and their indices to sort. */
     fis = malloc(sizeof(*fis) * nfiles);
     for(i = 0; i < nfiles; i++){
+        char *index_string = files[i] + prefix_len;
+        if(!isdigit(index_string[0])){
+            return DCP_FATAL;
+        }
         fis[i].file  = files[i];
-        fis[i].index = atoi(files[i] + prefix_len);
+        fis[i].index = atoi(index_string);
     }
     qsort(fis, nfiles, sizeof(*fis), file_cmp);
 

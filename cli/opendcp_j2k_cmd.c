@@ -410,6 +410,18 @@ int main (int argc, char **argv) {
 
     /* Sort files by index, and make sure they're sequential. */
     result = order_indexed_files(filelist->in, filelist->file_count);
+    switch(result){
+      case DCP_SUCCESS: break;
+      case STRING_NOTSEQUENTIAL:
+        dcp_log(LOG_WARN, "Filenames not sequential.");
+        break;
+      case DCP_FATAL:
+        dcp_log(LOG_ERROR, "No index found for file.");
+        exit(1);
+      default:
+        dcp_log(LOG_WARN, "unknown error while ordering filenames.");
+        break;
+    }
 
     if (opendcp->log_level>0 && opendcp->log_level<3) { progress_bar(0,0); }
 
