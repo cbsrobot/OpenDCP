@@ -22,6 +22,7 @@
 #else
 #include <dirent.h>
 #endif
+#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -213,60 +214,103 @@ int find_ext_offset(char str[]) {
     return 0;
 }
 
-int check_increment(char *str[], int index,int str_size) {
-    long x;
-    int seq_offset;
+/* Populates prefix with the longest common prefix of s1 and s2. */
+static void common_prefix(const char *s1, const char *s2, char *prefix){
+    int i;
 
-    seq_offset = find_seq_offset(str[0], str[str_size-1]);
+    for(i = 0; s1[i] && s2[i] && s1[i] == s2[i]; i++){
+        prefix[i] = s1[i];
+    }
+    prefix[i] = '\0';
+}
 
-    x = strtol(str[index]+seq_offset,NULL,10);
+/* Populates prefix with the longest common prefix of all the files.
+ * Assumes nfiles >= 2. */
+static void prefix_of_all(char *files[], int nfiles, char *prefix){
+    int i;
 
-    if (x == index) {
-        return 0;
-    } else {
-        return 1;
+    common_prefix(files[0], files[1], prefix);
+    for(i = 2; i < nfiles; i++){
+        common_prefix(files[i], prefix, prefix);
     }
 }
 
-/* check if two strings are sequential */
-int check_sequential(char str1[],char str2[]) {
-    unsigned i;
-    long     x,y;
-    unsigned int  offset = 0;
+/* A filename of the form <prefix>N*.tif paired with its index.
+ * (used only for sorting) */
+typedef struct {
+    char *file;
+    int   index;
+} File_and_index;
 
-    if (strlen(str1) != strlen(str2)) {
-        return OPENDCP_STRING_LENGTH;
-    }
+/* Compare 2 File_and_index structs by their index. */
+static int file_cmp(const void *a, const void *b){
+    const File_and_index *fa, *fb;
+    fa = a;
+    fb = b;
 
-    for (i = 0; i < strlen(str1); i++) {
-        if(str1[i] != str2[i]) {
-            offset = i;
-            break;
+    return (fa->index) - (fb->index);
+}
+
+/* Ensure fis[i].index == i+1 for all i. */
+int ensure_sequential(File_and_index fis[], int nfiles){
+    int i;
+
+    for(i = 0; i < nfiles-1; i++){
+        if(fis[i].index+1 != fis[i+1].index){
+            return OPENDCP_STRING_NOTSEQUENTIAL;
         }
     }
 
-    x = strtol(str1+offset,NULL,10);
-    y = strtol(str2+offset,NULL,10);
-
-    if ((y - x) == 1) {
-        return OPENDCP_NO_ERROR;
-    } else {
-        return OPENDCP_STRING_NOTSEQUENTIAL;
-    }
+    return OPENDCP_NO_ERROR;
 }
 
-int check_file_sequence(char *str[], int count) {
-    int sequential = 0;
-    int x = 0;
+/* Given an array of pointers to filenames of the form:
+ *
+ *   <prefix>N*
+ *
+ * where:
+ *  * <prefix> is the longest (though possibly empty) common prefix of all the
+ *    files.
+ *  * N is some decimal number which I call its "index".
+ *  * N is unique for each file.
+ *  * 1 <= N <= nfiles  OR  0 <= N < nfiles
+ *
+ * Sorts the files in order of increasing index.
+ *
+ * Returns: DCP error code.
+ */
+int order_indexed_files(char *files[], int nfiles){
+    int  prefix_len, i, rc;
+    char prefix_buffer[MAX_FILENAME_LENGTH];
+    File_and_index *fis;
 
-    while (x<(count-1) && sequential == OPENDCP_NO_ERROR) {
-        sequential = check_sequential(str[x], str[x+1]);
-        x++;
+    /* A single file is trivially sorted. */
+    if(nfiles < 2){
+      return OPENDCP_NO_ERROR;
     }
 
-    if (sequential == OPENDCP_NO_ERROR) {
-        return 0;
-    } else {
-        return x;
+    prefix_of_all(files, nfiles, prefix_buffer);
+    prefix_len = strlen(prefix_buffer);
+
+    /* Create an array of files and their indices to sort. */
+    fis = malloc(sizeof(*fis) * nfiles);
+    for(i = 0; i < nfiles; i++){
+        char *index_string = files[i] + prefix_len;
+        if(!isdigit(index_string[0])){
+            return OPENDCP_ERROR;
+        }
+        fis[i].file  = files[i];
+        fis[i].index = atoi(index_string);
     }
+    qsort(fis, nfiles, sizeof(*fis), file_cmp);
+
+    /* Reorder the original file array. */
+    for(i = 0; i < nfiles; i++){
+        files[i] = fis[i].file;
+    }
+
+    rc = ensure_sequential(fis, nfiles);
+    free(fis);
+
+    return rc;
 }
