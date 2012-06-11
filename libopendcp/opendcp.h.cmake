@@ -168,16 +168,11 @@ enum DPX_MODE {
     DPX_VIDEO
 };
 
-typedef struct {
+typedef struct filelist_t {
     char           **in;
     char           **out;
     int            file_count;
 } filelist_t;
-
-typedef struct {
-    struct dirent  **entry;
-    int            file_count;
-} filelist2_t;
 
 typedef struct {
     filelist_t *filelist;
