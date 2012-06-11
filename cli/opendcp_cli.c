@@ -279,7 +279,7 @@ int ensure_sequential(File_and_index fis[], int nfiles){
  * Returns: DCP error code.
  */
 int order_indexed_files(char *files[], int nfiles){
-    int  prefix_len, i;
+    int  prefix_len, i, rc;
     char prefix_buffer[MAX_FILENAME_LENGTH];
     File_and_index *fis;
 
@@ -308,6 +308,8 @@ int order_indexed_files(char *files[], int nfiles){
         files[i] = fis[i].file;
     }
 
+    rc = ensure_sequential(fis, nfiles);
     free(fis);
-    return ensure_sequential(fis, nfiles);
+
+    return rc;
 }
