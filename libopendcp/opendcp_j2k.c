@@ -118,7 +118,7 @@ int odcp_to_opj(odcp_image_t *odcp, opj_image_t **opj_ptr) {
 
     if(!opj) {
         dcp_log(LOG_ERROR,"Failed to create image");
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     /* set image offset and reference grid */
@@ -134,7 +134,7 @@ int odcp_to_opj(odcp_image_t *odcp, opj_image_t **opj_ptr) {
     memcpy(opj->comps[2].data,odcp->component[2].data,size*sizeof(int));
 
     *opj_ptr = opj;
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_path) {
@@ -153,29 +153,29 @@ int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_
     result = read_image(&odcp_image,in_file); 
     }
 
-    if (result != DCP_SUCCESS) {
+    if (result != OPENDCP_NO_ERROR) {
         dcp_log(LOG_ERROR,"Unable to read file %s",in_file);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     if (!odcp_image) {
         dcp_log(LOG_ERROR,"Unable to load file %s",in_file);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     /* verify image is dci compliant */
-    if (check_image_compliance(opendcp->cinema_profile, odcp_image, NULL) != DCP_SUCCESS) {
+    if (check_image_compliance(opendcp->cinema_profile, odcp_image, NULL) != OPENDCP_NO_ERROR) {
         dcp_log(LOG_WARN,"The image resolution of %s is not DCI Compliant",in_file);
 
         /* resize image */
         if (opendcp->j2k.resize) {
-            if (resize(&odcp_image, opendcp->cinema_profile, opendcp->j2k.resize) != DCP_SUCCESS) {
+            if (resize(&odcp_image, opendcp->cinema_profile, opendcp->j2k.resize) != OPENDCP_NO_ERROR) {
                 odcp_image_free(odcp_image);
-                return DCP_FATAL;
+                return OPENDCP_ERROR;
             }
         } else {
             odcp_image_free(odcp_image);
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }
     }
     
@@ -184,7 +184,7 @@ int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_
         if (rgb_to_xyz(odcp_image,opendcp->j2k.lut,opendcp->j2k.xyz_method)) {
             dcp_log(LOG_ERROR,"Color conversion failed %s",in_file);
             odcp_image_free(odcp_image);
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }
     }
 
@@ -195,31 +195,31 @@ int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_
         result = write_tif(odcp_image,tempfile,0);
         odcp_image_free(odcp_image);
         
-        if (result != DCP_SUCCESS) {
+        if (result != OPENDCP_NO_ERROR) {
             dcp_log(LOG_ERROR,"Writing temporary tif failed");
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }
 
         result = encode_kakadu(opendcp, tempfile, out_file);
-        if ( result != DCP_SUCCESS) {
+        if ( result != OPENDCP_NO_ERROR) {
             dcp_log(LOG_ERROR,"Kakadu JPEG2000 conversion failed %s",in_file);
             remove(tempfile);
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }
         remove(tempfile);
     } else {
         opj_image_t *opj_image;
         odcp_to_opj(odcp_image, &opj_image); 
         odcp_image_free(odcp_image);
-        if (encode_openjpeg(opendcp,opj_image,out_file) != DCP_SUCCESS) {
+        if (encode_openjpeg(opendcp,opj_image,out_file) != OPENDCP_NO_ERROR) {
             dcp_log(LOG_ERROR,"OpenJPEG JPEG2000 conversion failed %s",in_file);
             opj_image_destroy(opj_image);
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }        
         opj_image_destroy(opj_image);
     }
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int encode_kakadu(opendcp_t *opendcp, char *in_file, char *out_file) {
@@ -258,10 +258,10 @@ int encode_kakadu(opendcp_t *opendcp, char *in_file, char *out_file) {
     result=pclose(cmdfp);
     
     if (result) {
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
     }
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int encode_openjpeg(opendcp_t *opendcp, opj_image_t *opj_image, char *out_file) {
@@ -339,7 +339,7 @@ int encode_openjpeg(opendcp_t *opendcp, opj_image_t *opj_image, char *out_file) 
         dcp_log(LOG_ERROR,"Unable to encode jpeg2000 file %s",out_file);
         opj_cio_close(cio);
         opj_destroy_compress(cinfo);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
       
     codestream_length = cio_tell(cio);
@@ -350,7 +350,7 @@ int encode_openjpeg(opendcp_t *opendcp, opj_image_t *opj_image, char *out_file) 
         dcp_log(LOG_ERROR,"Unable to write jpeg2000 file %s",out_file);
         opj_cio_close(cio);
         opj_destroy_compress(cinfo);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     fwrite(cio->buffer, 1, codestream_length, f);
@@ -364,5 +364,5 @@ int encode_openjpeg(opendcp_t *opendcp, opj_image_t *opj_image, char *out_file) 
     if(parameters.cp_comment) free(parameters.cp_comment);
     if(parameters.cp_matrice) free(parameters.cp_matrice);
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }

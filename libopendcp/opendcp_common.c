@@ -66,7 +66,7 @@ const char *DCP_LOG[] = { "NONE",
 
 void dcp_fatal(opendcp_t *opendcp, char *error) {
     dcp_log(LOG_ERROR, "%s",error);
-    exit(DCP_FATAL);
+    exit(OPENDCP_ERROR);
 }
 
 /*
@@ -118,7 +118,7 @@ int get_asset_type(asset_t asset) {
     }
 }
 
-opendcp_t *create_opendcp() {
+opendcp_t *opendcp_create() {
     opendcp_t *opendcp;
 
     /* allocation opendcp memory */
@@ -134,14 +134,18 @@ opendcp_t *create_opendcp() {
     sprintf(opendcp->xml.kind,"%.15s",DCP_KIND);
     get_timestamp(opendcp->xml.timestamp);
 
+    /* initialize callbacks */
+    opendcp->mxf.frame_done = NULL;
+    opendcp->mxf.write_done = NULL;
+
     return opendcp;
 }
 
-int delete_opendcp(opendcp_t *opendcp) {
+int opendcp_delete(opendcp_t *opendcp) {
     if ( opendcp != NULL) {
         free(opendcp);
     }
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int add_pkl(opendcp_t *opendcp) {
@@ -166,7 +170,7 @@ int add_pkl(opendcp_t *opendcp) {
 
     opendcp->pkl_count++;
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int add_cpl(opendcp_t *opendcp, pkl_t *pkl) {
@@ -193,13 +197,13 @@ int add_cpl(opendcp_t *opendcp, pkl_t *pkl) {
 
     pkl->cpl_count++;
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int init_asset(asset_t *asset) {
     memset(asset,0,sizeof(asset_t));
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int validate_reel(opendcp_t *opendcp, cpl_t *cpl, int reel) {
@@ -221,10 +225,10 @@ int validate_reel(opendcp_t *opendcp, cpl_t *cpl, int reel) {
 
     if (picture < 1) {
         dcp_log(LOG_ERROR,"Reel %d has no picture track",reel);
-        return DCP_NO_PICTURE_TRACK;
+        return OPENDCP_NO_PICTURE_TRACK;
     } else if (picture > 1) {
         dcp_log(LOG_ERROR,"Reel %d has multiple picture tracks",reel);
-        return DCP_MULTIPLE_PICTURE_TRACK;
+        return OPENDCP_MULTIPLE_PICTURE_TRACK;
     }
 
     d = cpl->reel[reel].asset[0].duration;
@@ -240,7 +244,7 @@ int validate_reel(opendcp_t *opendcp, cpl_t *cpl, int reel) {
             }
         } else {
             dcp_log(LOG_ERROR,"Asset %s has no duration",cpl->reel[reel].asset[x].filename);
-           return DCP_ASSET_NO_DURATION;
+           return OPENDCP_TRACK_NO_DURATION;
         }
     }
 
@@ -251,7 +255,7 @@ int validate_reel(opendcp_t *opendcp, cpl_t *cpl, int reel) {
         }
     }
           
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int add_reel(opendcp_t *opendcp, cpl_t *cpl, asset_list_t reel) {
@@ -282,7 +286,7 @@ int add_reel(opendcp_t *opendcp, cpl_t *cpl, asset_list_t reel) {
         /* check if file exists */
         if ((fp = fopen(filename, "r")) == NULL) {
             dcp_log(LOG_ERROR,"add_reel: Could not open file: %s",filename);
-            return DCP_FILE_OPEN_ERROR;
+            return OPENDCP_FILEOPEN;
         } else {
             fclose (fp);
         }
@@ -296,9 +300,9 @@ int add_reel(opendcp_t *opendcp, cpl_t *cpl, asset_list_t reel) {
 
         result = read_asset_info(&asset);
 
-        if (result == DCP_FATAL) {
+        if (result == OPENDCP_ERROR) {
             dcp_log(LOG_ERROR,"%s is not a proper essence file",filename);
-            return DCP_INVALID_ESSENCE;
+            return OPENDCP_INVALID_TRACK_TYPE;
         }
 
         if (x == 0) {
@@ -307,7 +311,7 @@ int add_reel(opendcp_t *opendcp, cpl_t *cpl, asset_list_t reel) {
         } else {
             if (opendcp->ns != asset.xml_ns) {
                 dcp_log(LOG_ERROR,"Warning DCP specification mismatch in assets. Please make sure all assets are MXF Interop or SMPTE");
-                return DCP_SPECIFCATION_MISMATCH;
+                return OPENDCP_SPECIFICATION_MISMATCH;
             }
         }
 
@@ -347,5 +351,5 @@ int add_reel(opendcp_t *opendcp, cpl_t *cpl, asset_list_t reel) {
 
     cpl->reel_count++;
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }

@@ -95,7 +95,7 @@ int write_cpl(opendcp_t *opendcp, cpl_t *cpl) {
     rc = xmlTextWriterStartDocument(xml, NULL, XML_ENCODING, NULL);
     if (rc < 0) {
         dcp_log(LOG_ERROR,"xmlTextWriterStartDocument failed");
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     xmlTextWriterStartElement(xml, BAD_CAST "CompositionPlaylist");
@@ -193,7 +193,7 @@ int write_cpl(opendcp_t *opendcp, cpl_t *cpl) {
     rc = xmlTextWriterEndDocument(xml);
     if (rc < 0) {
         dcp_log(LOG_ERROR,"xmlTextWriterEndDocument failed %s",cpl->filename);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     xmlFreeTextWriter(xml);
@@ -213,7 +213,7 @@ int write_cpl(opendcp_t *opendcp, cpl_t *cpl) {
     sprintf(cpl->size,"%"PRIu64,st.st_size);
     calculate_digest(cpl->filename,cpl->digest);
     
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int write_cpl_list(opendcp_t *opendcp) {
@@ -240,7 +240,7 @@ int write_pkl(opendcp_t *opendcp, pkl_t *pkl) {
     rc = xmlTextWriterStartDocument(xml, NULL, XML_ENCODING, NULL);
     if (rc < 0) {
         dcp_log(LOG_ERROR,"xmlTextWriterStartDocument failed");
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     xmlTextWriterStartElement(xml, BAD_CAST "PackingList");
@@ -315,7 +315,7 @@ int write_pkl(opendcp_t *opendcp, pkl_t *pkl) {
     rc = xmlTextWriterEndDocument(xml);
     if (rc < 0) {
         dcp_log(LOG_ERROR,"xmlTextWriterEndDocument failed %s",pkl->filename);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     xmlFreeTextWriter(xml);
@@ -333,7 +333,7 @@ int write_pkl(opendcp_t *opendcp, pkl_t *pkl) {
     stat(pkl->filename, &st);
     sprintf(pkl->size,"%"PRIu64,st.st_size);
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int write_assetmap(opendcp_t *opendcp) {
@@ -357,7 +357,7 @@ int write_assetmap(opendcp_t *opendcp) {
     rc = xmlTextWriterStartDocument(xml, NULL, XML_ENCODING, NULL);
     if (rc < 0) {
         dcp_log(LOG_ERROR,"xmlTextWriterStartDocument failed");
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     xmlTextWriterStartElement(xml, BAD_CAST "AssetMap");
@@ -431,14 +431,14 @@ int write_assetmap(opendcp_t *opendcp) {
     rc = xmlTextWriterEndDocument(xml);
     if (rc < 0) {
         dcp_log(LOG_ERROR,"xmlTextWriterEndDocument failed %s",opendcp->assetmap.filename);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     xmlFreeTextWriter(xml);
     xmlSaveFormatFile(opendcp->assetmap.filename, doc, 1);
     xmlFreeDoc(doc);
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int write_volumeindex(opendcp_t *opendcp) {
@@ -456,7 +456,7 @@ int write_volumeindex(opendcp_t *opendcp) {
     rc = xmlTextWriterStartDocument(xml, NULL, XML_ENCODING, NULL);
     if (rc < 0) {
         dcp_log(LOG_ERROR,"xmlTextWriterStartDocument failed");
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     xmlTextWriterStartElement(xml, BAD_CAST "VolumeIndex");
@@ -467,12 +467,12 @@ int write_volumeindex(opendcp_t *opendcp) {
     rc = xmlTextWriterEndDocument(xml);
     if (rc < 0) {
         dcp_log(LOG_ERROR,"xmlTextWriterEndDocument failed %s",opendcp->volindex.filename);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     xmlFreeTextWriter(xml);
     xmlSaveFormatFile(opendcp->volindex.filename, doc, 1);
     xmlFreeDoc(doc);
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }

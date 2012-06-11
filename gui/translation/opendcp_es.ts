@@ -554,13 +554,13 @@
     </message>
     <message>
         <location filename="../j2k.cpp" line="313"/>
-        <location filename="../mxf.cpp" line="409"/>
+        <location filename="../mxf.cpp" line="411"/>
         <source>File Count Mismatch</source>
         <translation>Desajuste en el número de archivos</translation>
     </message>
     <message>
         <location filename="../j2k.cpp" line="314"/>
-        <location filename="../mxf.cpp" line="410"/>
+        <location filename="../mxf.cpp" line="412"/>
         <source>The left and right image directories have different file counts. They must be the same. Please fix and try again.</source>
         <translation>El número de archivos de los directorios de imágenes izquierdo y derecho no coinciden. Arréglalo e inténtalo de nuevo.</translation>
     </message>
@@ -646,8 +646,8 @@
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="211"/>
-        <location filename="../xml.cpp" line="287"/>
-        <location filename="../xml.cpp" line="318"/>
+        <location filename="../xml.cpp" line="285"/>
+        <location filename="../xml.cpp" line="316"/>
         <source>Choose a file to open</source>
         <translation>Selecciona el archivo a abrir</translation>
     </message>
@@ -765,143 +765,139 @@
         <translation>Indica el archivo XML de destino de los subtítulos.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="286"/>
-        <location filename="../mxf.cpp" line="289"/>
-        <location filename="../mxf.cpp" line="354"/>
-        <location filename="../mxf.cpp" line="432"/>
-        <location filename="../mxf.cpp" line="440"/>
+        <location filename="../mxf.cpp" line="356"/>
+        <location filename="../mxf.cpp" line="434"/>
+        <location filename="../mxf.cpp" line="442"/>
         <source>MXF Creation Error</source>
         <translation>Error de Creación del MXF</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="287"/>
         <source>Subtitle MXF creation failed.</source>
-        <translation>Falló la creación del MXF de Subtítulos.</translation>
+        <translation type="obsolete">Falló la creación del MXF de Subtítulos.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="290"/>
         <source>Subtitle MXF creation succeeded.</source>
-        <translation>Se ha creado correctamente el MXF de Subtítulos.</translation>
+        <translation type="obsolete">Se ha creado correctamente el MXF de Subtítulos.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="355"/>
+        <location filename="../mxf.cpp" line="357"/>
         <source>Sound MXF creation failed.</source>
         <translation>Falló la creación del MXF de Audio.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="432"/>
+        <location filename="../mxf.cpp" line="434"/>
         <source>No input files found.</source>
         <translation>No se han hallado los archivos de entrada.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="440"/>
+        <location filename="../mxf.cpp" line="442"/>
         <source>Picture MXF creation failed.</source>
         <translation>Falló la creación del MXF de Imagen.</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="66"/>
+        <location filename="../xml.cpp" line="65"/>
         <source>DCP Creation Failed</source>
         <translation>Falló la creación del DCP.</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="86"/>
+        <location filename="../xml.cpp" line="85"/>
         <source>An MXF picture track is required.</source>
         <translation>Falta la pista de imagen MXF.</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="94"/>
+        <location filename="../xml.cpp" line="93"/>
         <source>The duration of all MXF tracks must be the same.</source>
         <translation>Todas las pistas MXF deben tener la misma duración.</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="121"/>
+        <location filename="../xml.cpp" line="120"/>
         <source>Could not add reel to CPL.</source>
         <translation>No se ha podido añadir la bobina al CPL.</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="135"/>
+        <location filename="../xml.cpp" line="134"/>
         <source>Could not valiate reel.</source>
         <translation>La bobina no se ha podido validar.</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="140"/>
+        <location filename="../xml.cpp" line="139"/>
         <source>Choose destination folder</source>
         <translation>Selecciona la carpeta de destino</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="165"/>
+        <location filename="../xml.cpp" line="164"/>
         <source>Failed to create composition playlist.</source>
         <translation>No se ha podido crear la lista de reproducción (CPL).</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="170"/>
+        <location filename="../xml.cpp" line="169"/>
         <source>Failed to create packaging list.</source>
         <translation>No se ha podido crear la lista del paquete (PKL).</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="175"/>
+        <location filename="../xml.cpp" line="174"/>
         <source>Failed to create volume index.</source>
         <translation>No se ha podido crear el índice de volúmenes (VOLINDEX).</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="180"/>
+        <location filename="../xml.cpp" line="179"/>
         <source>Failed to create assetmap.</source>
         <translation>No se ha podido crear la lista de contenidos (ASSETMAP).</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="191"/>
-        <location filename="../xml.cpp" line="213"/>
-        <location filename="../xml.cpp" line="236"/>
+        <location filename="../xml.cpp" line="189"/>
+        <location filename="../xml.cpp" line="211"/>
+        <location filename="../xml.cpp" line="234"/>
         <source>Move MXF File</source>
         <translation>Mover Archivo MXF</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="191"/>
+        <location filename="../xml.cpp" line="189"/>
         <source>The destination picture MXF already exists, do you want to replace?</source>
         <translation>El MXF imagen de destino ya existe, ¿desea reemplazar?</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="213"/>
+        <location filename="../xml.cpp" line="211"/>
         <source>The destination sound MXF already exists, do you want to replace?</source>
         <translation>El MXF sonido de destino ya existe, ¿desea reemplazar?</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="236"/>
+        <location filename="../xml.cpp" line="234"/>
         <source>The destination subtitle MXF already exists, do you want to replace?</source>
         <translation>El destino de subtítulos MXF ya existe, ¿desea reemplazar?</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="296"/>
+        <location filename="../xml.cpp" line="294"/>
         <source>Not a Picture Track</source>
         <translation>No es una Pista de Imagen</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="297"/>
+        <location filename="../xml.cpp" line="295"/>
         <source>The selected file is not a valid MXF picture track.</source>
         <translation>El archivo seleccionado no es una pista MXF de imagen válida.</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="327"/>
+        <location filename="../xml.cpp" line="325"/>
         <source>Not a Sound Track</source>
         <translation>No es una Pista de Audio</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="328"/>
+        <location filename="../xml.cpp" line="326"/>
         <source>The selected file is not a valid MXF sound track.</source>
         <translation>El archivo seleccionado no es una pista MXF de audio válida.</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="349"/>
+        <location filename="../xml.cpp" line="347"/>
         <source>Choose an file to open</source>
         <translation>Selecciona un archivo</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="358"/>
+        <location filename="../xml.cpp" line="356"/>
         <source>Not a Subtitle Track</source>
         <translation>No es una Pista de Subtítulos</translation>
     </message>
     <message>
-        <location filename="../xml.cpp" line="359"/>
+        <location filename="../xml.cpp" line="357"/>
         <source>The selected file is not a valid MXF subtitle track.</source>
         <translation>El archivo seleccionado no es una pista MXF de subtítulos válida.</translation>
     </message>

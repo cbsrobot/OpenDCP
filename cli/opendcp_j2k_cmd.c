@@ -95,28 +95,28 @@ int get_filelist(opendcp_t *opendcp,char *in_path,char *out_path,filelist_t *fil
 
     if (stat(in_path, &st_in) != 0 ) {
         dcp_log(LOG_ERROR,"Could not open input file %s",in_path);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     /* directory */
     if (S_ISDIR(st_in.st_mode)) {
         if (stat(out_path, &st_out) != 0 ) {
             dcp_log(LOG_ERROR,"Output directory %s does not exist",out_path);
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }
 
         if (st_out.st_mode & S_IFDIR) {
             build_filelist(in_path, out_path, filelist, J2K_INPUT);
         } else {
             dcp_log(LOG_ERROR,"If input is a directory, output must be as well");
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }
     } else {
         dcp_log(LOG_DEBUG,"%-15.15s: input is a single file %s","get_filelist", in_path);
         if (stat(out_path, &st_out) == 0 ) {
             if (st_out.st_mode & S_IFDIR) {
                 dcp_log(LOG_ERROR,"If input is a file, output must be as well");
-                return DCP_FATAL;
+                return OPENDCP_ERROR;
             }
         }
         extension = strrchr(in_path,'.');
@@ -130,7 +130,7 @@ int get_filelist(opendcp_t *opendcp,char *in_path,char *out_path,filelist_t *fil
         }
     }
 
-   return DCP_SUCCESS;
+   return OPENDCP_NO_ERROR;
 }
 
 void progress_bar(int val, int total) {
@@ -181,7 +181,7 @@ int main (int argc, char **argv) {
         dcp_usage();
     }
 
-    opendcp = create_opendcp();
+    opendcp = opendcp_create();
 
     /* set initial values */
     opendcp->j2k.xyz         = 1;
@@ -446,13 +446,13 @@ int main (int argc, char **argv) {
             if(access(filelist->out[c], F_OK) != 0 || opendcp->j2k.no_overwrite == 0) {
                 result = convert_to_j2k(opendcp,filelist->in[c],filelist->out[c], tmp_path);
             } else {
-                result = DCP_SUCCESS;
+                result = OPENDCP_NO_ERROR;
             }
             if (count) {
                if (opendcp->log_level>0 && opendcp->log_level<3) {progress_bar(count,opendcp->j2k.end_frame);}
             }
 
-            if (result == DCP_FATAL) {
+            if (result == OPENDCP_ERROR) {
                 dcp_log(LOG_ERROR,"JPEG2000 conversion %s failed",filelist->in[c]);
                 dcp_fatal(opendcp,"Exiting...");
             } else {
@@ -470,7 +470,7 @@ int main (int argc, char **argv) {
         printf("\n");
     }
 
-    delete_opendcp(opendcp);
+    opendcp_delete(opendcp);
 
     exit(0);
 }

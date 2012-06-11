@@ -46,10 +46,49 @@ extern "C" {
 #define OPENDCP_LICENSE    "${OPENDCP_LICENSE}"
 #define OPENDCP_URL        "${OPENDCP_URL}"
 
-/* Defaults */
+/* defaults */
 #define DCP_ANNOTATION  "OPENDCP-FILM"
 #define DCP_TITLE       "OPENDCP-FILM-TITLE"
 #define DCP_KIND        "feature"
+
+/* generate error message */
+#define FOREACH_OPENDCP_ERROR_MSG(OPENDCP_ERROR_MSG) \
+        OPENDCP_ERROR_MSG(OPENDCP_NO_ERROR,                "No error")  \
+        OPENDCP_ERROR_MSG(OPENDCP_ERROR,                   "OpenDCP error")  \
+        OPENDCP_ERROR_MSG(OPENDCP_FATAL,                   "OpenDCP fatal error")  \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN,                "Could not open file") \
+        OPENDCP_ERROR_MSG(OPENDCP_INVALID_PICTURE_TRACK,   "Invalid picture track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_NO_PICTURE_TRACK,        "Reel does not contain a picture track") \
+        OPENDCP_ERROR_MSG(OPENDCP_MULTIPLE_PICTURE_TRACK,  "Reel contains multiple picture tracks") \
+        OPENDCP_ERROR_MSG(OPENDCP_INVALID_SOUND_TRACK,     "Invalid sound track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_NO_SOUND_TRACK,          "Reel does not contain a sound track") \
+        OPENDCP_ERROR_MSG(OPENDCP_MULTIPLE_SOUND_TRACK,    "Reel contains multiple sound tracks") \
+        OPENDCP_ERROR_MSG(OPENDCP_SPECIFICATION_MISMATCH,  "DCP contains MXF and SMPTE track") \
+        OPENDCP_ERROR_MSG(OPENDCP_TRACK_NO_DURATION,       "Track has no duration") \
+        OPENDCP_ERROR_MSG(OPENDCP_J2K_ERROR,               "JPEG2000 error") \
+        OPENDCP_ERROR_MSG(OPENDCP_CALC_DIGEST,            "Could not caclulate MXF digest") \
+        OPENDCP_ERROR_MSG(OPENDCP_DETECT_TRACK_TYPE,      "Could not determine MXF track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_INVALID_TRACK_TYPE,     "Invalid MXF track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_UNKOWN_TRACK_TYPE,      "Unknown MXF track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_MPEG2,         "Could not open MPEG2 file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_J2K,           "Could not open JPEG200 file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_WAV,           "Could not open wav file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_TT,            "Could not open subtitle file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEWRITE_MXF,          "Could not write MXF file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FINALIZE_MXF,           "Could not finalize MXF file") \
+        OPENDCP_ERROR_MSG(OPENDCP_PARSER_RESET,           "Could not reset MXF parser") \
+        OPENDCP_ERROR_MSG(OPENDCP_STRING_LENGTH,          "Input files have differing file lengths") \
+        OPENDCP_ERROR_MSG(OPENDCP_STRING_NOTSEQUENTIAL,   "Input files are not sequential") \
+        OPENDCP_ERROR_MSG(OPENDCP_MAX_ERROR,               "Maximum error string")
+ 
+#define GENERATE_ENUM(ERROR, STRING) ERROR,
+#define GENERATE_STRING(ERROR, STRING) STRING,
+#define GENERATE_NAME(ERROR, STRING) #ERROR,
+#define GENERATE_STRUCT(ERROR, STRING) { ERROR, #ERROR, STRING },
+
+enum OPENDCP_ERROR_MESSAGES {
+    FOREACH_OPENDCP_ERROR_MSG(GENERATE_ENUM)
+};
 
 /* XML Namespaces */
 extern const char *XML_HEADER;
@@ -68,14 +107,19 @@ extern const char *DS_SMA[]; /* signature method */
 extern const char *RATING_AGENCY[]; 
 extern const char *DCP_LOG[];
 
-typedef unsigned char byte_t; 
+/* error messages */
+extern const char *OPENDCP_ERROR_STRING[];
+extern const char *OPENDCP_ERROR_NAME[];
 
-enum DCP_ERROR {
-    DCP_FATAL   = -1,
-    DCP_SUCCESS =  0,
-    DCP_WARN    =  1,
-    DCP_QUIT    =  2
-};
+typedef struct {
+    int error;
+    char *name;
+    char *string;
+} opendcp_error_t;
+
+extern const opendcp_error_t OPENDCP_ERROR_T[];
+
+typedef unsigned char byte_t; 
 
 enum LOG_LEVEL {
     LOG_NONE = 0,
@@ -124,45 +168,21 @@ enum DPX_MODE {
     DPX_VIDEO
 };
 
-enum DCP_ERROR_MESSAGES {
-    DCP_NO_ERROR   = 0,
-    DCP_ERROR,
-    DCP_FILE_OPEN_ERROR,
-    DCP_NO_PICTURE_TRACK,
-    DCP_MULTIPLE_PICTURE_TRACK,
-    DCP_ASSET_NO_DURATION,
-    DCP_INVALID_ESSENCE,
-    DCP_SPECIFCATION_MISMATCH,
-
-    /* J2K */
-    J2K_ERROR,
-
-    /* MXF */
-    MXF_CALC_DIGEST_FAILED,
-    MXF_COULD_NOT_DETECT_ESSENCE_TYPE,
-    MXF_UNKOWN_ESSENCE_TYPE,
-    MXF_MPEG2_FILE_OPEN_ERROR,
-    MXF_J2K_FILE_OPEN_ERROR,
-    MXF_WAV_FILE_OPEN_ERROR,
-    MXF_TT_FILE_OPEN_ERROR,
-    MXF_FILE_WRITE_ERROR,
-    MXF_FILE_FINALIZE_ERROR,
-    MXF_PARSER_RESET_ERROR,
-
-    /* XML */
-
-    /* COMMON */
-    STRING_LENGTH_NOTEQUAL,
-    STRING_NOTSEQUENTIAL,
-
-    DCP_ERROR_MAX
-};
-
-typedef struct filelist_t {
+typedef struct {
     char           **in;
     char           **out;
     int            file_count;
 } filelist_t;
+
+typedef struct {
+    struct dirent  **entry;
+    int            file_count;
+} filelist2_t;
+
+typedef struct {
+    filelist_t *filelist;
+    char       *output;
+} mxf_writer_t;
 
 typedef struct {
     char           filename[MAX_FILENAME_LENGTH];
@@ -246,21 +266,22 @@ typedef struct {
     int            xyz;
     int            xyz_method;
     int            resize;
-} j2k_options_t;
+} j2k_t;
 
 typedef struct {
     int            start_frame;
     int            end_frame;
     int            duration;
     int            slide;
-
     int            encrypt_header_flag;
     int            key_flag;
     int            delete_intermediate;
     byte_t         key_id[16];
     byte_t         key_value[16];
     int            write_hmac;
-} mxf_options_t;
+    void          (*frame_done)(void *);
+    void          (*write_done)(void *);
+} mxf_t;
 
 typedef struct {
     char           basename[40];
@@ -273,7 +294,7 @@ typedef struct {
     char           rating[5];
     char           aspect_ratio[20];
     int            digest_flag;
-} xml_options_t;
+} xml_t;
 
 typedef struct {
     int  sign;
@@ -294,9 +315,9 @@ typedef struct {
     int             ns;
     int             threads;
     char            dcp_path[MAX_BASENAME_LENGTH];
-    j2k_options_t   j2k;
-    mxf_options_t   mxf;
-    xml_options_t   xml;
+    j2k_t           j2k;
+    mxf_t           mxf;
+    xml_t           xml;
     assetmap_t      assetmap;
     volindex_t      volindex;
     int             pkl_count;
@@ -318,8 +339,8 @@ void  dcp_set_log_level(int log_level);
 void  dcp_log_init(int level, const char *file);
 
 /* opendcp context */
-opendcp_t *create_opendcp();
-int       delete_opendcp(opendcp_t *opendcp);
+opendcp_t *opendcp_create();
+int       opendcp_delete(opendcp_t *opendcp);
 
 /* image functions */
 int check_image_compliance(int profile, odcp_image_t *image, char *file);
@@ -332,7 +353,7 @@ int get_wav_duration(const char *filename, int frame_rate);
 int get_file_essence_type(char *in_path);
 
 /* MXF functions */
-int write_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output);
+int write_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file);
 
 /* XML functions */
 int write_cpl(opendcp_t *opendcp, cpl_t *cpl);

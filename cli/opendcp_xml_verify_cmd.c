@@ -56,20 +56,20 @@ int main (int argc, char **argv) {
     if( stat(filename,&s) == 0 ) {
         if( !(s.st_mode & S_IFREG) ) {
             dcp_log(LOG_ERROR,"%s not a file",filename);
-            exit(DCP_FATAL);
+            exit(OPENDCP_ERROR);
         }
     } else {
         dcp_log(LOG_ERROR,"could not open file: %s",filename);
-        exit(DCP_FATAL);
+        exit(OPENDCP_ERROR);
     }
 
     result = xml_verify(filename);
 
-    if (result == DCP_SUCCESS) {
+    if (result == OPENDCP_NO_ERROR) {
         dcp_log(LOG_INFO,"%s Signature is VALID",filename);
-        exit(DCP_SUCCESS);
+        exit(OPENDCP_NO_ERROR);
     } else {
         dcp_log(LOG_ERROR,"%s Signature is NOT VALID",filename);
-        exit(DCP_FATAL);
+        exit(OPENDCP_ERROR);
     }
 }

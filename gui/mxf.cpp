@@ -268,7 +268,7 @@ void MainWindow::mxfCreateSubtitle() {
         return;
     }
 
-    opendcp_t *mxfContext = create_opendcp();
+    opendcp_t *mxfContext = opendcp_create();
 
     mxfContext->ns = XML_NS_SMPTE;
 
@@ -282,6 +282,7 @@ void MainWindow::mxfCreateSubtitle() {
     char *outputFile = new char [ui->sMxfOutEdit->text().toStdString().size()+1];
     strcpy(outputFile, ui->sMxfOutEdit->text().toStdString().c_str());
 
+/*
     if (write_mxf(mxfContext,fileList,outputFile) != 0 )  {
         QMessageBox::critical(this, tr("MXF Creation Error"),
                              tr("Subtitle MXF creation failed."));
@@ -289,8 +290,9 @@ void MainWindow::mxfCreateSubtitle() {
         QMessageBox::information(this, tr("MXF Creation Error"),
                          tr("Subtitle MXF creation succeeded."));
     }
+*/
 
-    delete_opendcp(mxfContext);
+    opendcp_delete(mxfContext);
 
     // free filelist
     for (int x=0;x<fileList->file_count;x++) {
@@ -310,7 +312,7 @@ void MainWindow::mxfCreateAudio() {
     QFileInfoList inputList;
     QString       outputFile;
 
-    opendcp_t     *mxfContext = create_opendcp();
+    opendcp_t     *mxfContext = opendcp_create();
 
     if (ui->mxfTypeComboBox->currentIndex() == 0) {
         mxfContext->ns = XML_NS_INTEROP;
@@ -355,7 +357,7 @@ void MainWindow::mxfCreateAudio() {
                              tr("Sound MXF creation failed."));
     }
 
-    delete_opendcp(mxfContext);
+    opendcp_delete(mxfContext);
 
     return;
 }
@@ -369,7 +371,7 @@ void MainWindow::mxfCreatePicture() {
     QString       outputFile;
     QString       msg;
 
-    opendcp_t *mxfContext = create_opendcp();
+    opendcp_t *mxfContext = opendcp_create();
 
     if (ui->mxfTypeComboBox->currentIndex() == 0) {
         mxfContext->ns = XML_NS_INTEROP;
@@ -386,7 +388,7 @@ void MainWindow::mxfCreatePicture() {
         pLeftDir.setFilter(QDir::Files | QDir::NoSymLinks);
         pLeftDir.setSorting(QDir::Name);
         pLeftList = pLeftDir.entryInfoList();
-        if (checkFileSequence(pLeftDir.entryList()) != DCP_SUCCESS) {
+        if (checkFileSequence(pLeftDir.entryList()) != OPENDCP_NO_ERROR) {
             goto Done;
         }
     } else {
@@ -401,7 +403,7 @@ void MainWindow::mxfCreatePicture() {
         pRightDir.setSorting(QDir::Name);
         pRightList = pRightDir.entryInfoList();
 
-        if (checkFileSequence(pRightDir.entryList()) != DCP_SUCCESS) {
+        if (checkFileSequence(pRightDir.entryList()) != OPENDCP_NO_ERROR) {
             goto Done;
         }
 
@@ -443,7 +445,7 @@ void MainWindow::mxfCreatePicture() {
 
 Done:
 
-    delete_opendcp(mxfContext);
+    opendcp_delete(mxfContext);
 
     return;
 }
