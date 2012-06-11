@@ -108,7 +108,7 @@ ELSE(UNIX)
         SET(TARGET --target=i686)
         SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -m32")
         SET(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS})
-        SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m32 -melf_i386")
+        SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m32")
     ENDIF()
 ENDIF()
 #-------------------------------------------------------------------------------
