@@ -9,7 +9,7 @@ STRING(TOLOWER ${PROJECT_NAME} PACKAGE_NAME)
 #--version----------------------------------------------------------------------
 SET(VERSION_MAJOR 0)
 SET(VERSION_MINOR 0)
-SET(VERSION_BUILD 26)
+SET(VERSION_BUILD 27)
 SET(OPENDCP_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD})
 SET(OPENDCP_NAME ${PROJECT_NAME})
 SET(OPENDCP_COPYRIGHT "(c) 2010-2012 Terrence Meiczinger. All rights reserved.")
@@ -63,7 +63,7 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 #-------------------------------------------------------------------------------
 
 #--set base compiler flags------------------------------------------------------
-SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -W -O3 ${OPENMP}")
+SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -Wextra -O3 ${OPENMP}")
 SET(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS})
 #-------------------------------------------------------------------------------
 
