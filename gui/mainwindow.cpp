@@ -236,7 +236,7 @@ int MainWindow::checkSequential(const char str1[], const char str2[])
     int  offset = 0;
 
     if (strlen(str1) != strlen(str2)) {
-        return STRING_LENGTH_NOTEQUAL;
+        return OPENDCP_STRING_LENGTH;
     }
 
     for (i = 0; i < (int) strlen(str1); i++) {
@@ -250,9 +250,9 @@ int MainWindow::checkSequential(const char str1[], const char str2[])
     y = strtol(str2+offset,NULL,10);
 
     if ((y - x) == 1) {
-        return DCP_SUCCESS;
+        return OPENDCP_NO_ERROR;
     } else {
-        return STRING_NOTSEQUENTIAL;
+        return OPENDCP_STRING_NOTSEQUENTIAL;
     }
 }
 
@@ -260,39 +260,39 @@ int MainWindow::checkSequential(const char str1[], const char str2[])
 int MainWindow::checkFileSequence(QStringList list)
 {
     QString msg;
-    int     sequential = DCP_SUCCESS;
+    int     sequential = OPENDCP_NO_ERROR;
     int     x = 0;
 
     if (list.size() <= 1) {
-        return DCP_SUCCESS;
+        return OPENDCP_NO_ERROR;
     }
 
-    for (x = 0; (x < (list.size()-1)) && (sequential == DCP_SUCCESS); x++) {
+    for (x = 0; (x < (list.size()-1)) && (sequential == OPENDCP_NO_ERROR); x++) {
         QFileInfo a(list.at(x));
         QFileInfo b(list.at(x+1));
         sequential = checkSequential((char *)a.completeBaseName().toStdString().c_str(),
                                      (char *)b.completeBaseName().toStdString().c_str());
     }
 
-    if (sequential == STRING_LENGTH_NOTEQUAL) {
+    if (sequential == OPENDCP_STRING_LENGTH) {
         QMessageBox::critical(this, tr("File Sequence Check Error"), tr("All filenames must be of the same length."));
-        return DCP_ERROR;
+        return OPENDCP_ERROR;
     }
 
-    if (sequential == STRING_NOTSEQUENTIAL) {
+    if (sequential == OPENDCP_STRING_NOTSEQUENTIAL) {
         QTextStream(&msg) << tr("File list does not appear to be sequential between ") << list.at(x-1);
         QTextStream(&msg) << tr(" and ") << list.at(x) << tr(". Do you wish to continue?");
         if (QMessageBox::question(this, tr("File Sequence Mismatch"), msg, QMessageBox::No,QMessageBox::Yes) == QMessageBox::No) {
-            return DCP_ERROR;
+            return OPENDCP_ERROR;
         } else {
-            return DCP_NO_ERROR;
+            return OPENDCP_NO_ERROR;
         }
     }
 
-    if (sequential == DCP_SUCCESS) {
-        return DCP_SUCCESS;
+    if (sequential == OPENDCP_NO_ERROR) {
+        return OPENDCP_NO_ERROR;
     } else {
-        return DCP_ERROR;
+        return OPENDCP_ERROR;
     }
 }
 

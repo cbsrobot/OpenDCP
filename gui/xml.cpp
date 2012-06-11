@@ -60,7 +60,7 @@ void MainWindow::startDcp()
 
     asset_list_t reelList[MAX_REELS];
 
-    opendcp_t *xmlContext = create_opendcp();
+    opendcp_t *xmlContext = opendcp_create();
 
     DCP_FAIL_MSG = tr("DCP Creation Failed");
 
@@ -115,7 +115,7 @@ void MainWindow::startDcp()
     // add cpl to the DCP/PKL (only one CPL currently support)
     add_cpl(xmlContext, &xmlContext->pkl[0]);
 
-    if (add_reel(xmlContext, &xmlContext->pkl[0].cpl[0],reelList[0]) != DCP_SUCCESS) {
+    if (add_reel(xmlContext, &xmlContext->pkl[0].cpl[0],reelList[0]) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG,
                               tr("Could not add reel to CPL."));
         goto Done;
@@ -129,7 +129,7 @@ void MainWindow::startDcp()
     xmlContext->pkl[0].cpl[0].reel[0].asset[2].duration = ui->reelSubtitleDurationSpinBox->value();
     xmlContext->pkl[0].cpl[0].reel[0].asset[2].entry_point = ui->reelSubtitleOffsetSpinBox->value();
 
-    if (validate_reel(xmlContext,&xmlContext->pkl[0].cpl[0],0) != DCP_SUCCESS) {
+    if (validate_reel(xmlContext,&xmlContext->pkl[0].cpl[0],0) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG,
                               tr("Could not valiate reel."));
         goto Done;
@@ -159,22 +159,22 @@ void MainWindow::startDcp()
     }
 
     // write XML Files
-    if (write_cpl(xmlContext,&xmlContext->pkl[0].cpl[0]) != DCP_SUCCESS) {
+    if (write_cpl(xmlContext,&xmlContext->pkl[0].cpl[0]) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG,
                               tr("Failed to create composition playlist."));
         goto Done;
     }
-    if (write_pkl(xmlContext,&xmlContext->pkl[0]) != DCP_SUCCESS) {
+    if (write_pkl(xmlContext,&xmlContext->pkl[0]) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG,
                               tr("Failed to create packaging list."));
         goto Done;
     }
-    if (write_volumeindex(xmlContext) != DCP_SUCCESS) {
+    if (write_volumeindex(xmlContext) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG,
                               tr("Failed to create volume index."));
         goto Done;
     }
-    if (write_assetmap(xmlContext) != DCP_SUCCESS) {
+    if (write_assetmap(xmlContext) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG,
                               tr("Failed to create assetmap."));
         goto Done;
@@ -253,7 +253,7 @@ void MainWindow::startDcp()
 
 
 Done:
-    delete_opendcp(xmlContext);
+    opendcp_delete(xmlContext);
 
     return;
 }

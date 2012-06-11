@@ -25,7 +25,7 @@
 #include <opendcp.h>
 #include "opendcp_cli.h"
 
-int get_filelist(opendcp_t *opendcp,char *in_path,filelist_t *filelist);
+int get_filelist(char *path, filelist_t *filelist);
 
 void version() {
     FILE *fp;
@@ -63,7 +63,7 @@ void dcp_usage() {
     exit(0);
 }
 
-int get_filelist_3d(opendcp_t *opendcp,char *in_path_left,char *in_path_right,filelist_t *filelist) {
+int get_filelist_3d(char *in_path_left,char *in_path_right,filelist_t *filelist) {
     filelist_t  *filelist_left;
     filelist_t  *filelist_right;
     int x,y;
@@ -71,14 +71,14 @@ int get_filelist_3d(opendcp_t *opendcp,char *in_path_left,char *in_path_right,fi
     filelist_left  = filelist_alloc(filelist->file_count/2);
     filelist_right = filelist_alloc(filelist->file_count/2);
 
-    get_filelist(opendcp,in_path_left,filelist_left);
-    get_filelist(opendcp,in_path_right,filelist_right);
+    get_filelist(in_path_left,filelist_left);
+    get_filelist(in_path_right,filelist_right);
 
     if (filelist_left->file_count != filelist_right->file_count) {
         dcp_log(LOG_ERROR,"Mismatching file count for 3D images left: %d right: %d\n",filelist_left->file_count,filelist_right->file_count);
         filelist_free(filelist_left);
         filelist_free(filelist_right);
-        return DCP_FATAL; 
+        return OPENDCP_ERROR; 
     }
 
     y = 0;
@@ -91,30 +91,38 @@ int get_filelist_3d(opendcp_t *opendcp,char *in_path_left,char *in_path_right,fi
     filelist_free(filelist_left);
     filelist_free(filelist_right);
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
-int get_filelist(opendcp_t *opendcp,char *in_path,filelist_t *filelist) {
+void frame_done_cb() {
+    printf(".");
+}
+
+void write_done_cb() {
+    printf("mxf complete");
+}
+
+int get_filelist(char *path, filelist_t *filelist) {
     struct stat st_in;
 
-    if (stat(in_path, &st_in) != 0 ) {
-        dcp_log(LOG_ERROR,"Could not open input file %s",in_path);
-        return DCP_FATAL;
+    if (stat(path, &st_in) != 0 ) {
+        dcp_log(LOG_ERROR,"Could not open input file %s",path);
+        return OPENDCP_ERROR;
     }
 
     if (S_ISDIR(st_in.st_mode)) {
-        build_filelist(in_path, NULL, filelist, MXF_INPUT);
+        build_filelist(path, NULL, filelist, MXF_INPUT);
     } else {
         /* mpeg2 or time_text */
-        int essence_type = get_file_essence_type(in_path);
+        int essence_type = get_file_essence_type(path);
         if (essence_type == AET_UNKNOWN) {
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }
         filelist->file_count = 1;
-        sprintf(filelist->in[0],"%s",in_path);
+        sprintf(filelist->in[0],"%s",path);
     }
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int main (int argc, char **argv) {
@@ -130,7 +138,7 @@ int main (int argc, char **argv) {
         dcp_usage();
     }
 
-    opendcp = create_opendcp();
+    opendcp = opendcp_create();
 
     /* set initial values */
     opendcp->log_level = LOG_WARN;
@@ -273,11 +281,11 @@ int main (int argc, char **argv) {
     if (opendcp->stereoscopic) {
         count = get_file_count(in_path_left, MXF_INPUT);
         filelist = (filelist_t *)filelist_alloc(count*2);
-        get_filelist_3d(opendcp,in_path_left,in_path_right,filelist);
+        get_filelist_3d(in_path_left,in_path_right,filelist);
     } else {
         count = get_file_count(in_path, MXF_INPUT);
         filelist = (filelist_t *)filelist_alloc(count);
-        get_filelist(opendcp,in_path,filelist);
+        get_filelist(in_path, filelist);
     }
 
     if (filelist->file_count < 1) {
@@ -305,8 +313,16 @@ int main (int argc, char **argv) {
     if (opendcp->mxf.duration < 1) {
         dcp_fatal(opendcp,"Duration must be at least 1 frame");
     }
+   
+    /* set the callbacks (optional) for the mxf writer */
+    //opendcp->mxf.frame_done = frame_done_cb;
+    //opendcp->mxf.write_done = write_done_cb;
 
-    if (write_mxf(opendcp,filelist,out_path) != 0 )  {
+    int z;
+    for (z = 0; z < filelist->file_count; z++) {
+    }
+
+    if (write_mxf(opendcp, filelist, out_path) != 0 )  {
         printf("Error!\n");
     }
 
@@ -318,7 +334,7 @@ int main (int argc, char **argv) {
         printf("\n");
     }
 
-    delete_opendcp(opendcp);
+    opendcp_delete(opendcp);
 
     exit(0);
 }

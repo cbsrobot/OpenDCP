@@ -126,22 +126,22 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
 
     if (!bmp_fp) {
         dcp_log(LOG_ERROR,"%-15.15s: opening bmp file %s","read_bmp",infile);
-        return DCP_FATAL;
+        return OPENDCP_FATAL;
     }
 
     if (fread(&magic,sizeof(bmp_magic_num_t),1,bmp_fp) < sizeof(bmp_magic_num_t)) {
         dcp_log(LOG_ERROR,"%-15.15s: failed to read magic number","read_bmp");
-        return DCP_FATAL;
+        return OPENDCP_FATAL;
     }
     
     if (fread(&bmp,sizeof(bmp_image_t),1,bmp_fp) <= sizeof(bmp_image_t)) {
         dcp_log(LOG_ERROR,"%-15.15s: failed to header","read_bmp");
-        return DCP_FATAL;
+        return OPENDCP_FATAL;
     }
 
     if (magic.magic_num != MAGIC_NUMBER) {
          dcp_log(LOG_ERROR,"%s is not a valid BMP file", infile);
-         return DCP_FATAL;
+         return OPENDCP_FATAL;
     }
 
     if (bmp.image.height < 0) {
@@ -166,7 +166,7 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
         case BMP_PNG:
         default:
             dcp_log(LOG_ERROR, "Unsupported image compression: %d\n", bmp.image.compression);
-            return DCP_FATAL;
+            return OPENDCP_FATAL;
             break;
     }
 
@@ -177,7 +177,7 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
 
     if (bmp.image.bpp < 24 || bmp.image.bpp > 32) {
         dcp_log(LOG_ERROR, "%d-bit depth is not supported.",bmp.image.bpp);
-        return DCP_FATAL;
+        return OPENDCP_FATAL;
     }
   
     /* create the image */
@@ -228,5 +228,5 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
     dcp_log(LOG_DEBUG,"%-15.15s: BMP read complete","read_bmp");
     *image_ptr = image;
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }

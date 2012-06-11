@@ -93,7 +93,7 @@ int main (int argc, char **argv) {
         dcp_usage();
     }
 
-    opendcp = create_opendcp();
+    opendcp = opendcp_create();
 
     /* parse options */
     while (1)
@@ -324,11 +324,11 @@ int main (int argc, char **argv) {
 
     /* Add and validate reels */
     for (c = 0;c<reel_count;c++) {
-        if (add_reel(opendcp, &opendcp->pkl[0].cpl[0], reel_list[c]) != DCP_SUCCESS) {
+        if (add_reel(opendcp, &opendcp->pkl[0].cpl[0], reel_list[c]) != OPENDCP_NO_ERROR) {
             sprintf(buffer,"Could not add reel %d to DCP\n",c+1); 
             dcp_fatal(opendcp,buffer);
         }
-       if (validate_reel(opendcp, &opendcp->pkl[0].cpl[0], c) != DCP_SUCCESS) {
+       if (validate_reel(opendcp, &opendcp->pkl[0].cpl[0], c) != OPENDCP_NO_ERROR) {
             sprintf(buffer,"Could validate reel %d\n",c+1); 
             dcp_fatal(opendcp,buffer);
        }
@@ -344,13 +344,13 @@ int main (int argc, char **argv) {
     }
 
     /* Write XML Files */
-    if (write_cpl(opendcp, &opendcp->pkl[0].cpl[0]) != DCP_SUCCESS)
+    if (write_cpl(opendcp, &opendcp->pkl[0].cpl[0]) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing composition playlist failed");
-    if (write_pkl(opendcp, &opendcp->pkl[0]) != DCP_SUCCESS)
+    if (write_pkl(opendcp, &opendcp->pkl[0]) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing packing list failed");
-    if (write_volumeindex(opendcp) != DCP_SUCCESS)
+    if (write_volumeindex(opendcp) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing volume index failed");
-    if (write_assetmap(opendcp) != DCP_SUCCESS)
+    if (write_assetmap(opendcp) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing asset map failed");
 
     dcp_log(LOG_INFO,"DCP Complete");
@@ -359,7 +359,7 @@ int main (int argc, char **argv) {
         printf("\n");
     }
 
-    delete_opendcp(opendcp);
+    opendcp_delete(opendcp);
 
     exit(0);
 }

@@ -412,7 +412,7 @@ int read_dpx(odcp_image_t **image_ptr, int dpx_log, const char *infile, int fd) 
 
     if (!dpx_fp) {
         dcp_log(LOG_ERROR,"Failed to open %s for reading", infile);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     fread(&dpx,sizeof(dpx_image_t),1,dpx_fp);
@@ -423,14 +423,14 @@ int read_dpx(odcp_image_t **image_ptr, int dpx_log, const char *infile, int fd) 
         endian = 1;
     } else {
          dcp_log(LOG_ERROR,"%s is not a valid DPX file", infile);
-         return DCP_FATAL;
+         return OPENDCP_ERROR;
     }
 
     bps = dpx.image.image_element[0].bit_size;
 
     if (bps < 8 || bps > 16) {
         dcp_log(LOG_ERROR, "%d-bit depth is not supported\n",bps);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     switch (dpx.image.image_element[0].descriptor) {
@@ -454,7 +454,7 @@ int read_dpx(odcp_image_t **image_ptr, int dpx_log, const char *infile, int fd) 
             break;
         default:
             dcp_log(LOG_ERROR, "Unsupported image descriptor: %d\n", dpx.image.image_element[0].descriptor);
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
             break;
     }
 
@@ -568,5 +568,5 @@ int read_dpx(odcp_image_t **image_ptr, int dpx_log, const char *infile, int fd) 
     dcp_log(LOG_DEBUG,"%-15.15s: DPX read complete","read_dpx");
     *image_ptr = image;
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }

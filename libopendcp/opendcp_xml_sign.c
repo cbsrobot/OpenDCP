@@ -142,18 +142,18 @@ int write_dsig_template(opendcp_t *opendcp, xmlTextWriterPtr xml) {
         for (i=0;i<3;i++) {
             if (bio[i] == NULL) {
                 dcp_log(LOG_ERROR,"Could allocate certificate from memory");
-                return DCP_FATAL;
+                return OPENDCP_ERROR;
             }
             x[i] = PEM_read_bio_X509(bio[i], NULL, NULL, NULL);
 
             if (!BIO_set_close(bio[i], BIO_NOCLOSE)) {
                 dcp_log(LOG_ERROR,"Could set BIO close flag");
-                return DCP_FATAL;
+                return OPENDCP_ERROR;
             }
 
             if (x[i] == NULL) {
                 dcp_log(LOG_ERROR,"Could not read certificate");
-                return DCP_FATAL;
+                return OPENDCP_ERROR;
              }
         }
     }
@@ -164,7 +164,7 @@ int write_dsig_template(opendcp_t *opendcp, xmlTextWriterPtr xml) {
         subject_xn[i] =  X509_get_subject_name(x[i]);
         if (issuer_xn[i] == NULL || subject_xn[i] == NULL) {
             dcp_log(LOG_ERROR,"Could not parse certificate data");
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }
     }
 
@@ -294,7 +294,7 @@ int write_dsig_template(opendcp_t *opendcp, xmlTextWriterPtr xml) {
         }
     }
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int xmlsec_init() {
@@ -307,29 +307,29 @@ int xmlsec_init() {
 
     /* init xmlsec lib */
     if(xmlSecInit() < 0) {
-        dcp_log(DCP_FATAL,"Error: xmlsec initialization failed.");
-        return(DCP_FATAL);
+        dcp_log(OPENDCP_ERROR,"Error: xmlsec initialization failed.");
+        return(OPENDCP_ERROR);
     }
 
     /* Check loaded library version */
     if(xmlSecCheckVersion() != 1) {
-        dcp_log(DCP_FATAL, "Error: loaded xmlsec library version is not compatible.");
-        return(DCP_FATAL);
+        dcp_log(OPENDCP_ERROR, "Error: loaded xmlsec library version is not compatible.");
+        return(OPENDCP_ERROR);
     }
 
     /* Init crypto library */
     if(xmlSecCryptoAppInit(NULL) < 0) {
-        dcp_log(DCP_FATAL, "Error: crypto initialization failed.");
-        return(DCP_FATAL);
+        dcp_log(OPENDCP_ERROR, "Error: crypto initialization failed.");
+        return(OPENDCP_ERROR);
     }
 
     /* Init xmlsec-crypto library */
     if(xmlSecCryptoInit() < 0) {
-        dcp_log(DCP_FATAL, "Error: xmlsec-crypto initialization failed.");
-        return(DCP_FATAL);
+        dcp_log(OPENDCP_ERROR, "Error: xmlsec-crypto initialization failed.");
+        return(OPENDCP_ERROR);
     }
 
-    return(DCP_SUCCESS);
+    return(OPENDCP_NO_ERROR);
 }
 
 xmlSecKeysMngrPtr load_certificates_verify() {
@@ -427,7 +427,7 @@ int xmlsec_close() {
     /* Shutdown libxslt/libxml */
     xmlCleanupParser();
     
-    return(DCP_SUCCESS);
+    return(OPENDCP_NO_ERROR);
 }
 
 int xml_sign(opendcp_t *opendcp, char *filename) {
@@ -436,7 +436,7 @@ int xml_sign(opendcp_t *opendcp, char *filename) {
     xmlNodePtr       root_node;
     xmlNodePtr       sign_node;
     FILE *fp;
-    int result = DCP_FATAL;
+    int result = OPENDCP_ERROR;
     xmlSecKeysMngrPtr key_manager = NULL;
     
     dcp_log(LOG_DEBUG, "xml_sign: xmlsec_init");
@@ -447,7 +447,7 @@ int xml_sign(opendcp_t *opendcp, char *filename) {
     doc = xmlParseFile(filename);
 
     if (doc == NULL) {
-        dcp_log(DCP_FATAL, "Error: unable to parse file %s", filename);
+        dcp_log(OPENDCP_ERROR, "Error: unable to parse file %s", filename);
         goto done;
     }
 
@@ -455,7 +455,7 @@ int xml_sign(opendcp_t *opendcp, char *filename) {
     root_node = xmlDocGetRootElement(doc);
 
     if (root_node == NULL){
-        dcp_log(DCP_FATAL, "Error: unable to find root node");
+        dcp_log(OPENDCP_ERROR, "Error: unable to find root node");
         goto done;
     }
 
@@ -534,7 +534,7 @@ int xml_verify(char *filename) {
     xmlNodePtr       cert_node;
     xmlNodePtr       x509d_node;
     xmlNodePtr       cur_node;
-    int              result = DCP_FATAL;
+    int              result = OPENDCP_ERROR;
     xmlSecKeysMngrPtr key_manager = NULL;
     unsigned char cert[5000];
     int  cert_l;

@@ -99,7 +99,7 @@ int get_file_count(char *path, int file_type) {
 
     if (stat(path, &st_in) != 0 ) {
         dcp_log(LOG_ERROR,"Could not open input file %s",path);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     if (S_ISDIR(st_in.st_mode)) {
@@ -123,7 +123,7 @@ int build_filelist(char *input, char *output, filelist_t *filelist, int file_typ
 
     if (stat(input, &st_in) != 0 ) {
         dcp_log(LOG_ERROR,"Could not open input file %s",input);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     filelist->file_count = scandir(input,&files,(void *)file_filter,alphasort);
@@ -140,7 +140,7 @@ int build_filelist(char *input, char *output, filelist_t *filelist, int file_typ
     }
     free(files);
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 filelist_t *filelist_alloc(int count) {
@@ -235,7 +235,7 @@ int check_sequential(char str1[],char str2[]) {
     unsigned int  offset = 0;
 
     if (strlen(str1) != strlen(str2)) {
-        return STRING_LENGTH_NOTEQUAL;
+        return OPENDCP_STRING_LENGTH;
     }
 
     for (i = 0; i < strlen(str1); i++) {
@@ -249,9 +249,9 @@ int check_sequential(char str1[],char str2[]) {
     y = strtol(str2+offset,NULL,10);
 
     if ((y - x) == 1) {
-        return DCP_SUCCESS;
+        return OPENDCP_NO_ERROR;
     } else {
-        return STRING_NOTSEQUENTIAL;
+        return OPENDCP_STRING_NOTSEQUENTIAL;
     }
 }
 
@@ -259,14 +259,14 @@ int check_file_sequence(char *str[], int count) {
     int sequential = 0;
     int x = 0;
 
-    while (x<(count-1) && sequential == DCP_SUCCESS) {
+    while (x<(count-1) && sequential == OPENDCP_NO_ERROR) {
         sequential = check_sequential(str[x], str[x+1]);
         x++;
     }
 
-    if (sequential == DCP_SUCCESS) {
+    if (sequential == OPENDCP_NO_ERROR) {
         return 0;
     } else {
-        return x+DCP_ERROR_MAX;
+        return x;
     }
 }

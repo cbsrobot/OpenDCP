@@ -65,7 +65,7 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
 
     if (!tif.fp) {
         dcp_log(LOG_ERROR,"%-15.15s: failed to open %s for reading","read_tif", infile);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     TIFFGetField(tif.fp, TIFFTAG_IMAGEWIDTH, &tif.w);
@@ -112,7 +112,7 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
 
     if (tif.supported == 0) {
         TIFFClose(tif.fp);
-       return(DCP_FATAL);
+       return(OPENDCP_ERROR);
     }
    
     /* create the image */
@@ -122,7 +122,7 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
     if (!image) {
         TIFFClose(tif.fp);
         dcp_log(LOG_ERROR,"%-15.15s: failed to create image %s","read_tif",infile);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     /* BW */
@@ -232,7 +232,7 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
     dcp_log(LOG_DEBUG,"%-15.15s: tiff read complete","read_tif");
     *image_ptr = image;
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int write_tif(odcp_image_t *image, const char *outfile, int fd) {
@@ -249,7 +249,7 @@ int write_tif(odcp_image_t *image, const char *outfile, int fd) {
 
     if (tif == NULL) {
         dcp_log(LOG_ERROR, "%-15.15s: failed to open file %s for writing","write_tif", outfile);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     /* Set tags */
@@ -267,7 +267,7 @@ int write_tif(odcp_image_t *image, const char *outfile, int fd) {
 
     if (data == NULL) {
         dcp_log(LOG_ERROR, "%-15.15s: tiff memory allocation error: %s", "write_tif", outfile);
-        return DCP_FATAL;
+        return OPENDCP_ERROR;
     }
 
     /* write each row */
@@ -279,5 +279,5 @@ int write_tif(odcp_image_t *image, const char *outfile, int fd) {
     _TIFFfree(data);
     TIFFClose(tif);
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }

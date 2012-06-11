@@ -111,14 +111,14 @@ int read_image(odcp_image_t **image, char *file) {
     } else if (strncasecmp(extension,"bmp",3) == 0) {
         result = read_bmp(image, file, 0);
     } else {
-        result = DCP_ERROR;
+        result = OPENDCP_ERROR;
     }
 
-    if (result != DCP_SUCCESS) {
-        return DCP_FATAL;
+    if (result != OPENDCP_NO_ERROR) {
+        return OPENDCP_ERROR;
     }
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int odcp_image_readline(odcp_image_t *image, int y, unsigned char *data) {
@@ -139,7 +139,7 @@ int odcp_image_readline(odcp_image_t *image, int y, unsigned char *data) {
         d+=9;
     }
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 int check_image_compliance(int profile, odcp_image_t *image, char *file) {
@@ -147,13 +147,13 @@ int check_image_compliance(int profile, odcp_image_t *image, char *file) {
     odcp_image_t *odcp_image;
 
     if (image == NULL) {
-        if (read_image(&odcp_image, file) == DCP_SUCCESS) {
+        if (read_image(&odcp_image, file) == OPENDCP_NO_ERROR) {
             h = odcp_image->h;
             w = odcp_image->w;
             odcp_image_free(odcp_image);
         } else {
             odcp_image_free(odcp_image);
-            return DCP_FATAL;
+            return OPENDCP_ERROR;
         }
     } else {
         h = image->h;
@@ -163,19 +163,19 @@ int check_image_compliance(int profile, odcp_image_t *image, char *file) {
     switch (profile) {
         case DCP_CINEMA2K:
             if (!((w == 2048) | (h == 1080))) {
-                return DCP_ERROR;
+                return OPENDCP_ERROR;
             }
         break;
         case DCP_CINEMA4K:
             if (!((w == 4096) | (h == 2160))) {
-                return DCP_ERROR;
+                return OPENDCP_ERROR;
             }
             break;
         default:
             break;
     }
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 rgb_pixel_float_t yuv444toRGB888(int y, int cb, int cr) {
@@ -245,7 +245,7 @@ int rgb_to_xyz_lut(odcp_image_t *image, int index) {
         image->component[2].data[i] = lut_out[LO_DCI][(int)d.z];
     }
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 /* rgb to xyz color conversion hard calculations */
@@ -275,7 +275,7 @@ int rgb_to_xyz_calculate(odcp_image_t *image, int index) {
         image->component[2].data[i] = (pow((d.z*DCI_COEFFICENT),DCI_DEGAMMA) * COLOR_DEPTH);
     }
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }
 
 float b_spline(float x) {
@@ -345,7 +345,7 @@ int letterbox(odcp_image_t **image, int w, int h) {
     odcp_image_free(*image);
     *image = d_image;
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 } 
 
 /* resize image */
@@ -419,5 +419,5 @@ int resize(odcp_image_t **image, int profile, int method) {
     odcp_image_free(*image);
     *image = d_image; 
 
-    return DCP_SUCCESS;
+    return OPENDCP_NO_ERROR;
 }

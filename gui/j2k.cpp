@@ -197,7 +197,7 @@ void MainWindow::j2kCheckLeftInputFiles() {
         return;
     }
 
-    if (checkFileSequence(inLeftDir.entryList()) != DCP_SUCCESS) {
+    if (checkFileSequence(inLeftDir.entryList()) != OPENDCP_NO_ERROR) {
        return;
     }
 
@@ -225,7 +225,7 @@ void MainWindow::j2kCheckRightInputFiles() {
         return;
     }
 
-    if (checkFileSequence(inRightDir.entryList()) != DCP_SUCCESS) {
+    if (checkFileSequence(inRightDir.entryList()) != OPENDCP_NO_ERROR) {
        return;
     }
 
@@ -235,7 +235,7 @@ void MainWindow::j2kCheckRightInputFiles() {
 
 void MainWindow::j2kStart() {
     // create opendcp context
-    context = create_opendcp();
+    context = opendcp_create();
 
     // process options
     context->log_level = 0;
@@ -318,7 +318,7 @@ void MainWindow::j2kStart() {
 
     // check images
     if (context->j2k.resize == SAMPLE_NONE) {
-        if (check_image_compliance(context->cinema_profile, NULL, inLeftList.at(0).absoluteFilePath().toAscii().data()) != DCP_SUCCESS) {
+        if (check_image_compliance(context->cinema_profile, NULL, inLeftList.at(0).absoluteFilePath().toAscii().data()) != OPENDCP_NO_ERROR) {
             QMessageBox::warning(this, tr("Invalid DCI Resolution"),
                                  tr("Images are not DCI compliant, select DCI resize to automatically resize or supply DCI compliant images"));
             return;
@@ -328,5 +328,5 @@ void MainWindow::j2kStart() {
     j2kConvert();
 
 Done:
-    delete_opendcp(context);
+    opendcp_delete(context);
 }
