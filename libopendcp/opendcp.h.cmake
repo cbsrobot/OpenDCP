@@ -66,19 +66,19 @@ extern "C" {
         OPENDCP_ERROR_MSG(OPENDCP_SPECIFICATION_MISMATCH,  "DCP contains MXF and SMPTE track") \
         OPENDCP_ERROR_MSG(OPENDCP_TRACK_NO_DURATION,       "Track has no duration") \
         OPENDCP_ERROR_MSG(OPENDCP_J2K_ERROR,               "JPEG2000 error") \
-        OPENDCP_ERROR_MSG(OPENDCP_CALC_DIGEST,            "Could not caclulate MXF digest") \
-        OPENDCP_ERROR_MSG(OPENDCP_DETECT_TRACK_TYPE,      "Could not determine MXF track type") \
-        OPENDCP_ERROR_MSG(OPENDCP_INVALID_TRACK_TYPE,     "Invalid MXF track type") \
-        OPENDCP_ERROR_MSG(OPENDCP_UNKOWN_TRACK_TYPE,      "Unknown MXF track type") \
-        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_MPEG2,         "Could not open MPEG2 file") \
-        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_J2K,           "Could not open JPEG200 file") \
-        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_WAV,           "Could not open wav file") \
-        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_TT,            "Could not open subtitle file") \
-        OPENDCP_ERROR_MSG(OPENDCP_FILEWRITE_MXF,          "Could not write MXF file") \
-        OPENDCP_ERROR_MSG(OPENDCP_FINALIZE_MXF,           "Could not finalize MXF file") \
-        OPENDCP_ERROR_MSG(OPENDCP_PARSER_RESET,           "Could not reset MXF parser") \
-        OPENDCP_ERROR_MSG(OPENDCP_STRING_LENGTH,          "Input files have differing file lengths") \
-        OPENDCP_ERROR_MSG(OPENDCP_STRING_NOTSEQUENTIAL,   "Input files are not sequential") \
+        OPENDCP_ERROR_MSG(OPENDCP_CALC_DIGEST,             "Could not caclulate MXF digest") \
+        OPENDCP_ERROR_MSG(OPENDCP_DETECT_TRACK_TYPE,       "Could not determine MXF track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_INVALID_TRACK_TYPE,      "Invalid MXF track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_UNKOWN_TRACK_TYPE,       "Unknown MXF track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_MPEG2,          "Could not open MPEG2 file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_J2K,            "Could not open JPEG200 file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_WAV,            "Could not open wav file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_TT,             "Could not open subtitle file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FILEWRITE_MXF,           "Could not write MXF file") \
+        OPENDCP_ERROR_MSG(OPENDCP_FINALIZE_MXF,            "Could not finalize MXF file") \
+        OPENDCP_ERROR_MSG(OPENDCP_PARSER_RESET,            "Could not reset MXF parser") \
+        OPENDCP_ERROR_MSG(OPENDCP_STRING_LENGTH,           "Input files have differing file lengths") \
+        OPENDCP_ERROR_MSG(OPENDCP_STRING_NOTSEQUENTIAL ,   "Input files are not sequential") \
         OPENDCP_ERROR_MSG(OPENDCP_MAX_ERROR,               "Maximum error string")
  
 #define GENERATE_ENUM(ERROR, STRING) ERROR,
@@ -170,7 +170,6 @@ enum DPX_MODE {
 
 typedef struct filelist_t {
     char           **in;
-    char           **out;
     int            file_count;
 } filelist_t;
 

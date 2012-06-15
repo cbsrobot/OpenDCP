@@ -417,33 +417,6 @@ Result_t MxfWriter::writeJ2kStereoscopicMxf(opendcp_t *opendcp, QFileInfoList mx
     return result;
 }
 
-void filelistFree(filelist_t *filelist) {
-    int x;
-
-    for (x=0;x<filelist->file_count;x++) {
-        if (filelist->in[x]) {
-            free(filelist->in[x]);
-        }
-        if (filelist->out[x]) {
-            free(filelist->out[x]);
-        }
-    }
-
-    if (filelist->in) {
-        free(filelist->in);
-    }
-
-    if (filelist->out) {
-        free(filelist->out);
-    }
-
-    if (filelist) {
-        free(filelist);
-    }
-
-    return;
-}
-
 Result_t MxfWriter::writePcmMxf(opendcp_t *opendcp, QFileInfoList mxfFileList, QString mxfOutputFile)
 {
     PCM::FrameBuffer     frame_buffer;

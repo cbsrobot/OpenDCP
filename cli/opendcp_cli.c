@@ -31,7 +31,6 @@
 #include "opendcp.h"
 #include "opendcp_cli.h"
 
-extern int build_filelist(char *input, char *output, filelist_t *filelist, int file_type);
 extern int get_file_count(char *path, int file_type);
 
 int check_extension(char *filename, char *pattern) {
@@ -100,7 +99,7 @@ int get_file_count(char *path, int file_type) {
 
     if (stat(path, &st_in) != 0 ) {
         dcp_log(LOG_ERROR,"Could not open input file %s",path);
-        return OPENDCP_ERROR;
+        return 0;
     }
 
     if (S_ISDIR(st_in.st_mode)) {
@@ -117,7 +116,7 @@ int get_file_count(char *path, int file_type) {
     return count;
 }
 
-int build_filelist(char *input, char *output, filelist_t *filelist, int file_type) {
+int build_filelist(char *input, filelist_t *filelist) {
     struct dirent **files;
     int x = 0;
     struct stat st_in;
@@ -127,13 +126,10 @@ int build_filelist(char *input, char *output, filelist_t *filelist, int file_typ
         return OPENDCP_ERROR;
     }
 
-    filelist->file_count = scandir(input,&files,(void *)file_filter,alphasort);
+    filelist->file_count = scandir(input, &files, (void *)file_filter, alphasort);
     if (filelist->file_count) {
         for (x=0;x<filelist->file_count;x++) {
             sprintf(filelist->in[x],"%s/%s",input,files[x]->d_name);
-            if (file_type == J2K_INPUT) {
-                sprintf(filelist->out[x],"%s/%s.j2c",output,get_basename(files[x]->d_name));
-            }
         }
      }
     for (x=0;x<filelist->file_count;x++) {
@@ -152,12 +148,10 @@ filelist_t *filelist_alloc(int count) {
 
     filelist->file_count = count;
     filelist->in  = malloc(filelist->file_count*sizeof(char*));
-    filelist->out = malloc(filelist->file_count*sizeof(char*));
 
     if (filelist->file_count) {
         for (x=0;x<filelist->file_count;x++) {
-                filelist->in[x]  = malloc(MAX_FILENAME_LENGTH*sizeof(char *));
-                filelist->out[x] = malloc(MAX_FILENAME_LENGTH*sizeof(char *));
+                filelist->in[x]  = malloc(MAX_FILENAME_LENGTH*sizeof(char));
         }
     }
 
@@ -167,28 +161,18 @@ filelist_t *filelist_alloc(int count) {
 void filelist_free(filelist_t *filelist) {
     int x;
 
-    for (x=0;x<filelist->file_count;x++) {
-        if (filelist->in[x]) {
-            free(filelist->in[x]);
-        }
-        if (filelist->out[x]) {
-            free(filelist->out[x]);
-        }
+    if (filelist == NULL) {
+        return;
     }
 
     if (filelist->in) {
+        for (x=0; x<filelist->file_count; x++) {
+            free(filelist->in[x]);
+        }
         free(filelist->in);
     }
 
-    if (filelist->out) {
-        free(filelist->out);
-    }
-
-    if (filelist) {
-        free(filelist);
-    }
-
-    return;
+    free(filelist);
 }
 
 int find_seq_offset(char str1[], char str2[]) {
@@ -215,7 +199,7 @@ int find_ext_offset(char str[]) {
 }
 
 /* Populates prefix with the longest common prefix of s1 and s2. */
-static void common_prefix(const char *s1, const char *s2, char *prefix){
+static void common_prefix(const char *s1, const char *s2, char *prefix) {
     int i;
 
     for(i = 0; s1[i] && s2[i] && s1[i] == s2[i]; i++){
@@ -226,7 +210,7 @@ static void common_prefix(const char *s1, const char *s2, char *prefix){
 
 /* Populates prefix with the longest common prefix of all the files.
  * Assumes nfiles >= 2. */
-static void prefix_of_all(char *files[], int nfiles, char *prefix){
+static void prefix_of_all(char *files[], int nfiles, char *prefix) {
     int i;
 
     common_prefix(files[0], files[1], prefix);
@@ -243,7 +227,7 @@ typedef struct {
 } File_and_index;
 
 /* Compare 2 File_and_index structs by their index. */
-static int file_cmp(const void *a, const void *b){
+static int file_cmp(const void *a, const void *b) {
     const File_and_index *fa, *fb;
     fa = a;
     fb = b;
@@ -251,13 +235,35 @@ static int file_cmp(const void *a, const void *b){
     return (fa->index) - (fb->index);
 }
 
-/* Ensure fis[i].index == i+1 for all i. */
-int ensure_sequential(File_and_index fis[], int nfiles){
-    int i;
+static int get_index(char *file, int prefix_len) {
+    int index;
 
-    for(i = 0; i < nfiles-1; i++){
-        if(fis[i].index+1 != fis[i+1].index){
-            return OPENDCP_STRING_NOTSEQUENTIAL;
+    char *index_string = file + prefix_len;
+
+    if(!isdigit(index_string[0])) {
+        return OPENDCP_ERROR;
+    }
+
+    index = atoi(index_string);
+
+    return index;
+}
+
+/* Ensure fis[i].index == i+1 for all i. */
+int ensure_sequential(char *files[], int nfiles) {
+    int  prefix_len, i;
+    char prefix_buffer[MAX_FILENAME_LENGTH];
+
+    if (nfiles <= 1) {
+        return OPENDCP_NO_ERROR;
+    }
+
+    prefix_of_all(files, nfiles, prefix_buffer);
+    prefix_len = strlen(prefix_buffer);
+
+    for(i = 0; i < nfiles-1; i++) {
+        if (get_index(files[i], prefix_len)+1 != get_index(files[i+1], prefix_len)) {
+            return i;
         }
     }
 
@@ -279,13 +285,13 @@ int ensure_sequential(File_and_index fis[], int nfiles){
  *
  * Returns: DCP error code.
  */
-int order_indexed_files(char *files[], int nfiles){
-    int  prefix_len, i, rc;
+int order_indexed_files(char *files[], int nfiles) {
+    int  prefix_len, i;
     char prefix_buffer[MAX_FILENAME_LENGTH];
     File_and_index *fis;
 
     /* A single file is trivially sorted. */
-    if(nfiles < 2){
+    if(nfiles < 2) {
       return OPENDCP_NO_ERROR;
     }
 
@@ -294,13 +300,9 @@ int order_indexed_files(char *files[], int nfiles){
 
     /* Create an array of files and their indices to sort. */
     fis = malloc(sizeof(*fis) * nfiles);
-    for(i = 0; i < nfiles; i++){
-        char *index_string = files[i] + prefix_len;
-        if(!isdigit(index_string[0])){
-            return OPENDCP_ERROR;
-        }
+    for(i = 0; i < nfiles; i++) {
         fis[i].file  = files[i];
-        fis[i].index = atoi(index_string);
+        fis[i].index = get_index(files[i], prefix_len);
     }
     qsort(fis, nfiles, sizeof(*fis), file_cmp);
 
@@ -309,8 +311,7 @@ int order_indexed_files(char *files[], int nfiles){
         files[i] = fis[i].file;
     }
 
-    rc = ensure_sequential(fis, nfiles);
     free(fis);
 
-    return rc;
+    return OPENDCP_NO_ERROR;
 }

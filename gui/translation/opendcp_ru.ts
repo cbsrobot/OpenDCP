@@ -4,17 +4,17 @@
 <context>
     <name>ConversionDialog</name>
     <message>
-        <location filename="../../build/gui/ui_conversion.h" line="145"/>
+        <location filename="../../build/gui/ui_conversion.h" line="144"/>
         <source>JPEG2000 Conversion</source>
         <translation>Конвертация JPEG2000</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_conversion.h" line="146"/>
+        <location filename="../../build/gui/ui_conversion.h" line="145"/>
         <source>Stop</source>
         <translation>Прервать</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_conversion.h" line="147"/>
+        <location filename="../../build/gui/ui_conversion.h" line="146"/>
         <source>Close</source>
         <translation>Закрыть</translation>
     </message>
@@ -22,92 +22,92 @@
 <context>
     <name>GenerateTitle</name>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="263"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="262"/>
         <source>Title Generator</source>
         <translation>Генератор имен</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="264"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="263"/>
         <source>Film Title Wizard</source>
         <translation>Генератор имен</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="265"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="264"/>
         <source>Title:</source>
         <translation>Название:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="266"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="265"/>
         <source>Aspect Ratio:</source>
         <translation>Формат:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="271"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="270"/>
         <source>Film Title:</source>
         <translation>Название фильма:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="272"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="271"/>
         <source>Rating:</source>
         <translation>Рейтинг:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="277"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="276"/>
         <source>Resolution:</source>
         <translation>Разрешение:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="282"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="281"/>
         <source>3D Specs:</source>
         <translation>3D:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="287"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="286"/>
         <source>Type:</source>
         <translation>Тип:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="292"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="291"/>
         <source>Language Audio:</source>
         <translation>Язык озвучки:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="297"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="296"/>
         <source>Language Subtitle:</source>
         <translation>Язык субтитров:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="304"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="303"/>
         <source>Territory:</source>
         <translation>Территория:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="309"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="308"/>
         <source>Audio Type:</source>
         <translation>Формат звука:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="310"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="309"/>
         <source>Narrative:</source>
         <translation>Язык повествования:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="315"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="314"/>
         <source>Studio:</source>
         <translation>Студия:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="320"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="319"/>
         <source>Date:</source>
         <translation>Дата:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="321"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="320"/>
         <source>Package Type:</source>
         <translation>Тип пакета:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_generatetitle.h" line="330"/>
+        <location filename="../../build/gui/ui_generatetitle.h" line="329"/>
         <source>Facility:</source>
         <translation>Подразделение:</translation>
     </message>
@@ -115,20 +115,20 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1306"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1305"/>
         <source>OpenDCP</source>
         <translation>OpenDCP</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1307"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1306"/>
         <source>Input Directories</source>
         <translation>Исходные директории</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1308"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1326"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1352"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1361"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1307"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1325"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1351"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1360"/>
         <location filename="../j2k.cpp" line="57"/>
         <location filename="../j2k.cpp" line="58"/>
         <location filename="../mxf.cpp" line="147"/>
@@ -136,355 +136,355 @@
         <translation>Левый:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1309"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1327"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1353"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1363"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1308"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1326"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1352"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1362"/>
         <source>Right:</source>
         <translation>Правый:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1310"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1309"/>
         <source>Start:</source>
         <translation>Начало:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1311"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1310"/>
         <source>End:</source>
         <translation>Конец:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1312"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1311"/>
         <source>JPEG2000 Encoder Parameters</source>
         <translation>Параметры кодирования JPEG2000</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1313"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1348"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1312"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1347"/>
         <source>Frame Rate:</source>
         <translation>Кадров в секунду:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1314"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1313"/>
         <source>Encoder:</source>
         <translation>Кодировщик:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1316"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1315"/>
         <source>Stereoscopic image sequence</source>
         <translation>Стереоскопическая последовательность изображений</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1318"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1357"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1317"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1356"/>
         <source>Stereoscopic</source>
         <translation>Стерео</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1319"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1318"/>
         <source>Profile:</source>
         <translation>Профиль:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1320"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1319"/>
         <source>Bandwidth:</source>
         <translation>Битрейт:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1322"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1321"/>
         <source>Overwrite existing j2c files. Uncheck if you are resuming a previous conversion, which will save time.</source>
         <translation>Перезаписать существующие j2c файлы. Снимите галочку, если восстанавливаете предыдущую конвертацию, что сохранит немного времени.</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1324"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1323"/>
         <source>Overwrite Existing</source>
         <translation>Перезаписать существующие</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1325"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1324"/>
         <source>Output Directories</source>
         <translation>Конечные директории</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1328"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1327"/>
         <source>Convert</source>
         <translation>Конвертировать</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1329"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1328"/>
         <source>Preview</source>
         <translation>Предпросмотр</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1331"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1330"/>
         <source>Image Parameters</source>
         <translation>Параметры изображения</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1333"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1332"/>
         <source>Perform RGB to XYZ colorspace conversion</source>
         <translation>Трансформация RGB -XYZ</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1335"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1334"/>
         <source>XYZ Transform</source>
         <translation>XYZ трансформация</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1337"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1336"/>
         <source>If input is DPX, use logarithmic conversion</source>
         <translation>Если входные файлы - DPX, использовать логарифмический перевод</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1339"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1338"/>
         <source>Source Color:</source>
         <translation>Исходный цвет:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1340"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1339"/>
         <source>DCI Resize:</source>
         <translation>DCI масштабирование:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1343"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1342"/>
         <source>None</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1344"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1343"/>
         <source>Nearest Pixel</source>
         <translation>Ближайший пиксель</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1346"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1345"/>
         <source>MXF Parameters</source>
         <translation>Параметры MXF</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1347"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1373"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1346"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1372"/>
         <source>Label:</source>
         <translation>Название:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1349"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1378"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1348"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1377"/>
         <source>Type:</source>
         <translation>Тип:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1350"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1349"/>
         <source>Create MXF</source>
         <translation>Создать MXF</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1351"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1350"/>
         <source>Picture Input</source>
         <translation>Исходные изображения</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1354"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1353"/>
         <source>Output Files</source>
         <translation>Конечные изображения</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1355"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1392"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1354"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1391"/>
         <source>Picture:</source>
         <translation>Видео:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1356"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1355"/>
         <source>Picture Parameters</source>
         <translation>Параметры изображения</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1358"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1357"/>
         <source>Slideshow</source>
         <translation>Слайдшоу</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1359"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1358"/>
         <source>duration per slide</source>
         <translation>продолжительность слайда</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1360"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1359"/>
         <source>Sound Input</source>
         <translation>Исходный звук</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1362"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1361"/>
         <source>Center:</source>
         <translation>Центр:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1364"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1363"/>
         <source>Sub:</source>
         <translation>Саб:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1365"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1364"/>
         <source>Left Surround:</source>
         <translation>Левый сурраунд:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1366"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1365"/>
         <source>Right Surround:</source>
         <translation>Правый сурраунд:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1367"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1366"/>
         <source>Output File</source>
         <translation>Конечный файл</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1368"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1397"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1367"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1396"/>
         <source>Sound:</source>
         <translation>Звук:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1369"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1368"/>
         <source>Sound Parameters</source>
         <translation>Параметры звука</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1370"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1369"/>
         <source>Stereo</source>
         <translation>Стерео</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1371"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1370"/>
         <source>Hearing/Visually Impaired</source>
         <translation>Дорожка для глухих/слепых</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1372"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1371"/>
         <source>Subtitles and Closed Captions</source>
         <translation>Субтитры</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1376"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1375"/>
         <source>SMPTE</source>
         <translation>SMPTE</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1379"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1378"/>
         <source>Subtitle</source>
         <translation>Субтитры</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1380"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1379"/>
         <source>Input:</source>
         <translation>Исходные:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1381"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1380"/>
         <source>Output:</source>
         <translation>Конечные:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1382"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1381"/>
         <source>Create</source>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1383"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1382"/>
         <source>Composition Parameters</source>
         <translation>Параметры CPL</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1384"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1391"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1383"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1390"/>
         <source>Annotation:</source>
         <translation>Аннотация:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1385"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1384"/>
         <source>Title:</source>
         <translation>Название:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1386"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1385"/>
         <source>Rating:</source>
         <translation>Рейтинг:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1387"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1386"/>
         <source>Kind:</source>
         <translation>Тип:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1388"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1387"/>
         <source>Title Generator</source>
         <translation>Мастер</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1389"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1388"/>
         <source>Issuer:</source>
         <translation>Организация:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1390"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1389"/>
         <source>Reel</source>
         <translation>Бобина</translation>
+    </message>
+    <message>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1392"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1397"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1402"/>
+        <source>Duration:</source>
+        <translation>Продолжительность:</translation>
     </message>
     <message>
         <location filename="../../build/gui/ui_mainwindow.h" line="1393"/>
         <location filename="../../build/gui/ui_mainwindow.h" line="1398"/>
         <location filename="../../build/gui/ui_mainwindow.h" line="1403"/>
-        <source>Duration:</source>
-        <translation>Продолжительность:</translation>
+        <source>frames</source>
+        <translation>кадров</translation>
     </message>
     <message>
         <location filename="../../build/gui/ui_mainwindow.h" line="1394"/>
         <location filename="../../build/gui/ui_mainwindow.h" line="1399"/>
         <location filename="../../build/gui/ui_mainwindow.h" line="1404"/>
-        <source>frames</source>
-        <translation>кадров</translation>
+        <source>Entry Point:</source>
+        <translation>Начало:</translation>
     </message>
     <message>
         <location filename="../../build/gui/ui_mainwindow.h" line="1395"/>
         <location filename="../../build/gui/ui_mainwindow.h" line="1400"/>
         <location filename="../../build/gui/ui_mainwindow.h" line="1405"/>
-        <source>Entry Point:</source>
-        <translation>Начало:</translation>
-    </message>
-    <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1396"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1401"/>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1406"/>
         <source>frame</source>
         <translation>кадр</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1402"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1401"/>
         <source>Subtitle:</source>
         <translation>Субтитры:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1407"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1406"/>
         <source>Create DCP</source>
         <translation>Создать DCP</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1408"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1407"/>
         <source>Options</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1409"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1408"/>
         <source>MXF File Behavior:</source>
         <translation>MXF:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1410"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1409"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_mainwindow.h" line="1411"/>
+        <location filename="../../build/gui/ui_mainwindow.h" line="1410"/>
         <source>Move</source>
         <translation>Переместить</translation>
     </message>
@@ -905,37 +905,37 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../../build/gui/ui_settings.h" line="114"/>
+        <location filename="../../build/gui/ui_settings.h" line="113"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_settings.h" line="115"/>
+        <location filename="../../build/gui/ui_settings.h" line="114"/>
         <source>Language</source>
         <translation>Язык</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_settings.h" line="116"/>
+        <location filename="../../build/gui/ui_settings.h" line="115"/>
         <source>Language:</source>
         <translation>Язык:</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_settings.h" line="117"/>
+        <location filename="../../build/gui/ui_settings.h" line="116"/>
         <source>Overwrite Files?</source>
         <translation>Перезаписать файлы?</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_settings.h" line="118"/>
+        <location filename="../../build/gui/ui_settings.h" line="117"/>
         <source>Yes</source>
         <translation>Да</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_settings.h" line="119"/>
+        <location filename="../../build/gui/ui_settings.h" line="118"/>
         <source>Ok</source>
         <translation>ОК</translation>
     </message>
     <message>
-        <location filename="../../build/gui/ui_settings.h" line="120"/>
+        <location filename="../../build/gui/ui_settings.h" line="119"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>

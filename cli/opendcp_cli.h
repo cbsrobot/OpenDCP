@@ -34,7 +34,8 @@ int find_seq_offset (char str1[], char str2[]);
 int check_increment(char *str[], int index,int str_size);
 int check_sequential(char str1[],char str2[]);
 int check_file_sequence(char *str[], int count);
-int build_filelist(char *input, char *output, filelist_t *filelist, int file_type);
+int build_filelist(char *input, filelist_t *filelist);
+int ensure_sequential(char *files[], int nfiles);
 int order_indexed_files(char *files[], int nfiles);
 
 #endif

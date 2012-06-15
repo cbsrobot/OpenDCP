@@ -111,7 +111,7 @@ int get_filelist(char *path, filelist_t *filelist) {
     }
 
     if (S_ISDIR(st_in.st_mode)) {
-        build_filelist(path, NULL, filelist, MXF_INPUT);
+        build_filelist(path, filelist);
     } else {
         /* mpeg2 or time_text */
         int essence_type = get_file_essence_type(path);
