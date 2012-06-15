@@ -41,6 +41,15 @@ void sig_handler(int signum) {
 int SIGINT_received = 0;
 #endif
 
+/* prototypes */
+char *basename_noext(const char *str);
+int   is_dir(char *path);
+void  build_j2k_filename(char *in, char *path, char *out);
+int   get_filelist(char *path, filelist_t *filelist);
+void  progress_bar(int val, int total);
+void  version();
+void  dcp_usage();
+
 void version() {
     FILE *fp;
 
@@ -88,46 +97,68 @@ void dcp_usage() {
     exit(0);
 }
 
-int get_filelist(opendcp_t *opendcp,char *in_path,char *out_path,filelist_t *filelist) {
-    struct stat st_in;
-    struct stat st_out;
-    char *extension;
+char *substring(const char *str, size_t begin, size_t len) {
+  if (str == 0 || strlen(str) == 0 || strlen(str) < begin || strlen(str) < (begin+len)) {
+      return 0;
+  }
 
-    if (stat(in_path, &st_in) != 0 ) {
-        dcp_log(LOG_ERROR,"Could not open input file %s",in_path);
-        return OPENDCP_ERROR;
+  return strndup(str + begin, len);
+}
+
+char *basename_noext(const char *str) {
+  int start, end;
+
+  if (str == 0 || strlen(str) == 0) {
+    return 0;
+  }
+
+  char *base = strrchr(str,'/') + 1;
+  char *ext  = strrchr(str,'.');
+
+  start = strlen(str) - strlen(base);
+  end   = strlen(base) - strlen(ext);
+
+  char *substr = substring(str, start, end); 
+
+  return(substr);
+}
+
+void build_j2k_filename(char *in, char *path, char *out) {
+    if (!is_dir(path)) {
+        sprintf(out,"%s",path);
+    } else {
+        char *base = basename_noext(in);
+        sprintf(out, "%s/%s.j2c", path, base);
+        free(base);
+    }
+}
+
+int is_dir(char *path) {
+    struct stat st_in;
+
+    if (stat(path, &st_in) != 0 ) {
+        dcp_log(LOG_ERROR,"Could not open input file %s",path);
+        return 0;
     }
 
-    /* directory */
     if (S_ISDIR(st_in.st_mode)) {
-        if (stat(out_path, &st_out) != 0 ) {
-            dcp_log(LOG_ERROR,"Output directory %s does not exist",out_path);
-            return OPENDCP_ERROR;
-        }
+        return 1;
+    }
 
-        if (st_out.st_mode & S_IFDIR) {
-            build_filelist(in_path, out_path, filelist, J2K_INPUT);
-        } else {
-            dcp_log(LOG_ERROR,"If input is a directory, output must be as well");
-            return OPENDCP_ERROR;
-        }
+    return 0;
+}
+
+int get_filelist(char *path, filelist_t *filelist) {
+    char *extension;
+
+    if (is_dir(path)) {
+        build_filelist(path, filelist);
     } else {
-        dcp_log(LOG_DEBUG,"%-15.15s: input is a single file %s","get_filelist", in_path);
-        if (stat(out_path, &st_out) == 0 ) {
-            if (st_out.st_mode & S_IFDIR) {
-                dcp_log(LOG_ERROR,"If input is a file, output must be as well");
-                return OPENDCP_ERROR;
-            }
-        }
-        extension = strrchr(in_path,'.');
+        dcp_log(LOG_DEBUG,"%-15.15s: input is a single file %s","get_filelist", path);
+        extension = strrchr(path,'.');
         ++extension;
-        if (strncasecmp(extension,"tif",3) == 0
-            || strncasecmp(extension,"bmp",3) == 0
-            || strncasecmp(extension,"dpx",3) == 0) {
-            filelist->file_count = 1;
-            sprintf(filelist->in[0],"%s",in_path);
-            sprintf(filelist->out[0],"%s",out_path);
-        }
+        filelist->file_count = 1;
+        sprintf(filelist->in[0],"%s",path);
     }
 
    return OPENDCP_NO_ERROR;
@@ -159,7 +190,7 @@ void progress_bar(int val, int total) {
 }
 
 int main (int argc, char **argv) {
-    int c, result, count = 0;
+    int rc, c, result, count = 0;
     int openmp_flag = 0;
     opendcp_t *opendcp;
     char *in_path = NULL;
@@ -382,11 +413,17 @@ int main (int argc, char **argv) {
         dcp_fatal(opendcp,"Missing output file");
     }
 
+    /* make sure path modes are ok */
+    if (is_dir(in_path) && !is_dir(out_path)) {
+        dcp_fatal(opendcp,"Input is a directory, so output must also be a directory");
+    }
+
+
     /* get file list */
     dcp_log(LOG_DEBUG,"%-15.15s: getting files in %s","opendcp_j2k_cmd",in_path);
     count = get_file_count(in_path, J2K_INPUT);
     filelist = (filelist_t *)filelist_alloc(count);
-    get_filelist(opendcp,in_path,out_path,filelist);
+    get_filelist(in_path, filelist);
 
     if (filelist->file_count < 1) {
         dcp_fatal(opendcp,"No input files located");
@@ -409,18 +446,13 @@ int main (int argc, char **argv) {
     dcp_log(LOG_DEBUG,"%-15.15s: checking file sequence","opendcp_j2k_cmd",in_path);
 
     /* Sort files by index, and make sure they're sequential. */
-    result = order_indexed_files(filelist->in, filelist->file_count);
-    switch(result){
-      case OPENDCP_NO_ERROR: break;
-      case OPENDCP_STRING_NOTSEQUENTIAL:
-        dcp_log(LOG_WARN, "Filenames not sequential.");
-        break;
-      case OPENDCP_ERROR:
-        dcp_log(LOG_ERROR, "No index found for file.");
-        exit(1);
-      default:
-        dcp_log(LOG_WARN, "unknown error while ordering filenames.");
-        break;
+    if (order_indexed_files(filelist->in, filelist->file_count) != OPENDCP_NO_ERROR) {
+        dcp_fatal(opendcp,"Could not order image files"); 
+    }
+
+    rc = ensure_sequential(filelist->in, filelist->file_count); 
+    if (rc != OPENDCP_NO_ERROR) {
+        dcp_log(LOG_WARN, "Filenames not sequential between %s and %s.",filelist->in[rc],filelist->in[rc+1]);
     }
 
     if (opendcp->log_level>0 && opendcp->log_level<3) { progress_bar(0,0); }
@@ -435,13 +467,16 @@ int main (int argc, char **argv) {
     #pragma omp parallel for private(c)
     for (c=opendcp->j2k.start_frame-1;c<opendcp->j2k.end_frame;c++) {    
         #pragma omp flush(SIGINT_received)
+        char out[MAX_FILENAME_LENGTH];
+        build_j2k_filename(filelist->in[c], out_path, out);
         if (!SIGINT_received) {
             dcp_log(LOG_INFO,"JPEG2000 conversion %s started OPENMP: %d",filelist->in[c],openmp_flag);
-            if(access(filelist->out[c], F_OK) != 0 || opendcp->j2k.no_overwrite == 0) {
-                result = convert_to_j2k(opendcp,filelist->in[c],filelist->out[c], tmp_path);
+            if(access(out, F_OK) != 0 || opendcp->j2k.no_overwrite == 0) {
+                result = convert_to_j2k(opendcp,filelist->in[c],out, tmp_path);
             } else {
                 result = OPENDCP_NO_ERROR;
             }
+
             if (count) {
                if (opendcp->log_level>0 && opendcp->log_level<3) {progress_bar(count,opendcp->j2k.end_frame);}
             }
