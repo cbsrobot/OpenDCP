@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <inttypes.h>
+#include <ctype.h>
 #include <time.h>
 #include "opendcp.h"
 
@@ -87,6 +88,135 @@ char *base64(const unsigned char *data, int length) {
     return b_ptr;
 }
 */
+
+/* populates prefix with the longest common prefix of s1 and s2. */
+static void common_prefix(const char *s1, const char *s2, char *prefix) {
+    int i;
+
+    for(i = 0; s1[i] && s2[i] && s1[i] == s2[i]; i++){
+        prefix[i] = s1[i];
+    }
+    prefix[i] = '\0';
+}
+
+/* populates prefix with the longest common prefix of all the files. */
+static void prefix_of_all(char *files[], int nfiles, char *prefix) {
+    int i;
+
+    common_prefix(files[0], files[1], prefix);
+    for(i = 2; i < nfiles; i++){
+        common_prefix(files[i], prefix, prefix);
+    }
+}
+
+/* a filename of the form <prefix>N*.<ext> paired with its index. */
+typedef struct {
+    char *file;
+    int   index;
+} opendcp_sort_t;
+
+/* compare 2 File_and_index structs by their index. */
+static int file_cmp(const void *a, const void *b) {
+    const opendcp_sort_t *fa, *fb;
+    fa = a;
+    fb = b;
+
+    return (fa->index) - (fb->index);
+}
+
+/* return the index of a filename */
+static int get_index(char *file, int prefix_len) {
+    int index;
+
+    char *index_string = file + prefix_len;
+
+    if (!isdigit(index_string[0])) {
+        return OPENDCP_ERROR;
+    }
+
+    index = atoi(index_string);
+
+    return index;
+}
+
+
+/**
+Ensure a list of ordered filenames are sequential 
+
+@param files is an array of file names
+@param nfiles is the number of files
+@return returns 0 if files are sequential, otherwise it returns the index
+        the first out of order file.
+*/
+int ensure_sequential(char *files[], int nfiles) {
+    int  prefix_len, i;
+    char prefix_buffer[MAX_FILENAME_LENGTH];
+
+    if (nfiles <= 1) {
+        return OPENDCP_NO_ERROR;
+    }
+
+    prefix_of_all(files, nfiles, prefix_buffer);
+    prefix_len = strlen(prefix_buffer);
+
+    for(i = 0; i < nfiles-1; i++) {
+        if (get_index(files[i], prefix_len)+1 != get_index(files[i+1], prefix_len)) {
+            return i;
+        }
+    }
+
+    return OPENDCP_NO_ERROR;
+}
+
+
+/**
+Order a list of filenames using a version type sort.
+
+This function will order a list of filenames of the form:
+
+  <index>N* or N*<index>
+
+where:
+  <index> is the longest (though possibly empty) common prefix/suffic of all the
+  files.
+  N is some decimal number which I call its "index".
+  N is unique for each file.
+  1 <= N <= nfiles  OR  0 <= N < nfiles
+
+@param files is an array of file names
+@param nfiles is the number of files
+@return OPENDCP_ERROR_CODE
+*/
+int order_indexed_files(char *files[], int nfiles) {
+    int  prefix_len, i;
+    char prefix_buffer[MAX_FILENAME_LENGTH];
+    opendcp_sort_t *fis;
+
+    /* A single file is trivially sorted. */
+    if(nfiles < 2) {
+      return OPENDCP_NO_ERROR;
+    }
+
+    prefix_of_all(files, nfiles, prefix_buffer);
+    prefix_len = strlen(prefix_buffer);
+
+    /* Create an array of files and their indices to sort. */
+    fis = malloc(sizeof(*fis) * nfiles);
+    for(i = 0; i < nfiles; i++) {
+        fis[i].file  = files[i];
+        fis[i].index = get_index(files[i], prefix_len);
+    }
+    qsort(fis, nfiles, sizeof(*fis), file_cmp);
+
+    /* Reorder the original file array. */
+    for(i = 0; i < nfiles; i++){
+        files[i] = fis[i].file;
+    }
+
+    free(fis);
+
+    return OPENDCP_NO_ERROR;
+}
 
 void get_timestamp(char *timestamp) { 
     time_t time_ptr;
