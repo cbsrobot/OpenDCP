@@ -331,6 +331,8 @@ int   add_cpl(opendcp_t *opendcp, pkl_t *pkl);
 int   add_pkl(opendcp_t *opendcp);
 void  dcp_set_log_level(int log_level);
 void  dcp_log_init(int level, const char *file);
+int   ensure_sequential(char *files[], int nfiles);
+int   order_indexed_files(char *files[], int nfiles);
 
 /* opendcp context */
 opendcp_t *opendcp_create();
