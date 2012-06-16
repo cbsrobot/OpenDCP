@@ -27,12 +27,17 @@
 #include <iostream>
 #include <assert.h>
 
-#include "asdcp_intf.h"
 #include "opendcp.h"
 
 using namespace ASDCP;
 
 const ui32_t FRAME_BUFFER_SIZE = 4 * Kumu::Megabyte;
+
+int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file);
+int write_j2k_s_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file);
+int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file);
+int write_tt_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file);
+int write_mpeg2_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file);
 
 /* generate a random UUID */
 extern "C" void uuid_random(char *uuid) {
@@ -43,8 +48,7 @@ extern "C" void uuid_random(char *uuid) {
 }
 
 /* calcuate the SHA1 digest of a file */
-extern "C" int calculate_digest(const char *filename, char *digest)
-{
+extern "C" int calculate_digest(const char *filename, char *digest) {
     using namespace Kumu;
 
     FileReader    reader;
@@ -183,8 +187,7 @@ extern "C" int get_file_essence_type(char *filename) {
 }
 
 /* read asset file information */
-extern "C" int read_asset_info(asset_t *asset)
-{
+extern "C" int read_asset_info(asset_t *asset) {
     EssenceType_t essence_type;
     WriterInfo info;
     Result_t result = RESULT_OK;
