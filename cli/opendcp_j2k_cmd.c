@@ -110,7 +110,8 @@ char *substring(const char *str, size_t begin, size_t len) {
         return 0;
     }
 
-    strncpy(result, str+begin, len);
+    result[0] = '\0';
+    strncat(result, str+begin, len);
 
     return result;
 }
