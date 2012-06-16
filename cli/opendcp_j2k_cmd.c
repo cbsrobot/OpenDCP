@@ -98,29 +98,39 @@ void dcp_usage() {
 }
 
 char *substring(const char *str, size_t begin, size_t len) {
-  if (str == 0 || strlen(str) == 0 || strlen(str) < begin || strlen(str) < (begin+len)) {
-      return 0;
-  }
+    char   *result;
+ 
+    if (str == 0 || strlen(str) == 0 || strlen(str) < begin || strlen(str) < (begin + len)) {
+        return 0;
+    }
 
-  return strndup(str + begin, len);
+    result = (char *)malloc(len);
+
+    if (!result) {
+        return 0;
+    }
+
+    strncpy(result, str+begin, len);
+
+    return result;
 }
 
 char *basename_noext(const char *str) {
-  int start, end;
+    int start, end;
 
-  if (str == 0 || strlen(str) == 0) {
-    return 0;
-  }
+    if (str == 0 || strlen(str) == 0) {
+        return 0;
+    }
 
-  char *base = strrchr(str,'/') + 1;
-  char *ext  = strrchr(str,'.');
+    char *base = strrchr(str,'/') + 1;
+    char *ext  = strrchr(str,'.');
 
-  start = strlen(str) - strlen(base);
-  end   = strlen(base) - strlen(ext);
+    start = strlen(str) - strlen(base);
+    end   = strlen(base) - strlen(ext);
 
-  char *substr = substring(str, start, end); 
+    char *substr = substring(str, start, end); 
 
-  return(substr);
+    return(substr);
 }
 
 void build_j2k_filename(char *in, char *path, char *out) {
