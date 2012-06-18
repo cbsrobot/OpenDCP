@@ -50,6 +50,11 @@ void MxfWriter::reset()
     success = 0;
 }
 
+void MxfWriter::frameDoneCb(void *data) {
+    MxfWriter *self = static_cast<MxfWriter*>(data);
+    emit self->frameDone();
+}
+
 Result_t MxfWriter::fillWriterInfo(opendcp_t *opendcp, writer_info_t *writer_info) {
     Kumu::FortunaRNG        rng;
     byte_t                  iv_buf[CBC_BLOCK_SIZE];

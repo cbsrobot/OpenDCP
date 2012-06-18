@@ -130,7 +130,7 @@ enum LOG_LEVEL {
 };
 
 enum ASSET_CLASS_TYPE {
-    ACT_UNKNOWN,
+    ACT_UNKNOWN = 0,
     ACT_PICTURE,
     ACT_SOUND,
     ACT_TIMED_TEXT
@@ -273,8 +273,9 @@ typedef struct {
     byte_t         key_id[16];
     byte_t         key_value[16];
     int            write_hmac;
-    void          (*frame_done)(void *);
-    void          (*write_done)(void *);
+    void         (*frame_done)(void *);
+    void         (*write_done)(void *);
+    void          *cb_argument; 
 } mxf_t;
 
 typedef struct {
