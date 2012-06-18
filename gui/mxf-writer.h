@@ -23,26 +23,10 @@
 #include <QObject>
 #include <string.h>
 #include <iostream>
-#include "AS_DCP.h"
-#include <KM_fileio.h>
-#include <KM_prng.h>
-#include <KM_memio.h>
-#include <KM_util.h>
 #include "opendcp.h"
 #include "mxfconversion_dialog.h"
 
-using namespace ASDCP;
-using namespace Kumu;
-
 using namespace std;
-
-typedef struct {
-    WriterInfo    info;
-    AESEncContext *aes_context;
-    HMACContext   *hmac_context;
-} writer_info_t;
-
-static const ui32_t FRAME_BUFFER_SIZE = 4 * Kumu::Megabyte;
 
 class MxfWriter : public QThread
 {
@@ -50,31 +34,28 @@ class MxfWriter : public QThread
 
 public:
     MxfWriter(QObject *parent);
-    void reset();
+
     ~MxfWriter();
     void run();
-    void setMxfInputs(opendcp_t *opendcp, QFileInfoList fileList, QString outputFile);
+    void init(opendcp_t *opendcp, QFileInfoList fileList, QString outputFile);
     int  success;
+    int  cancelled;
 
 private:
     opendcp_t      *opendcpMxf;
-    int            cancelled;
-    QFileInfoList  mxfFileList;
-    QString        mxfOutputFile;
+    QFileInfoList   mxfFileList;
+    QString         mxfOutputFile;
 
-    Result_t writeMxf();
-    static void frameDoneCb(void *data);
-    Result_t fillWriterInfo(opendcp_t *opendcp, writer_info_t *writer_info);
-    Result_t writeJ2kStereoscopicMxf(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
-    Result_t writeJ2kMxf(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
-    Result_t writePcmMxf(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
-    Result_t writeMpeg2Mxf(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
-    Result_t writeTTMxf(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
+    void reset();
+    static int frameDoneCb(void *data);
 
 signals:
     void finished();
     void errorMessage(QString);
     void frameDone();
+
+public slots:
+    void mxfCancel();
 
 private slots:
 

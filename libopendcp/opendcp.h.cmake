@@ -169,8 +169,8 @@ enum DPX_MODE {
 };
 
 typedef struct filelist_t {
-    char           **in;
-    int            file_count;
+    char           **files;
+    int              nfiles;
 } filelist_t;
 
 typedef struct {
@@ -273,7 +273,7 @@ typedef struct {
     byte_t         key_id[16];
     byte_t         key_value[16];
     int            write_hmac;
-    void         (*frame_done)(void *);
+    int          (*frame_done)(void *);
     void         (*write_done)(void *);
     void          *cb_argument; 
 } mxf_t;
@@ -332,12 +332,16 @@ int   add_cpl(opendcp_t *opendcp, pkl_t *pkl);
 int   add_pkl(opendcp_t *opendcp);
 void  dcp_set_log_level(int log_level);
 void  dcp_log_init(int level, const char *file);
-int   ensure_sequential(char *files[], int nfiles);
-int   order_indexed_files(char *files[], int nfiles);
+
+/* utility functions */
+int         ensure_sequential(char *files[], int nfiles);
+int         order_indexed_files(char *files[], int nfiles);
+filelist_t *filelist_alloc(int nfiles);
+void        filelist_free(filelist_t *filelist);
 
 /* opendcp context */
 opendcp_t *opendcp_create();
-int       opendcp_delete(opendcp_t *opendcp);
+int        opendcp_delete(opendcp_t *opendcp);
 
 /* image functions */
 int check_image_compliance(int profile, odcp_image_t *image, char *file);

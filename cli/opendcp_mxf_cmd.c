@@ -69,24 +69,24 @@ int get_filelist_3d(char *in_path_left,char *in_path_right,filelist_t *filelist)
     filelist_t  *filelist_right;
     int x,y;
 
-    filelist_left  = filelist_alloc(filelist->file_count/2);
-    filelist_right = filelist_alloc(filelist->file_count/2);
+    filelist_left  = filelist_alloc(filelist->nfiles/2);
+    filelist_right = filelist_alloc(filelist->nfiles/2);
 
     get_filelist(in_path_left,filelist_left);
     get_filelist(in_path_right,filelist_right);
 
-    if (filelist_left->file_count != filelist_right->file_count) {
-        dcp_log(LOG_ERROR,"Mismatching file count for 3D images left: %d right: %d\n",filelist_left->file_count,filelist_right->file_count);
+    if (filelist_left->nfiles != filelist_right->nfiles) {
+        dcp_log(LOG_ERROR,"Mismatching file count for 3D images left: %d right: %d\n",filelist_left->nfiles,filelist_right->nfiles);
         filelist_free(filelist_left);
         filelist_free(filelist_right);
         return OPENDCP_ERROR; 
     }
 
     y = 0;
-    filelist->file_count = filelist_left->file_count * 2;
-    for (x=0;x<filelist_left->file_count;x++) {
-        strcpy(filelist->in[y++],filelist_left->in[x]);
-        strcpy(filelist->in[y++],filelist_right->in[x]);
+    filelist->nfiles = filelist_left->nfiles * 2;
+    for (x=0;x<filelist_left->nfiles;x++) {
+        strcpy(filelist->files[y++],filelist_left->files[x]);
+        strcpy(filelist->files[y++],filelist_right->files[x]);
     }
 
     filelist_free(filelist_left);
@@ -142,8 +142,8 @@ int get_filelist(char *path, filelist_t *filelist) {
         if (essence_type == AET_UNKNOWN) {
             return OPENDCP_ERROR;
         }
-        filelist->file_count = 1;
-        sprintf(filelist->in[0],"%s",path);
+        filelist->nfiles = 1;
+        sprintf(filelist->files[0],"%s",path);
     }
 
     return OPENDCP_NO_ERROR;
@@ -312,16 +312,16 @@ int main (int argc, char **argv) {
         get_filelist(in_path, filelist);
     }
 
-    if (filelist->file_count < 1) {
+    if (filelist->nfiles < 1) {
         dcp_fatal(opendcp,"No input files located");
     }
   
     if (opendcp->mxf.end_frame) {
-        if (opendcp->mxf.end_frame > filelist->file_count) {
+        if (opendcp->mxf.end_frame > filelist->nfiles) {
             dcp_fatal(opendcp,"End frame is greater than the actual frame count");
         }
     } else {
-        opendcp->mxf.end_frame = filelist->file_count;
+        opendcp->mxf.end_frame = filelist->nfiles;
     }
 
     if (opendcp->mxf.start_frame) {
@@ -343,15 +343,15 @@ int main (int argc, char **argv) {
     opendcp->mxf.write_done = write_done_cb;
     //opendcp->mxf.cb_argument = "=";
 
-    int class = get_file_essence_class(filelist->in[0]);
+    int class = get_file_essence_class(filelist->files[0]);
 
     if (opendcp->log_level>0 && opendcp->log_level<3) { progress_bar(); }
 
 
     if (class == ACT_SOUND) {
-        total = get_wav_duration(filelist->in[0], opendcp->frame_rate);
+        total = get_wav_duration(filelist->files[0], opendcp->frame_rate);
     } else {
-        total = filelist->file_count;
+        total = filelist->nfiles;
     } 
 
     if (write_mxf(opendcp, filelist, out_path) != 0 )  {

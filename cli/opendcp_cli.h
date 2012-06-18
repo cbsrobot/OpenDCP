@@ -27,8 +27,6 @@ enum FILE_FILTER {
 int check_extension(char *filename, char *pattern);
 char *get_basename(const char *filename);
 int get_file_count(char *path, int file_type);
-filelist_t *filelist_alloc(int count);
-void filelist_free(filelist_t *filelist);
 int find_ext_offset(char str[]);
 int find_seq_offset (char str1[], char str2[]);
 int check_increment(char *str[], int index,int str_size);

@@ -139,12 +139,11 @@ static int get_index(char *file, int prefix_len) {
     return index;
 }
 
-
 /**
 Ensure a list of ordered filenames are sequential 
 
-@param files is an array of file names
-@param nfiles is the number of files
+@param  files is an array of file names
+@param  nfiles is the number of files
 @return returns 0 if files are sequential, otherwise it returns the index
         the first out of order file.
 */
@@ -183,8 +182,8 @@ where:
   N is unique for each file.
   1 <= N <= nfiles  OR  0 <= N < nfiles
 
-@param files is an array of file names
-@param nfiles is the number of files
+@param  files is an array of file names
+@param  nfiles is the number of files
 @return OPENDCP_ERROR_CODE
 */
 int order_indexed_files(char *files[], int nfiles) {
@@ -216,6 +215,57 @@ int order_indexed_files(char *files[], int nfiles) {
     free(fis);
 
     return OPENDCP_NO_ERROR;
+}
+
+/**
+Allocate a list of filenames
+
+This function allocates memory for a list of filenames. 
+
+@param  nfiles is the number of files to allocate 
+@return filelist_t  
+*/
+filelist_t *filelist_alloc(int nfiles) {
+    int x;
+    filelist_t *filelist;
+
+    filelist = malloc(sizeof(filelist_t));
+
+    filelist->nfiles = nfiles;
+    filelist->files  = malloc(filelist->nfiles*sizeof(char*));
+
+    if (filelist->nfiles) {
+        for (x=0;x<filelist->nfiles;x++) {
+                filelist->files[x]  = malloc(MAX_FILENAME_LENGTH*sizeof(char));
+        }
+    }
+
+    return filelist;
+}
+
+/**
+free a filelist_t structure 
+
+This function frees memory used by filelist_t. 
+
+@param  filelist_t 
+@return NONE  
+*/
+void filelist_free(filelist_t *filelist) {
+    int x;
+
+    if (filelist == NULL) {
+        return;
+    }
+
+    if (filelist->files) {
+        for (x=0; x<filelist->nfiles; x++) {
+            free(filelist->files[x]);
+        }
+        free(filelist->files);
+    }
+
+    free(filelist);
 }
 
 void get_timestamp(char *timestamp) { 

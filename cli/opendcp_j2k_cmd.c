@@ -168,8 +168,8 @@ int get_filelist(char *path, filelist_t *filelist) {
         dcp_log(LOG_DEBUG,"%-15.15s: input is a single file %s","get_filelist", path);
         extension = strrchr(path,'.');
         ++extension;
-        filelist->file_count = 1;
-        sprintf(filelist->in[0],"%s",path);
+        filelist->nfiles = 1;
+        sprintf(filelist->files[0],"%s",path);
     }
 
    return OPENDCP_NO_ERROR;
@@ -436,17 +436,17 @@ int main (int argc, char **argv) {
     filelist = (filelist_t *)filelist_alloc(count);
     get_filelist(in_path, filelist);
 
-    if (filelist->file_count < 1) {
+    if (filelist->nfiles < 1) {
         dcp_fatal(opendcp,"No input files located");
     }
 
     /* end frame check */
     if (opendcp->j2k.end_frame) {
-        if (opendcp->j2k.end_frame > filelist->file_count) {
+        if (opendcp->j2k.end_frame > filelist->nfiles) {
             dcp_fatal(opendcp,"End frame is greater than the actual frame count");
         }
     } else {
-        opendcp->j2k.end_frame = filelist->file_count;
+        opendcp->j2k.end_frame = filelist->nfiles;
     }
    
     /* start frame check */
@@ -457,13 +457,13 @@ int main (int argc, char **argv) {
     dcp_log(LOG_DEBUG,"%-15.15s: checking file sequence","opendcp_j2k_cmd",in_path);
 
     /* Sort files by index, and make sure they're sequential. */
-    if (order_indexed_files(filelist->in, filelist->file_count) != OPENDCP_NO_ERROR) {
+    if (order_indexed_files(filelist->files, filelist->nfiles) != OPENDCP_NO_ERROR) {
         dcp_fatal(opendcp,"Could not order image files"); 
     }
 
-    rc = ensure_sequential(filelist->in, filelist->file_count); 
+    rc = ensure_sequential(filelist->files, filelist->nfiles); 
     if (rc != OPENDCP_NO_ERROR) {
-        dcp_log(LOG_WARN, "Filenames not sequential between %s and %s.",filelist->in[rc],filelist->in[rc+1]);
+        dcp_log(LOG_WARN, "Filenames not sequential between %s and %s.",filelist->files[rc],filelist->files[rc+1]);
     }
 
     if (opendcp->log_level>0 && opendcp->log_level<3) { progress_bar(0,0); }
@@ -479,11 +479,11 @@ int main (int argc, char **argv) {
     for (c=opendcp->j2k.start_frame-1;c<opendcp->j2k.end_frame;c++) {    
         #pragma omp flush(SIGINT_received)
         char out[MAX_FILENAME_LENGTH];
-        build_j2k_filename(filelist->in[c], out_path, out);
+        build_j2k_filename(filelist->files[c], out_path, out);
         if (!SIGINT_received) {
-            dcp_log(LOG_INFO,"JPEG2000 conversion %s started OPENMP: %d",filelist->in[c],openmp_flag);
+            dcp_log(LOG_INFO,"JPEG2000 conversion %s started OPENMP: %d",filelist->files[c],openmp_flag);
             if(access(out, F_OK) != 0 || opendcp->j2k.no_overwrite == 0) {
-                result = convert_to_j2k(opendcp,filelist->in[c],out, tmp_path);
+                result = convert_to_j2k(opendcp,filelist->files[c],out, tmp_path);
             } else {
                 result = OPENDCP_NO_ERROR;
             }
@@ -493,10 +493,10 @@ int main (int argc, char **argv) {
             }
 
             if (result == OPENDCP_ERROR) {
-                dcp_log(LOG_ERROR,"JPEG2000 conversion %s failed",filelist->in[c]);
+                dcp_log(LOG_ERROR,"JPEG2000 conversion %s failed",filelist->files[c]);
                 dcp_fatal(opendcp,"Exiting...");
             } else {
-                dcp_log(LOG_INFO,"JPEG2000 conversion %s complete",filelist->in[c]);
+                dcp_log(LOG_INFO,"JPEG2000 conversion %s complete",filelist->files[c]);
             }
             count++;
         }
