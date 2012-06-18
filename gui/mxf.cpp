@@ -39,6 +39,7 @@ void MainWindow::mxfConnectSlots() {
 
     connect(mxfWriterThread, SIGNAL(frameDone()), dMxfConversion, SLOT(step()));
     connect(mxfWriterThread, SIGNAL(finished()), this, SLOT(mxfDone()));
+    connect(dMxfConversion,  SIGNAL(cancel()), mxfWriterThread, SLOT(mxfCancel()));
 
     // Picture input lines
     signalMapper.setMapping(ui->pictureLeftButton, ui->pictureLeftEdit);
@@ -272,12 +273,8 @@ void MainWindow::mxfCreateSubtitle() {
 
     mxfContext->ns = XML_NS_SMPTE;
 
-    filelist_t *fileList = (filelist_t*) malloc(sizeof(filelist_t));
-
-    fileList->in = (char**) malloc(fileList->file_count*sizeof(char*));
-    fileList->in[0] = new char [ui->subInEdit->text().toStdString().size()+1];
-    strcpy(fileList->in[0], ui->subInEdit->text().toStdString().c_str());
-    fileList->file_count = 1;
+    filelist_t *fileList = filelist_alloc(1);
+    strcpy(fileList->files[0], ui->subInEdit->text().toStdString().c_str());
 
     char *outputFile = new char [ui->sMxfOutEdit->text().toStdString().size()+1];
     strcpy(outputFile, ui->sMxfOutEdit->text().toStdString().c_str());
@@ -293,15 +290,7 @@ void MainWindow::mxfCreateSubtitle() {
 */
 
     opendcp_delete(mxfContext);
-
-    // free filelist
-    for (int x=0;x<fileList->file_count;x++) {
-        delete[] fileList->in[x];
-    }
-
-    if (fileList) {
-        free(fileList);
-    }
+    filelist_free(fileList);
 
     delete[] outputFile;
 
@@ -346,8 +335,7 @@ void MainWindow::mxfCreateAudio() {
                                     mxfContext->frame_rate); 
 
     outputFile = ui->aMxfOutEdit->text();
-    mxfWriterThread->setMxfInputs(mxfContext, inputList, outputFile);
-
+    mxfWriterThread->init(mxfContext, inputList, outputFile);
     dMxfConversion->init(duration, outputFile);
     mxfWriterThread->start();
     dMxfConversion->exec();
@@ -434,13 +422,13 @@ void MainWindow::mxfCreatePicture() {
         QMessageBox::critical(this, tr("MXF Creation Error"), tr("No input files found."));
         goto Done;
     } else {
-        mxfWriterThread->setMxfInputs(mxfContext,inputList,outputFile);
+        mxfWriterThread->init(mxfContext,inputList,outputFile);
         dMxfConversion->init(mxfContext->mxf.duration, outputFile);
         mxfWriterThread->start();
         dMxfConversion->exec();
-        if (!mxfWriterThread->success)  {
+        if (!mxfWriterThread->success && !mxfWriterThread->cancelled)  {
             QMessageBox::critical(this, tr("MXF Creation Error"), tr("Picture MXF creation failed."));
-       }
+        }
     }
 
 Done:

@@ -126,53 +126,18 @@ int build_filelist(char *input, filelist_t *filelist) {
         return OPENDCP_ERROR;
     }
 
-    filelist->file_count = scandir(input, &files, (void *)file_filter, alphasort);
-    if (filelist->file_count) {
-        for (x=0;x<filelist->file_count;x++) {
-            sprintf(filelist->in[x],"%s/%s",input,files[x]->d_name);
+    filelist->nfiles = scandir(input, &files, (void *)file_filter, alphasort);
+    if (filelist->nfiles) {
+        for (x=0;x<filelist->nfiles;x++) {
+            sprintf(filelist->files[x],"%s/%s",input,files[x]->d_name);
         }
      }
-    for (x=0;x<filelist->file_count;x++) {
+    for (x=0;x<filelist->nfiles;x++) {
         free(files[x]);
     }
     free(files);
 
     return OPENDCP_NO_ERROR;
-}
-
-filelist_t *filelist_alloc(int count) {
-    int x;
-    filelist_t *filelist;
-
-    filelist = malloc(sizeof(filelist_t));
-
-    filelist->file_count = count;
-    filelist->in  = malloc(filelist->file_count*sizeof(char*));
-
-    if (filelist->file_count) {
-        for (x=0;x<filelist->file_count;x++) {
-                filelist->in[x]  = malloc(MAX_FILENAME_LENGTH*sizeof(char));
-        }
-    }
-
-    return filelist;
-}
-
-void filelist_free(filelist_t *filelist) {
-    int x;
-
-    if (filelist == NULL) {
-        return;
-    }
-
-    if (filelist->in) {
-        for (x=0; x<filelist->file_count; x++) {
-            free(filelist->in[x]);
-        }
-        free(filelist->in);
-    }
-
-    free(filelist);
 }
 
 int find_seq_offset(char str1[], char str2[]) {

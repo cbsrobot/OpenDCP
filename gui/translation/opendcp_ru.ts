@@ -131,7 +131,7 @@
         <location filename="../../build/gui/ui_mainwindow.h" line="1360"/>
         <location filename="../j2k.cpp" line="57"/>
         <location filename="../j2k.cpp" line="58"/>
-        <location filename="../mxf.cpp" line="147"/>
+        <location filename="../mxf.cpp" line="148"/>
         <source>Left:</source>
         <translation>Левый:</translation>
     </message>
@@ -491,7 +491,7 @@
     <message>
         <location filename="../j2k.cpp" line="68"/>
         <location filename="../j2k.cpp" line="69"/>
-        <location filename="../mxf.cpp" line="153"/>
+        <location filename="../mxf.cpp" line="154"/>
         <source>Directory:</source>
         <translation>Папка:</translation>
     </message>
@@ -554,13 +554,13 @@
     </message>
     <message>
         <location filename="../j2k.cpp" line="313"/>
-        <location filename="../mxf.cpp" line="411"/>
+        <location filename="../mxf.cpp" line="399"/>
         <source>File Count Mismatch</source>
         <translation>Количество файлов не совпадает</translation>
     </message>
     <message>
         <location filename="../j2k.cpp" line="314"/>
-        <location filename="../mxf.cpp" line="412"/>
+        <location filename="../mxf.cpp" line="400"/>
         <source>The left and right image directories have different file counts. They must be the same. Please fix and try again.</source>
         <translation>Папка с изображения для левого и правого глаза содержат разное количество файлов. Они должны содержать одинаковое количество. Пожалуйста исправьте и попытайтесь снова.</translation>
     </message>
@@ -682,92 +682,92 @@
         <translation>Несовпадение последовательности файлов</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="155"/>
+        <location filename="../mxf.cpp" line="156"/>
         <source>M2V:</source>
         <translation>M2V:</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="187"/>
-        <location filename="../mxf.cpp" line="213"/>
-        <location filename="../mxf.cpp" line="225"/>
-        <location filename="../mxf.cpp" line="267"/>
+        <location filename="../mxf.cpp" line="188"/>
+        <location filename="../mxf.cpp" line="214"/>
+        <location filename="../mxf.cpp" line="226"/>
+        <location filename="../mxf.cpp" line="268"/>
         <source>Destination file needed</source>
         <translation>Требуется конечный файл</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="187"/>
-        <location filename="../mxf.cpp" line="213"/>
+        <location filename="../mxf.cpp" line="188"/>
+        <location filename="../mxf.cpp" line="214"/>
         <source>Please select a destination picture MXF file.</source>
         <translation>Пожалуйста выберие конечный файл изображения MXF.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="192"/>
-        <location filename="../mxf.cpp" line="197"/>
-        <location filename="../mxf.cpp" line="217"/>
-        <location filename="../mxf.cpp" line="231"/>
-        <location filename="../mxf.cpp" line="240"/>
+        <location filename="../mxf.cpp" line="193"/>
+        <location filename="../mxf.cpp" line="198"/>
+        <location filename="../mxf.cpp" line="218"/>
+        <location filename="../mxf.cpp" line="232"/>
+        <location filename="../mxf.cpp" line="241"/>
         <source>Source content needed</source>
         <translation>Требуется исходный контент</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="192"/>
+        <location filename="../mxf.cpp" line="193"/>
         <source>Please select left and right source image directories.</source>
         <translation>Пожалуйста выберите директории с исходными изображениями левого и правого глаза.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="197"/>
+        <location filename="../mxf.cpp" line="198"/>
         <source>Please select a source image directory.</source>
         <translation>Пожалуйста выбери папку с исходными изображениями.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="204"/>
+        <location filename="../mxf.cpp" line="205"/>
         <source>Invalid frame rate</source>
         <translation>Неправильная частота смены кадров</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="204"/>
+        <location filename="../mxf.cpp" line="205"/>
         <source>Stereoscopic MXF only supports 24, 25, or 30 fps.</source>
         <translation>Стерео MXF поддерживает только 24, 25 и 30 fps.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="217"/>
+        <location filename="../mxf.cpp" line="218"/>
         <source>Please select a source MPEG2 file.</source>
         <translation>Выберите исходный MPEG2 файл.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="225"/>
+        <location filename="../mxf.cpp" line="226"/>
         <source>Please select a destination sound MXF file.</source>
         <translation>Выберите конечный звуковой файл MXF.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="231"/>
+        <location filename="../mxf.cpp" line="232"/>
         <source>Please specify left and right wav files.</source>
         <translation>Выберите левый и правый wav файлы.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="240"/>
+        <location filename="../mxf.cpp" line="241"/>
         <source>Please specify 5.1 wav files.</source>
         <translation>Выберите 5.1 wav файлы.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="262"/>
+        <location filename="../mxf.cpp" line="263"/>
         <source>Source subtitle needed</source>
         <translation>Требуются исходные субтитры</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="262"/>
+        <location filename="../mxf.cpp" line="263"/>
         <source>Please specify an input subtitle XML file.</source>
         <translation>Выберите исходный XML файл субтитров.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="267"/>
+        <location filename="../mxf.cpp" line="268"/>
         <source>Please specify a destinaton subtitle MXF file.</source>
         <translation>Выберите конечный MXF файл субтитров.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="356"/>
-        <location filename="../mxf.cpp" line="434"/>
-        <location filename="../mxf.cpp" line="442"/>
+        <location filename="../mxf.cpp" line="344"/>
+        <location filename="../mxf.cpp" line="422"/>
+        <location filename="../mxf.cpp" line="430"/>
         <source>MXF Creation Error</source>
         <translation>Ошибка создания MXF</translation>
     </message>
@@ -780,17 +780,17 @@
         <translation type="obsolete">Создание MXF файла субтитров успешно.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="357"/>
+        <location filename="../mxf.cpp" line="345"/>
         <source>Sound MXF creation failed.</source>
         <translation>Ошибка создания звукового MXF файла.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="434"/>
+        <location filename="../mxf.cpp" line="422"/>
         <source>No input files found.</source>
         <translation>Исходные файлы не найдены.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="442"/>
+        <location filename="../mxf.cpp" line="430"/>
         <source>Picture MXF creation failed.</source>
         <translation>Ошибка создания MXF файла изображения.</translation>
     </message>

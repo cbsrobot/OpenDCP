@@ -315,8 +315,6 @@ void MainWindow::preferences()
         //setSettingsObject(settings);
         //fallbacksAct->setEnabled(true);
     }
-
-
 }
 
 void MainWindow::newFile()
