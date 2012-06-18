@@ -25,7 +25,8 @@
 #include <opendcp.h>
 #include "opendcp_cli.h"
 
-int get_filelist(char *path, filelist_t *filelist);
+int  get_filelist(char *path, filelist_t *filelist);
+void progress_bar();
 
 void version() {
     FILE *fp;
@@ -94,12 +95,35 @@ int get_filelist_3d(char *in_path_left,char *in_path_right,filelist_t *filelist)
     return OPENDCP_NO_ERROR;
 }
 
-void frame_done_cb() {
-    printf(".");
+int total = 0;
+int val   = 0;
+
+void frame_done_cb(void *p) {
+    val++;
+    p = NULL;
+    progress_bar();
 }
 
-void write_done_cb() {
-    printf("mxf complete");
+void write_done_cb(void *p) {
+    p = NULL;
+    printf("\n  MXF Complete\n");
+}
+
+void progress_bar() {
+    int x;
+    int step = 20;
+    float c = (float)step/total * (float)val;
+  
+    printf("  MXF Creation [");
+    for (x=0;x<step;x++) {
+        if (c>x) {
+            printf("=");
+        } else {
+            printf(" ");
+        }
+    }
+    printf("] 100%% [%d/%d]\r",val,total);
+    fflush(stdout);
 }
 
 int get_filelist(char *path, filelist_t *filelist) {
@@ -315,12 +339,20 @@ int main (int argc, char **argv) {
     }
    
     /* set the callbacks (optional) for the mxf writer */
-    //opendcp->mxf.frame_done = frame_done_cb;
-    //opendcp->mxf.write_done = write_done_cb;
+    opendcp->mxf.frame_done = frame_done_cb;
+    opendcp->mxf.write_done = write_done_cb;
+    //opendcp->mxf.cb_argument = "=";
 
-    int z;
-    for (z = 0; z < filelist->file_count; z++) {
-    }
+    int class = get_file_essence_class(filelist->in[0]);
+
+    if (opendcp->log_level>0 && opendcp->log_level<3) { progress_bar(); }
+
+
+    if (class == ACT_SOUND) {
+        total = get_wav_duration(filelist->in[0], opendcp->frame_rate);
+    } else {
+        total = filelist->file_count;
+    } 
 
     if (write_mxf(opendcp, filelist, out_path) != 0 )  {
         printf("Error!\n");

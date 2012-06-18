@@ -117,17 +117,13 @@ extern "C" int get_file_essence_class(char *filename) {
 
     result = ASDCP::EssenceType(filename, essence_type);
 
-    if (ASDCP_FAILURE(result)) {
-        return OPENDCP_DETECT_TRACK_TYPE;
-    }
-
     /* If type is unknown, try reading raw */
     if (essence_type == ESS_UNKNOWN) {
        result = ASDCP::RawEssenceType(filename, essence_type);
     }
 
     if (ASDCP_FAILURE(result)) {
-        return OPENDCP_DETECT_TRACK_TYPE;
+        return ACT_UNKNOWN;
     }
 
     switch (essence_type) {
@@ -508,6 +504,10 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
             if (opendcp->mxf.encrypt_header_flag) {
                 frame_buffer.PlaintextOffset(0);
             }
+
+            if (opendcp->mxf.frame_done != NULL) {
+                opendcp->mxf.frame_done(opendcp->mxf.cb_argument);
+            }
             i++;
         }
         result = mxf_writer.WriteFrame(frame_buffer, writer_info.aes_context, writer_info.hmac_context);
@@ -522,6 +522,10 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     }
 
     result = mxf_writer.Finalize();
+
+    if (opendcp->mxf.write_done != NULL) {
+        opendcp->mxf.write_done(opendcp->mxf.cb_argument);
+    }
 
     if (ASDCP_FAILURE(result)) {
         return OPENDCP_FINALIZE_MXF;
@@ -608,7 +612,13 @@ int write_j2k_s_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file)
             }
         }
         result = mxf_writer.WriteFrame(frame_buffer_left, JP2K::SP_LEFT, writer_info.aes_context, writer_info.hmac_context);
+        if (opendcp->mxf.frame_done != NULL) {
+            opendcp->mxf.frame_done(opendcp->mxf.cb_argument);
+        }
         result = mxf_writer.WriteFrame(frame_buffer_right, JP2K::SP_RIGHT, writer_info.aes_context, writer_info.hmac_context);
+        if (opendcp->mxf.frame_done != NULL) {
+            opendcp->mxf.frame_done(opendcp->mxf.cb_argument);
+        }
     }
 
     if (result == RESULT_ENDOFFILE) {
@@ -620,6 +630,10 @@ int write_j2k_s_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file)
     }
 
     result = mxf_writer.Finalize();
+
+    if (opendcp->mxf.write_done != NULL) {
+        opendcp->mxf.write_done(opendcp->mxf.cb_argument);
+    }
 
     if (ASDCP_FAILURE(result)) {
         return OPENDCP_FINALIZE_MXF;
@@ -746,7 +760,7 @@ int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
             /* write the frame */
             result = mxf_writer.WriteFrame(frame_buffer, writer_info.aes_context, writer_info.hmac_context);
             if (opendcp->mxf.frame_done != NULL) {
-                opendcp->mxf.frame_done(NULL);
+                opendcp->mxf.frame_done(opendcp->mxf.cb_argument);
             }
         }
     }
@@ -763,7 +777,7 @@ int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     result = mxf_writer.Finalize();
 
     if (opendcp->mxf.write_done !=NULL) {
-        opendcp->mxf.write_done(NULL);
+        opendcp->mxf.write_done(opendcp->mxf.cb_argument);
     }
 
     if (ASDCP_FAILURE(result)) {

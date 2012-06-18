@@ -63,6 +63,7 @@ private:
     QString        mxfOutputFile;
 
     Result_t writeMxf();
+    static void frameDoneCb(void *data);
     Result_t fillWriterInfo(opendcp_t *opendcp, writer_info_t *writer_info);
     Result_t writeJ2kStereoscopicMxf(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
     Result_t writeJ2kMxf(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
