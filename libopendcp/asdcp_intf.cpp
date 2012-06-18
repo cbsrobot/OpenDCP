@@ -92,8 +92,8 @@ extern "C" int calculate_digest(const char *filename, char *digest) {
 extern "C" int get_wav_duration(const char *filename, int frame_rate) {
     PCM::WAVParser       pcm_parser;
     PCM::AudioDescriptor audio_desc;
-    Result_t             result = RESULT_OK;
-    ui32_t               duration;
+    Result_t             result   = RESULT_OK;
+    ui32_t               duration = 0;
 
     Rational edit_rate(frame_rate,1);
 
@@ -102,8 +102,6 @@ extern "C" int get_wav_duration(const char *filename, int frame_rate) {
     if (ASDCP_SUCCESS(result)) {
         pcm_parser.FillAudioDescriptor(audio_desc);
         duration = audio_desc.ContainerDuration; 
-    } else {
-        duration = 0;
     }
 
     return duration;
@@ -113,7 +111,6 @@ extern "C" int get_wav_duration(const char *filename, int frame_rate) {
 extern "C" int get_file_essence_class(char *filename) {
     Result_t      result = RESULT_OK;
     EssenceType_t essence_type;
-    int essence_class = -1;
 
     result = ASDCP::EssenceType(filename, essence_type);
 
@@ -130,21 +127,21 @@ extern "C" int get_file_essence_class(char *filename) {
         case ESS_JPEG_2000:
         case ESS_JPEG_2000_S:
         case ESS_MPEG2_VES:
-            essence_class = ACT_PICTURE;
+            return  ACT_PICTURE;
             break;
         case ESS_PCM_24b_48k:
         case ESS_PCM_24b_96k:
-            essence_class = ACT_SOUND;
+            return ACT_SOUND;
             break;
         case ESS_TIMED_TEXT:
-            essence_class = ACT_TIMED_TEXT;
+            return ACT_TIMED_TEXT;
             break;
         default:
-            essence_class = ACT_UNKNOWN;
+            return ACT_UNKNOWN;
             break;
     }
 
-    return essence_class;
+    return ACT_UNKNOWN;
 }
 
 /* get the essence type of an asset */
@@ -155,7 +152,7 @@ extern "C" int get_file_essence_type(char *filename) {
     result = ASDCP::RawEssenceType(filename, essence_type);
 
     if (ASDCP_FAILURE(result)) {
-        return OPENDCP_DETECT_TRACK_TYPE;
+        return AET_UNKNOWN;
     }
 
     switch(essence_type) {
@@ -179,7 +176,7 @@ extern "C" int get_file_essence_type(char *filename) {
             break;
     }
 
-    return 0;
+    return AET_UNKNOWN;
 }
 
 /* read asset file information */
@@ -221,8 +218,8 @@ extern "C" int read_asset_info(asset_t *asset) {
             sprintf(asset->edit_rate,"%d %d",desc.EditRate.Numerator,desc.EditRate.Denominator);
             sprintf(asset->sample_rate,"%d %d",desc.SampleRate.Numerator,desc.SampleRate.Denominator);
             sprintf(asset->frame_rate,"%d",desc.FrameRate);
+            break;
         }
-        break;
         case ESS_JPEG_2000_S:
         {        
             JP2K::MXFSReader reader;
@@ -248,8 +245,8 @@ extern "C" int read_asset_info(asset_t *asset) {
             sprintf(asset->edit_rate,"%d %d",desc.EditRate.Numerator,desc.EditRate.Denominator);
             sprintf(asset->sample_rate,"%d %d",desc.SampleRate.Numerator,desc.SampleRate.Denominator);
             sprintf(asset->frame_rate,"%d %d",desc.SampleRate.Numerator,desc.SampleRate.Denominator);
+            break;
         }
-        break;
         case ESS_JPEG_2000:
         {
             JP2K::MXFReader reader;
@@ -282,8 +279,8 @@ extern "C" int read_asset_info(asset_t *asset) {
             sprintf(asset->edit_rate,"%d %d",desc.EditRate.Numerator,desc.EditRate.Denominator);
             sprintf(asset->sample_rate,"%d %d",desc.SampleRate.Numerator,desc.SampleRate.Denominator);
             sprintf(asset->frame_rate,"%d %d",desc.SampleRate.Numerator,desc.SampleRate.Denominator);
+            break;
         }
-        break;
         case ESS_PCM_24b_48k:
         case ESS_PCM_24b_96k:
         {
@@ -307,8 +304,8 @@ extern "C" int read_asset_info(asset_t *asset) {
             sprintf(asset->uuid,"%.36s", Kumu::bin2UUIDhex(info.AssetUUID,16,uuid_buffer, 64));
             sprintf(asset->edit_rate,"%d %d",desc.EditRate.Numerator,desc.EditRate.Denominator);
             sprintf(asset->sample_rate,"%d %d",desc.AudioSamplingRate.Numerator,desc.AudioSamplingRate.Denominator);
+            break;
         }
-        break;
         case ESS_TIMED_TEXT:
         { 
             TimedText::MXFReader reader;
@@ -330,10 +327,13 @@ extern "C" int read_asset_info(asset_t *asset) {
             asset->xml_ns         = info.LabelSetType;
             sprintf(asset->uuid,"%.36s", Kumu::bin2UUIDhex(info.AssetUUID,16,uuid_buffer, 64));
             sprintf(asset->edit_rate,"%d %d",desc.EditRate.Numerator,desc.EditRate.Denominator);
-      }
-      break;
-      default:
-            return OPENDCP_UNKOWN_TRACK_TYPE;
+            break;
+        }
+        default:
+        {
+            return OPENDCP_UNKNOWN_TRACK_TYPE;
+            break; 
+        }
     }
  
     return OPENDCP_NO_ERROR;
@@ -342,7 +342,6 @@ extern "C" int read_asset_info(asset_t *asset) {
 /* write the asset to an mxf file */
 extern "C" int write_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     Result_t      result = RESULT_OK; 
-    int           rc = 0;
     EssenceType_t essence_type;
 
     result = ASDCP::RawEssenceType(filelist->in[0], essence_type);
@@ -353,30 +352,48 @@ extern "C" int write_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_
 
     switch (essence_type) {
         case ESS_JPEG_2000:
-            if ( opendcp->stereoscopic )
-                rc = write_j2k_s_mxf(opendcp,filelist,output_file);
-            else
-                rc = write_j2k_mxf(opendcp,filelist,output_file);
+        {
+            if ( opendcp->stereoscopic ) {
+                return write_j2k_s_mxf(opendcp,filelist,output_file);
+            } else {
+                return write_j2k_mxf(opendcp,filelist,output_file);
+            }
             break;
+        }
         case ESS_JPEG_2000_S:
-                rc = write_j2k_s_mxf(opendcp,filelist,output_file);
+        {
+            return write_j2k_s_mxf(opendcp,filelist,output_file);
             break;
+        }
         case ESS_PCM_24b_48k:
         case ESS_PCM_24b_96k:
-            rc = write_pcm_mxf(opendcp, filelist, output_file);
+        {
+            return write_pcm_mxf(opendcp, filelist, output_file);
             break;
+        }
         case ESS_MPEG2_VES:
-            rc = write_mpeg2_mxf(opendcp,filelist,output_file);
+        {
+            return write_mpeg2_mxf(opendcp,filelist,output_file);
             break;
+        }
         case ESS_TIMED_TEXT:
-            rc = write_tt_mxf(opendcp,filelist,output_file);
+        {
+            return write_tt_mxf(opendcp,filelist,output_file);
             break;
+        }
         case ESS_UNKNOWN:
-            rc = OPENDCP_UNKOWN_TRACK_TYPE;
+        {
+            return OPENDCP_UNKNOWN_TRACK_TYPE;
             break;
+        }
+        default:
+        {
+            return OPENDCP_UNKNOWN_TRACK_TYPE;
+            break;
+        }
     }
 
-    return rc; 
+    return OPENDCP_UNKNOWN_TRACK_TYPE; 
 }
 
 typedef struct {
