@@ -69,7 +69,7 @@ extern "C" {
         OPENDCP_ERROR_MSG(OPENDCP_CALC_DIGEST,             "Could not caclulate MXF digest") \
         OPENDCP_ERROR_MSG(OPENDCP_DETECT_TRACK_TYPE,       "Could not determine MXF track type") \
         OPENDCP_ERROR_MSG(OPENDCP_INVALID_TRACK_TYPE,      "Invalid MXF track type") \
-        OPENDCP_ERROR_MSG(OPENDCP_UNKOWN_TRACK_TYPE,       "Unknown MXF track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_UNKNOWN_TRACK_TYPE,      "Unknown MXF track type") \
         OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_MPEG2,          "Could not open MPEG2 file") \
         OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_J2K,            "Could not open JPEG200 file") \
         OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_WAV,            "Could not open wav file") \
