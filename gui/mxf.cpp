@@ -37,9 +37,9 @@ void MainWindow::mxfConnectSlots() {
     connect(ui->subCreateButton,SIGNAL(clicked()),this,SLOT(mxfCreateSubtitle()));
     connect(ui->mxfSlideCheckBox, SIGNAL(stateChanged(int)), this, SLOT(mxfSetSlideState()));
 
-    connect(mxfWriterThread, SIGNAL(frameDone()), dMxfConversion, SLOT(step()));
-    connect(mxfWriterThread, SIGNAL(finished()), this, SLOT(mxfDone()));
-    connect(dMxfConversion,  SIGNAL(cancel()), mxfWriterThread, SLOT(mxfCancel()));
+    connect(mxfWriterThread, SIGNAL(frameDone()),    dMxfConversion,  SLOT(step()));
+    connect(mxfWriterThread, SIGNAL(finished(int)),  dMxfConversion,  SLOT(finished(int)));
+    connect(dMxfConversion,  SIGNAL(cancel()),       mxfWriterThread, SLOT(cancel()));
 
     // Picture input lines
     signalMapper.setMapping(ui->pictureLeftButton, ui->pictureLeftEdit);
@@ -175,10 +175,6 @@ void MainWindow::mxfSetSoundState() {
     ui->aSubLabel->setEnabled(value);
     ui->aSubEdit->setEnabled(value);
     ui->aSubButton->setEnabled(value);
-}
-
-void MainWindow::mxfDone() {
-   dMxfConversion->finished(mxfWriterThread->success);
 }
 
 void MainWindow::mxfStart() {
@@ -340,11 +336,6 @@ void MainWindow::mxfCreateAudio() {
     mxfWriterThread->start();
     dMxfConversion->exec();
 
-    if (!mxfWriterThread->success)  {
-        QMessageBox::critical(this, tr("MXF Creation Error"),
-                             tr("Sound MXF creation failed."));
-    }
-
     opendcp_delete(mxfContext);
 
     return;
@@ -426,9 +417,6 @@ void MainWindow::mxfCreatePicture() {
         dMxfConversion->init(mxfContext->mxf.duration, outputFile);
         mxfWriterThread->start();
         dMxfConversion->exec();
-        if (!mxfWriterThread->success && !mxfWriterThread->cancelled)  {
-            QMessageBox::critical(this, tr("MXF Creation Error"), tr("Picture MXF creation failed."));
-        }
     }
 
 Done:

@@ -495,10 +495,9 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     }
    
     ui32_t read  = 1;
-    ui32_t stop  = 0;
     ui32_t i = start_frame;
     /* read each input frame and write to the output mxf until duration is reached */
-    while (!stop && ASDCP_SUCCESS(result) && mxf_duration--) {
+    while ( ASDCP_SUCCESS(result) && mxf_duration--) {
         if (read) {
             result = j2k_parser.OpenReadFrame(filelist->files[i], frame_buffer);
 
@@ -527,10 +526,13 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
         } else {
             i++;
         }
-
+ 
         result = mxf_writer.WriteFrame(frame_buffer, writer_info.aes_context, writer_info.hmac_context);
+
         if (opendcp->mxf.frame_done != NULL) {
-            stop = opendcp->mxf.frame_done(opendcp->mxf.cb_argument);
+            if (opendcp->mxf.frame_done(opendcp->mxf.cb_argument)) {
+                return OPENDCP_NO_ERROR;
+            }
         }
     }
 

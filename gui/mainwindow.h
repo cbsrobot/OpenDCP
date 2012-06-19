@@ -58,7 +58,6 @@ public slots:
     void mxfSetHVState();
     void mxfSetSoundState();
     void mxfCreateSubtitle();
-    void mxfDone();
 
     void startDcp();
     void updatePictureDuration();

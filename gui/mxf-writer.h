@@ -38,24 +38,23 @@ public:
     ~MxfWriter();
     void run();
     void init(opendcp_t *opendcp, QFileInfoList fileList, QString outputFile);
-    int  success;
+    int  rc;
     int  cancelled;
 
 private:
     opendcp_t      *opendcpMxf;
     QFileInfoList   mxfFileList;
     QString         mxfOutputFile;
-
     void reset();
     static int frameDoneCb(void *data);
 
 signals:
-    void finished();
+    void finished(int);
     void errorMessage(QString);
     void frameDone();
 
 public slots:
-    void mxfCancel();
+    void cancel();
 
 private slots:
 
