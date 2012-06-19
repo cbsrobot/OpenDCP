@@ -38,10 +38,10 @@ MxfWriter::~MxfWriter()
 void MxfWriter::reset()
 {
     cancelled = 0;
-    success = 0;
+    rc        = 0;
 }
 
-void MxfWriter::mxfCancel() {
+void MxfWriter::cancel() {
     cancelled = 1;
 }
 
@@ -51,6 +51,11 @@ int MxfWriter::frameDoneCb(void *data) {
 
     return self->cancelled;
 }
+
+//void MxfWriter::writeDoneCb(void *data) {
+//    MxfWriter *self = static_cast<MxfWriter*>(data);
+//    emit self->writeDone();
+//}
 
 void MxfWriter::init(opendcp_t *opendcp, QFileInfoList fileList, QString outputFile)
 {
@@ -73,16 +78,9 @@ void MxfWriter::run()
         sprintf(fileList->files[i++],"%s",mxfFileList.takeFirst().absoluteFilePath().toStdString().c_str());
     }
 
-    int result = write_mxf(opendcpMxf, fileList, mxfOutputFile.toAscii().data());
-
-
-    if (result == OPENDCP_NO_ERROR) {
-        success = 1;
-    } else {
-        success = 0;
-    }
+    rc = write_mxf(opendcpMxf, fileList, mxfOutputFile.toAscii().data());
 
     filelist_free(fileList);
 
-    emit finished();
+    emit finished(rc);
 }

@@ -29,15 +29,16 @@ MxfConversionDialog::MxfConversionDialog(QWidget *parent) : QDialog(parent)
     this->setWindowTitle("MXF Creation");
 
     connect(buttonClose, SIGNAL(clicked()), this, SLOT(close()));
-    connect(buttonStop, SIGNAL(clicked()), this, SLOT(abort()));
+    connect(buttonStop,  SIGNAL(clicked()), this, SLOT(stop()));
 }
 
-void MxfConversionDialog::init(int imageCount, QString outputFile)
+void MxfConversionDialog::init(int nFrames, QString outputFile)
 {
     currentCount  = 0;
-    done          = 0;
+    totalCount    = nFrames;
+
     cancelled     = 0;
-    totalCount    = imageCount;
+
     mxfOutputFile = outputFile;
 
     progressBar->reset();
@@ -51,49 +52,69 @@ void MxfConversionDialog::step()
 {
     QString labelText;
 
-    if (done == 1 && cancelled == 0) {
-        currentCount = totalCount;
+    if (!cancelled) {
+        labelText.sprintf("%s  [Writing %d of %d]",mxfOutputFile.toAscii().constData(),currentCount,totalCount);
+        labelTotal->setText(labelText);
+        progressBar->setValue(currentCount);
     }
 
-    labelText.sprintf("MXF File Creation: %s  [Writing %d of %d]",mxfOutputFile.toAscii().constData(),currentCount,totalCount);
-    labelTotal->setText(labelText);
-    progressBar->setValue(currentCount);
-
-    if (!done) {
+    // make sure current doesn't exceed total (shouldn't happen)
+    if (currentCount < totalCount) {
         currentCount++;
     }
 }
 
-void MxfConversionDialog::finished(int status)
+void MxfConversionDialog::stop()
 {
-    QString labelText;
-
-    done = 1;
-    step();
-    if (status) {
-        labelText.sprintf("MXF File Creation: Writing %d of %d. MXF file %s created successfully.",currentCount,totalCount,mxfOutputFile.toAscii().constData());
-        labelTotal->setText(labelText);
-    } else {
-        labelText.sprintf("MXF File Creation: Writing %d of %d. MXF file %s creation failed.",currentCount,totalCount,mxfOutputFile.toAscii().constData());
-        labelTotal->setText(labelText);
-    }
-    setButtons(0);
-}
-
-void MxfConversionDialog::abort()
-{
-    setButtons(0);
+    setButtons(2);
+    labelTotal->setText("Cancelling...");
     cancelled = 1;
     emit cancel();
 }
 
+void MxfConversionDialog::finished(int result)
+{
+    QString t;
+    QString labelText;
+
+    progressBar->setValue(currentCount);
+
+    if (result) {
+        t = "failed";
+
+    } else {
+        t = "succeeded";
+    }
+
+    if (cancelled) {
+        t = "cancelled";
+    }
+
+    labelText.sprintf("Wrote %d of %d. MXF file %s creation ",currentCount,totalCount,mxfOutputFile.toAscii().constData());
+    labelText.append(t);
+    labelTotal->setText(labelText);
+
+    setButtons(0);
+}
+
 void MxfConversionDialog::setButtons(int state)
 {
-    if (state == 0) {
-        buttonClose->setEnabled(true);
-        buttonStop->setEnabled(false);
-    } else {
-        buttonClose->setEnabled(false);
-        buttonStop->setEnabled(true);
+    switch (state)
+    {
+        case 0:
+            // stopped
+            buttonClose->setEnabled(true);
+            buttonStop->setEnabled(false);
+            break;
+        case 1:
+            // running
+            buttonClose->setEnabled(false);
+            buttonStop->setEnabled(true);
+            break;
+        case 2:
+            // stopping
+            buttonClose->setEnabled(false);
+            buttonStop->setEnabled(false);
+            break;
     }
 }

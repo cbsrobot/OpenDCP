@@ -554,13 +554,13 @@
     </message>
     <message>
         <location filename="../j2k.cpp" line="313"/>
-        <location filename="../mxf.cpp" line="399"/>
+        <location filename="../mxf.cpp" line="390"/>
         <source>File Count Mismatch</source>
         <translation>Anzahl Dateien ungleich</translation>
     </message>
     <message>
         <location filename="../j2k.cpp" line="314"/>
-        <location filename="../mxf.cpp" line="400"/>
+        <location filename="../mxf.cpp" line="391"/>
         <source>The left and right image directories have different file counts. They must be the same. Please fix and try again.</source>
         <translation>Linkes und rechtes Bildverzeichnis enthalten unterschiedlich viele Dateien. Identische Anzahl erforderlich. Bitte korrigieren und erneut versuchen.</translation>
     </message>
@@ -687,87 +687,85 @@
         <translation>M2V:</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="188"/>
-        <location filename="../mxf.cpp" line="214"/>
-        <location filename="../mxf.cpp" line="226"/>
-        <location filename="../mxf.cpp" line="268"/>
+        <location filename="../mxf.cpp" line="184"/>
+        <location filename="../mxf.cpp" line="210"/>
+        <location filename="../mxf.cpp" line="222"/>
+        <location filename="../mxf.cpp" line="264"/>
         <source>Destination file needed</source>
         <translation>Zieldatei erforderlich</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="188"/>
-        <location filename="../mxf.cpp" line="214"/>
+        <location filename="../mxf.cpp" line="184"/>
+        <location filename="../mxf.cpp" line="210"/>
         <source>Please select a destination picture MXF file.</source>
         <translation>Bitte wählen Sie eine Zieldatei für Bild-MXF.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="193"/>
-        <location filename="../mxf.cpp" line="198"/>
-        <location filename="../mxf.cpp" line="218"/>
-        <location filename="../mxf.cpp" line="232"/>
-        <location filename="../mxf.cpp" line="241"/>
+        <location filename="../mxf.cpp" line="189"/>
+        <location filename="../mxf.cpp" line="194"/>
+        <location filename="../mxf.cpp" line="214"/>
+        <location filename="../mxf.cpp" line="228"/>
+        <location filename="../mxf.cpp" line="237"/>
         <source>Source content needed</source>
         <translation>Quelle erforderlich</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="193"/>
+        <location filename="../mxf.cpp" line="189"/>
         <source>Please select left and right source image directories.</source>
         <translation>Bitte wählen Sie Quellverzeichnisse für Links und Rechts.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="198"/>
+        <location filename="../mxf.cpp" line="194"/>
         <source>Please select a source image directory.</source>
         <translation>Bitte wählen Sie ein Bild-Quellverzeichnis.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="205"/>
+        <location filename="../mxf.cpp" line="201"/>
         <source>Invalid frame rate</source>
         <translation>Ungültige Bildrate</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="205"/>
+        <location filename="../mxf.cpp" line="201"/>
         <source>Stereoscopic MXF only supports 24, 25, or 30 fps.</source>
         <translation>Stereoskopisches MXF unterstützt nur 24, 25, oder 30 fps.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="218"/>
+        <location filename="../mxf.cpp" line="214"/>
         <source>Please select a source MPEG2 file.</source>
         <translation>Bitte wählen Sie eine MPEG2-Quelldatei.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="226"/>
+        <location filename="../mxf.cpp" line="222"/>
         <source>Please select a destination sound MXF file.</source>
         <translation>Bitte wählen Sie eine Zieldatei für Ton-MXF.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="232"/>
+        <location filename="../mxf.cpp" line="228"/>
         <source>Please specify left and right wav files.</source>
         <translation>Bitte geben Sie WAV-Dateien für Links und Rechts an.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="241"/>
+        <location filename="../mxf.cpp" line="237"/>
         <source>Please specify 5.1 wav files.</source>
         <translation>Bitte geben Sie WAV-Dateien für 5.1 an.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="263"/>
+        <location filename="../mxf.cpp" line="259"/>
         <source>Source subtitle needed</source>
         <translation>Quelldatei Untertitel erforderlich</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="263"/>
+        <location filename="../mxf.cpp" line="259"/>
         <source>Please specify an input subtitle XML file.</source>
         <translation>Bitte geben Sie eine XML Untertitel Quelldatei an.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="268"/>
+        <location filename="../mxf.cpp" line="264"/>
         <source>Please specify a destinaton subtitle MXF file.</source>
         <translation>Bitte geben Sie eine Zieldatei für MXF Untertitel an.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="344"/>
-        <location filename="../mxf.cpp" line="422"/>
-        <location filename="../mxf.cpp" line="430"/>
+        <location filename="../mxf.cpp" line="413"/>
         <source>MXF Creation Error</source>
         <translation>Fehler MXF Erstellung</translation>
     </message>
@@ -780,19 +778,17 @@
         <translation type="obsolete">Untertitel-MXF-Erstellung erfolgreich.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="345"/>
         <source>Sound MXF creation failed.</source>
-        <translation>Ton-MXF-Erstellung fehlgeschlagen.</translation>
+        <translation type="obsolete">Ton-MXF-Erstellung fehlgeschlagen.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="422"/>
+        <location filename="../mxf.cpp" line="413"/>
         <source>No input files found.</source>
         <translation>Keine Quelldateien gefunden.</translation>
     </message>
     <message>
-        <location filename="../mxf.cpp" line="430"/>
         <source>Picture MXF creation failed.</source>
-        <translation>Bild MXF-Erstellung fehlgeschlagen.</translation>
+        <translation type="obsolete">Bild MXF-Erstellung fehlgeschlagen.</translation>
     </message>
     <message>
         <location filename="../xml.cpp" line="65"/>

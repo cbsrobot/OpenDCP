@@ -42,7 +42,7 @@
        <item>
         <widget class="QLabel" name="labelThreadCount">
          <property name="text">
-          <string notr="true">Conversion using 0 thread(s) </string>
+          <string notr="true">Conversion using 1 thread(s) </string>
          </property>
         </widget>
        </item>
