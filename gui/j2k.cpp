@@ -156,6 +156,12 @@ void MainWindow::j2kConvert() {
         }
     }
 
+    if (iterations < 1) {
+        QMessageBox::warning(this, tr("No images to encode"),
+                                   tr("No images need to be encoded"));
+        return;
+    }
+
     threadCount = QThreadPool::globalInstance()->maxThreadCount();
     dJ2kConversion->init(iterations, threadCount);
 
@@ -239,7 +245,7 @@ void MainWindow::j2kStart() {
 
     // process options
     context->log_level = 0;
-    dcp_log_init(context->log_level, "opendcp.log");
+    dcp_log_init(context->log_level, NULL);
 
     if (ui->profileComboBox->currentIndex() == 0) {
         context->cinema_profile = DCP_CINEMA2K;
@@ -305,6 +311,12 @@ void MainWindow::j2kStart() {
             QMessageBox::warning(this, tr("Destination Directory Needed"),tr("Please select a destination directory"));
             goto Done;
         }
+    }
+
+    if (inLeftList.size() < 1) {
+            QMessageBox::critical(this, tr("No files to encode"),
+                                 tr("The selected directory does not contain any valid image files. Please select a new directory."));
+            goto Done;
     }
 
     // check left and right files are equal

@@ -501,76 +501,96 @@
         <translation>Bildvorschau dieser Datei nicht möglich</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="195"/>
-        <location filename="../j2k.cpp" line="223"/>
+        <location filename="../j2k.cpp" line="160"/>
+        <source>No images to encode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../j2k.cpp" line="161"/>
+        <source>No images need to be encoded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../j2k.cpp" line="201"/>
+        <location filename="../j2k.cpp" line="229"/>
         <source>No image files found</source>
         <translation>Keine Bilddateien gefunden</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="196"/>
-        <location filename="../j2k.cpp" line="224"/>
+        <location filename="../j2k.cpp" line="202"/>
+        <location filename="../j2k.cpp" line="230"/>
         <source>No valid image files were found in the selected directory</source>
         <translation>Keine gültigen Bilddateien im gewählten Verzeichnis gefunden</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="292"/>
+        <location filename="../j2k.cpp" line="298"/>
         <source>Source Directories Needed</source>
         <translation>Quellverzeichnisse benötigt</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="292"/>
+        <location filename="../j2k.cpp" line="298"/>
         <source>Please select source directories</source>
         <translation>Bitte wählen Sie Quellverzeichnisse</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="295"/>
+        <location filename="../j2k.cpp" line="301"/>
         <source>Destination Directories Needed</source>
         <translation>Zielverzeichnisse benötigt</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="295"/>
+        <location filename="../j2k.cpp" line="301"/>
         <source>Please select destination directories</source>
         <translation>Bitte wählen Sie Zielverzeichnisse</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="302"/>
+        <location filename="../j2k.cpp" line="308"/>
         <source>Source Directory Needed</source>
         <translation>Quellverzeichnis benötigt</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="302"/>
+        <location filename="../j2k.cpp" line="308"/>
         <source>Please select a source directory</source>
         <translation>Bitte wählen Sie ein Quellverzeichnis</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="305"/>
+        <location filename="../j2k.cpp" line="311"/>
         <source>Destination Directory Needed</source>
         <translation>Zielverzeichnis benötigt</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="305"/>
+        <location filename="../j2k.cpp" line="311"/>
         <source>Please select a destination directory</source>
         <translation>Bitte wählen Sie ein Zielverzeichnis</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="313"/>
+        <location filename="../j2k.cpp" line="317"/>
+        <source>No files to encode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../j2k.cpp" line="318"/>
+        <source>The selected directory does not contain any valid image files. Please select a new directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../j2k.cpp" line="325"/>
         <location filename="../mxf.cpp" line="384"/>
         <source>File Count Mismatch</source>
         <translation>Anzahl Dateien ungleich</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="314"/>
+        <location filename="../j2k.cpp" line="326"/>
         <location filename="../mxf.cpp" line="385"/>
         <source>The left and right image directories have different file counts. They must be the same. Please fix and try again.</source>
         <translation>Linkes und rechtes Bildverzeichnis enthalten unterschiedlich viele Dateien. Identische Anzahl erforderlich. Bitte korrigieren und erneut versuchen.</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="322"/>
+        <location filename="../j2k.cpp" line="334"/>
         <source>Invalid DCI Resolution</source>
         <translation>Ungültige DCI Auflösung</translation>
     </message>
     <message>
-        <location filename="../j2k.cpp" line="323"/>
+        <location filename="../j2k.cpp" line="335"/>
         <source>Images are not DCI compliant, select DCI resize to automatically resize or supply DCI compliant images</source>
         <translation>Bilder nicht DCI-konform. Wählen Sie DCI-Skalierung oder stellen Sie DCI-konforme Bilder bereit</translation>
     </message>
