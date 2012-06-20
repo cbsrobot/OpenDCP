@@ -26,7 +26,7 @@ class MxfConversionDialog : public QDialog, private Ui::ConversionDialog {
 
 public:
     MxfConversionDialog(QWidget *parent = 0);
-    void init(int imageCount, QString outputFile);
+    void init(int nFrames, QString outputFile);
 
 private:
     int totalCount;

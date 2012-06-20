@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>ConversionDialog</class>
  <widget class="QDialog" name="ConversionDialog">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>156</height>
+    <height>180</height>
    </rect>
   </property>
   <property name="windowTitle">

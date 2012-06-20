@@ -69,8 +69,8 @@ void MxfWriter::run()
 {
     int i = 0;
 
-    opendcpMxf->mxf.frame_done  = MxfWriter::frameDoneCb;
-    opendcpMxf->mxf.cb_argument = this;
+    opendcpMxf->mxf.frame_done.callback  = MxfWriter::frameDoneCb;
+    opendcpMxf->mxf.frame_done.argument = this;
 
     filelist_t *fileList = filelist_alloc(mxfFileList.size());
 

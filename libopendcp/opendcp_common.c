@@ -315,9 +315,10 @@ opendcp_t *opendcp_create() {
     get_timestamp(opendcp->xml.timestamp);
 
     /* initialize callbacks */
-    opendcp->mxf.frame_done  = NULL;
-    opendcp->mxf.write_done  = NULL;
-    opendcp->mxf.cb_argument = NULL;
+    opendcp->mxf.frame_done.callback  = NULL;
+    opendcp->mxf.frame_done.argument  = NULL;
+    opendcp->mxf.file_done.callback   = NULL;
+    opendcp->mxf.file_done.argument   = NULL;
 
     return opendcp;
 }

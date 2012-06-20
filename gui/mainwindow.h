@@ -94,6 +94,7 @@ protected slots:
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void fileCopy(QString source, QString destination);
 
 private:
     void createActions();
