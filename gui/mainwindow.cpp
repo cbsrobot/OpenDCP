@@ -39,8 +39,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     generateTitle   = new GenerateTitle(this);
     dJ2kConversion  = new J2kConversionDialog();
-    dMxfConversion  = new MxfConversionDialog();
-    mxfWriterThread = new MxfWriter(this);
 
     // create menus
     createActions();

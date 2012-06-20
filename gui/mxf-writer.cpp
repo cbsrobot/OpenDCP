@@ -20,8 +20,7 @@
 #include <QInputDialog>
 #include <QFileInfo>
 
-#include "opendcp.h"
-#include "mxfconversion_dialog.h"
+#include <opendcp.h>
 #include "mxf-writer.h"
 
 MxfWriter::MxfWriter(QObject *parent)
@@ -69,7 +68,7 @@ void MxfWriter::run()
 {
     int i = 0;
 
-    opendcpMxf->mxf.frame_done.callback  = MxfWriter::frameDoneCb;
+    opendcpMxf->mxf.frame_done.callback = MxfWriter::frameDoneCb;
     opendcpMxf->mxf.frame_done.argument = this;
 
     filelist_t *fileList = filelist_alloc(mxfFileList.size());

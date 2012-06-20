@@ -23,9 +23,7 @@
 #include <QtGui>
 #include <opendcp.h>
 #include "j2kconversion_dialog.h"
-#include "mxfconversion_dialog.h"
 #include "settings.h"
-#include "mxf-writer.h"
 
 class GenerateTitle;
 
@@ -102,6 +100,7 @@ private:
 
     void loadLanguage(const QString& rLanguage);
     void createLanguageMenu(void);
+    void mxfStartThread(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
 
     Ui::MainWindow      *ui;
     Settings            *settings;
@@ -110,8 +109,6 @@ private:
     GenerateTitle       *generateTitle;
     QString             lastDir;
     J2kConversionDialog *dJ2kConversion;
-    MxfConversionDialog *dMxfConversion;
-    MxfWriter           *mxfWriterThread;
 
     // copy/paste
     QPlainTextEdit *textEdit;
