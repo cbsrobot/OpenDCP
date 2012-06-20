@@ -29,9 +29,9 @@ extern "C" {
 #define MAX_REELS           30   /* Soft limit */
 #define MAX_PKL             1    /* Soft limit */
 #define MAX_CPL             5    /* Soft limit */
-#define MAX_PATH_LENGTH     4096 
-#define MAX_FILENAME_LENGTH 256 
-#define MAX_BASENAME_LENGTH 256 
+#define MAX_PATH_LENGTH     4095 
+#define MAX_FILENAME_LENGTH 254 
+#define MAX_AUDIO_CHANNELS  16   /* maximum allowed audio channels */
 
 #define MAX_DCP_JPEG_BITRATE 250000000  /* Maximum DCI compliant bit rate for JPEG2000 */
 #define MAX_DCP_MPEG_BITRATE  80000000  /* Maximum DCI compliant bit rate for MPEG */
@@ -168,6 +168,11 @@ enum DPX_MODE {
     DPX_VIDEO
 };
 
+typedef struct {
+    int (*callback)(void *);
+    void  *argument;
+} opendcp_cb_t;
+
 typedef struct filelist_t {
     char           **files;
     int              nfiles;
@@ -273,9 +278,8 @@ typedef struct {
     byte_t         key_id[16];
     byte_t         key_value[16];
     int            write_hmac;
-    int          (*frame_done)(void *);
-    void         (*write_done)(void *);
-    void          *cb_argument; 
+    opendcp_cb_t   frame_done;
+    opendcp_cb_t   file_done;
 } mxf_t;
 
 typedef struct {
@@ -309,7 +313,7 @@ typedef struct {
     int             log_level;
     int             ns;
     int             threads;
-    char            dcp_path[MAX_BASENAME_LENGTH];
+    char            dcp_path[MAX_FILENAME_LENGTH];
     j2k_t           j2k;
     mxf_t           mxf;
     xml_t           xml;

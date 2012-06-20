@@ -98,15 +98,19 @@ int get_filelist_3d(char *in_path_left,char *in_path_right,filelist_t *filelist)
 int total = 0;
 int val   = 0;
 
-void frame_done_cb(void *p) {
+int frame_done_cb(void *p) {
     val++;
     p = NULL;
     progress_bar();
+
+    return 0;
 }
 
-void write_done_cb(void *p) {
+int write_done_cb(void *p) {
     p = NULL;
     printf("\n  MXF Complete\n");
+   
+    return 0;
 }
 
 void progress_bar() {
@@ -339,9 +343,8 @@ int main (int argc, char **argv) {
     }
    
     /* set the callbacks (optional) for the mxf writer */
-    opendcp->mxf.frame_done = frame_done_cb;
-    opendcp->mxf.write_done = write_done_cb;
-    //opendcp->mxf.cb_argument = "=";
+    opendcp->mxf.frame_done.callback = frame_done_cb;
+    opendcp->mxf.file_done.callback  = write_done_cb;
 
     int class = get_file_essence_class(filelist->files[0]);
 

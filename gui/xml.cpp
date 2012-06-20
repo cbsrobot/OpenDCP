@@ -194,12 +194,12 @@ void MainWindow::startDcp()
         if (ui->rbMoveMxf->isChecked()) {
             QFile::rename(source.absoluteFilePath(), destination.absoluteFilePath());
         } else {
-            QMessageBox* msgBox = new QMessageBox( this );
-            msgBox->setWindowTitle("File Copy");
-            msgBox->setText("Copying picture file...");
-            msgBox->open();
-            QFile::copy(source.absoluteFilePath(), destination.absoluteFilePath());
-            msgBox->close();;
+            //QMessageBox* msgBox = new QMessageBox( this );
+            //msgBox->setWindowTitle("File Copy");
+            //msgBox->setText("Copying picture file...");
+            //msgBox->open();
+            fileCopy(source.absoluteFilePath(), destination.absoluteFilePath());
+            //msgBox->close();;
         }
     }
 

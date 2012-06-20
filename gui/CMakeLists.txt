@@ -27,6 +27,7 @@ SET(OPENDCP_GUI_CXX_SRC
     mxf-writer.cpp
     settings.cpp
     translator.cpp
+    filecopy.cpp
 )
 
 SET(OPENDCP_GUI_H_SRC
