@@ -23,10 +23,7 @@
 #include <QObject>
 #include <string.h>
 #include <iostream>
-#include "opendcp.h"
-#include "mxfconversion_dialog.h"
-
-using namespace std;
+#include <opendcp.h>
 
 class MxfWriter : public QThread
 {

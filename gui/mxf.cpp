@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <opendcp.h>
 #include "mxf-writer.h"
+#include "mxfconversion_dialog.h"
 
 void MainWindow::mxfConnectSlots() {
     // connect slots
@@ -36,10 +37,6 @@ void MainWindow::mxfConnectSlots() {
     connect(ui->mxfButton,SIGNAL(clicked()),this,SLOT(mxfStart()));
     connect(ui->subCreateButton,SIGNAL(clicked()),this,SLOT(mxfCreateSubtitle()));
     connect(ui->mxfSlideCheckBox, SIGNAL(stateChanged(int)), this, SLOT(mxfSetSlideState()));
-
-    connect(mxfWriterThread, SIGNAL(frameDone()),    dMxfConversion,  SLOT(step()));
-    connect(mxfWriterThread, SIGNAL(finished(int)),  dMxfConversion,  SLOT(finished(int)));
-    connect(dMxfConversion,  SIGNAL(cancel()),       mxfWriterThread, SLOT(cancel()));
 
     // Picture input lines
     signalMapper.setMapping(ui->pictureLeftButton, ui->pictureLeftEdit);
@@ -265,9 +262,9 @@ void MainWindow::mxfCreateSubtitle() {
         return;
     }
 
-    opendcp_t *mxfContext = opendcp_create();
+    opendcp_t *opendcp = opendcp_create();
 
-    mxfContext->ns = XML_NS_SMPTE;
+    opendcp->ns = XML_NS_SMPTE;
 
     filelist_t *fileList = filelist_alloc(1);
     strcpy(fileList->files[0], ui->subInEdit->text().toStdString().c_str());
@@ -276,7 +273,7 @@ void MainWindow::mxfCreateSubtitle() {
     strcpy(outputFile, ui->sMxfOutEdit->text().toStdString().c_str());
 
 /*
-    if (write_mxf(mxfContext,fileList,outputFile) != 0 )  {
+    if (write_mxf(opendcp,fileList,outputFile) != 0 )  {
         QMessageBox::critical(this, tr("MXF Creation Error"),
                              tr("Subtitle MXF creation failed."));
     } else {
@@ -285,7 +282,7 @@ void MainWindow::mxfCreateSubtitle() {
     }
 */
 
-    opendcp_delete(mxfContext);
+    opendcp_delete(opendcp);
     filelist_free(fileList);
 
     delete[] outputFile;
@@ -297,16 +294,16 @@ void MainWindow::mxfCreateAudio() {
     QFileInfoList inputList;
     QString       outputFile;
 
-    opendcp_t     *mxfContext = opendcp_create();
+    opendcp_t     *opendcp = opendcp_create();
 
     if (ui->mxfTypeComboBox->currentIndex() == 0) {
-        mxfContext->ns = XML_NS_INTEROP;
+        opendcp->ns = XML_NS_INTEROP;
     } else {
-        mxfContext->ns = XML_NS_SMPTE;
+        opendcp->ns = XML_NS_SMPTE;
     }
 
-    mxfContext->frame_rate = ui->mxfFrameRateComboBox->currentText().toInt();
-    mxfContext->stereoscopic = 0;
+    opendcp->frame_rate = ui->mxfFrameRateComboBox->currentText().toInt();
+    opendcp->stereoscopic = 0;
 
     // stereo files
     inputList.append(QFileInfo(ui->aLeftEdit->text()));
@@ -327,16 +324,13 @@ void MainWindow::mxfCreateAudio() {
     }
 
     // get wav duration
-    int duration = get_wav_duration(ui->aLeftEdit->text().toStdString().c_str(),
-                                    mxfContext->frame_rate); 
+    opendcp->mxf.duration = get_wav_duration(ui->aLeftEdit->text().toStdString().c_str(),
+                                             opendcp->frame_rate);
 
     outputFile = ui->aMxfOutEdit->text();
-    mxfWriterThread->init(mxfContext, inputList, outputFile);
-    dMxfConversion->init(duration, outputFile);
-    mxfWriterThread->start();
-    dMxfConversion->exec();
+    mxfStartThread(opendcp, inputList, outputFile);
 
-    opendcp_delete(mxfContext);
+    opendcp_delete(opendcp);
 
     return;
 }
@@ -350,16 +344,16 @@ void MainWindow::mxfCreatePicture() {
     QString       outputFile;
     QString       msg;
 
-    opendcp_t *mxfContext = opendcp_create();
+    opendcp_t *opendcp = opendcp_create();
 
     if (ui->mxfTypeComboBox->currentIndex() == 0) {
-        mxfContext->ns = XML_NS_INTEROP;
+        opendcp->ns = XML_NS_INTEROP;
     } else {
-        mxfContext->ns = XML_NS_SMPTE;
+        opendcp->ns = XML_NS_SMPTE;
     }
 
-    mxfContext->frame_rate = ui->mxfFrameRateComboBox->currentText().toInt();
-    mxfContext->stereoscopic = 0;
+    opendcp->frame_rate = ui->mxfFrameRateComboBox->currentText().toInt();
+    opendcp->stereoscopic = 0;
 
     if (ui->mxfSourceTypeComboBox->currentIndex() == 0) {
         pLeftDir.cd(ui->pictureLeftEdit->text());
@@ -375,7 +369,7 @@ void MainWindow::mxfCreatePicture() {
     }
 
     if (ui->mxfStereoscopicCheckBox->checkState()) {
-        mxfContext->stereoscopic = 1;
+        opendcp->stereoscopic = 1;
         pRightDir.cd(ui->pictureRightEdit->text());
         pRightDir.setNameFilters(QStringList() << "*.j2c");
         pRightDir.setFilter(QDir::Files | QDir::NoSymLinks);
@@ -403,25 +397,40 @@ void MainWindow::mxfCreatePicture() {
     outputFile = ui->pMxfOutEdit->text();
 
     if (ui->mxfSlideCheckBox->checkState()) {
-        mxfContext->mxf.slide = (ui->mxfSlideCheckBox->checkState());
-        mxfContext->mxf.duration = ui->mxfSlideSpinBox->value() * mxfContext->frame_rate * inputList.size();
+        opendcp->mxf.slide = (ui->mxfSlideCheckBox->checkState());
+        opendcp->mxf.duration = ui->mxfSlideSpinBox->value() * opendcp->frame_rate * inputList.size();
     } else {
-        mxfContext->mxf.duration = inputList.size();
+        opendcp->mxf.duration = inputList.size();
     }
 
     if (inputList.size() < 1) {
         QMessageBox::critical(this, tr("MXF Creation Error"), tr("No input files found."));
         goto Done;
     } else {
-        mxfWriterThread->init(mxfContext,inputList,outputFile);
-        dMxfConversion->init(mxfContext->mxf.duration, outputFile);
-        mxfWriterThread->start();
-        dMxfConversion->exec();
+        mxfStartThread(opendcp, inputList, outputFile);
     }
 
 Done:
 
-    opendcp_delete(mxfContext);
+    opendcp_delete(opendcp);
 
     return;
+}
+
+void MainWindow::mxfStartThread(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile)
+{
+    MxfConversionDialog *dialog = new MxfConversionDialog();
+    MxfWriter           *writer = new MxfWriter(this);
+
+    connect(writer, SIGNAL(frameDone()),    dialog,  SLOT(step()));
+    connect(writer, SIGNAL(finished(int)),  dialog,  SLOT(finished(int)));
+    connect(dialog, SIGNAL(cancel()),       writer,  SLOT(cancel()));
+
+    writer->init(opendcp,inputList,outputFile);
+    dialog->init(opendcp->mxf.duration, outputFile);
+    writer->start();
+    dialog->exec();
+
+    delete dialog;
+    delete writer;
 }
