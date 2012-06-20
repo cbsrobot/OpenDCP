@@ -32,7 +32,6 @@ private:
     int totalCount;
     int currentCount;
     int cancelled;
-    int done;
 
 signals:
     void cancel();
@@ -43,7 +42,7 @@ public slots:
     void finished();
 
 private slots:
-    void abort();
+    void stop();
 };
 
 #endif // J2KCONVERSIONDIALOG_H
