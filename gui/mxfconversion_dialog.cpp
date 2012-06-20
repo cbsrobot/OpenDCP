@@ -52,6 +52,10 @@ void MxfConversionDialog::step()
 {
     QString labelText;
 
+    if (cancelled) {
+        return;
+    }
+
     labelText.sprintf("%s  [Writing %d of %d]",mxfOutputFile.toAscii().constData(),currentCount,totalCount);
     labelTotal->setText(labelText);
     progressBar->setValue(currentCount);
