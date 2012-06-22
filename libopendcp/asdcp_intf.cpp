@@ -211,8 +211,8 @@ extern "C" int read_asset_info(asset_t *asset) {
             asset->essence_class      = ACT_PICTURE;
             asset->duration           = desc.ContainerDuration;
             asset->intrinsic_duration = desc.ContainerDuration;
-            asset->entry_point    = 0;
-            asset->xml_ns         = info.LabelSetType;
+            asset->entry_point        = 0;
+            asset->xml_ns             = info.LabelSetType;
             sprintf(asset->uuid,"%.36s", Kumu::bin2UUIDhex(info.AssetUUID,16,uuid_buffer, 64));
             sprintf(asset->aspect_ratio,"%d %d",desc.AspectRatio.Numerator,desc.AspectRatio.Denominator);
             sprintf(asset->edit_rate,"%d %d",desc.EditRate.Numerator,desc.EditRate.Denominator);
@@ -238,8 +238,8 @@ extern "C" int read_asset_info(asset_t *asset) {
             asset->essence_class      = ACT_PICTURE;
             asset->duration           = desc.ContainerDuration;
             asset->intrinsic_duration = desc.ContainerDuration;
-            asset->entry_point    = 0;
-            asset->xml_ns         = info.LabelSetType;
+            asset->entry_point        = 0;
+            asset->xml_ns             = info.LabelSetType;
             sprintf(asset->uuid,"%.36s", Kumu::bin2UUIDhex(info.AssetUUID,16,uuid_buffer, 64));
             sprintf(asset->aspect_ratio,"%d %d",desc.AspectRatio.Numerator,desc.AspectRatio.Denominator);
             sprintf(asset->edit_rate,"%d %d",desc.EditRate.Numerator,desc.EditRate.Denominator);
