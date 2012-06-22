@@ -90,7 +90,7 @@ enum OPENDCP_ERROR_MESSAGES {
     FOREACH_OPENDCP_ERROR_MSG(GENERATE_ENUM)
 };
 
-/* XML Namespaces */
+/* XML namespaces */
 extern const char *XML_HEADER;
 extern const char *NS_CPL[];
 extern const char *NS_PKL[];
@@ -129,16 +129,16 @@ enum LOG_LEVEL {
     LOG_DEBUG
 };
 
+enum CINEMA_PROFILE {
+    DCP_CINEMA2K = 3,
+    DCP_CINEMA4K = 4,
+};
+
 enum ASSET_CLASS_TYPE {
     ACT_UNKNOWN = 0,
     ACT_PICTURE,
     ACT_SOUND,
     ACT_TIMED_TEXT
-};
-
-enum CINEMA_PROFILE {
-    DCP_CINEMA2K = 3,
-    DCP_CINEMA4K = 4,
 };
 
 enum ASSET_ESSENCE_TYPE {
