@@ -213,85 +213,44 @@ void MainWindow::getPath(QWidget *w)
     lastDir = path;
 }
 
-// get the sequence number
-int findSeqOffset(const char str1[], const char str2[])
+filelist_t *MainWindow::QStringToFilelist(QFileInfoList list)
 {
     int i = 0;
-    while(1) {
-        if(str1[i] != str2[i])
-                return i;
-        if(str1[i] == '\0' || str2[i] == '\0')
-                return 0;
-        i++;
-    }
-}
+    filelist_t *fileList = filelist_alloc(list.size());
 
-// check if two files are sequential
-int MainWindow::checkSequential(const char str1[], const char str2[])
-{
-    long x,y;
-    int  i;
-    int  offset = 0;
-
-    if (strlen(str1) != strlen(str2)) {
-        return OPENDCP_STRING_LENGTH;
+    while (!list.isEmpty()) {
+        sprintf(fileList->files[i++],"%s",list.takeFirst().absoluteFilePath().toStdString().c_str());
     }
 
-    for (i = 0; i < (int) strlen(str1); i++) {
-        if (str1[i] != str2[i]) {
-            offset = i;
-            break;
-        }
-    }
- 
-    x = strtol(str1+offset,NULL,10);
-    y = strtol(str2+offset,NULL,10);
-
-    if ((y - x) == 1) {
-        return OPENDCP_NO_ERROR;
-    } else {
-        return OPENDCP_STRING_NOTSEQUENTIAL;
-    }
+    return fileList;
 }
 
 // check if filelist is sequential
-int MainWindow::checkFileSequence(QStringList list)
+int MainWindow::checkFileSequence(QFileInfoList list)
 {
     QString msg;
-    int     sequential = OPENDCP_NO_ERROR;
-    int     x = 0;
+    int     rc;
+    int     result = OPENDCP_NO_ERROR;
 
-    if (list.size() <= 1) {
-        return OPENDCP_NO_ERROR;
+    filelist_t *fileList = QStringToFilelist(list);
+    if (order_indexed_files(fileList->files, fileList->nfiles) != OPENDCP_NO_ERROR) {
+        if (QMessageBox::question(this, tr("Could not order files"), msg, QMessageBox::No,QMessageBox::Yes) == QMessageBox::No) {
+            filelist_free(fileList);
+            result = OPENDCP_ERROR;
+        }
     }
+    rc = ensure_sequential(fileList->files, fileList->nfiles);
 
-    for (x = 0; (x < (list.size()-1)) && (sequential == OPENDCP_NO_ERROR); x++) {
-        QFileInfo a(list.at(x));
-        QFileInfo b(list.at(x+1));
-        sequential = checkSequential((char *)a.completeBaseName().toStdString().c_str(),
-                                     (char *)b.completeBaseName().toStdString().c_str());
-    }
-
-    if (sequential == OPENDCP_STRING_LENGTH) {
-        QMessageBox::critical(this, tr("File Sequence Check Error"), tr("All filenames must be of the same length."));
-        return OPENDCP_ERROR;
-    }
-
-    if (sequential == OPENDCP_STRING_NOTSEQUENTIAL) {
-        QTextStream(&msg) << tr("File list does not appear to be sequential between ") << list.at(x-1);
-        QTextStream(&msg) << tr(" and ") << list.at(x) << tr(". Do you wish to continue?");
+    if (rc) {
+        QTextStream(&msg) << tr("File list does not appear to be sequential between ") << list.at(rc).fileName();
+        QTextStream(&msg) << tr(" and ") << list.at(rc+1).fileName() << tr(". Do you wish to continue?");
         if (QMessageBox::question(this, tr("File Sequence Mismatch"), msg, QMessageBox::No,QMessageBox::Yes) == QMessageBox::No) {
-            return OPENDCP_ERROR;
-        } else {
-            return OPENDCP_NO_ERROR;
+            result = OPENDCP_ERROR;
         }
     }
 
-    if (sequential == OPENDCP_NO_ERROR) {
-        return OPENDCP_NO_ERROR;
-    } else {
-        return OPENDCP_ERROR;
-    }
+    filelist_free(fileList);
+    return result;
 }
 
 void MainWindow::about()

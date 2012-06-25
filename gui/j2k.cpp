@@ -190,6 +190,10 @@ void MainWindow::j2kUpdateEndSpinBox() {
 void MainWindow::j2kCheckLeftInputFiles() {
     QString filter = "*.tif;*.tiff;*.dpx;*.bmp";
     QDir inLeftDir;
+   
+    if (ui->inImageLeftEdit->text() == NULL) {
+        return;
+    }
 
     inLeftDir.cd(ui->inImageLeftEdit->text());
     inLeftDir.setFilter(QDir::Files | QDir::NoSymLinks);
@@ -203,10 +207,10 @@ void MainWindow::j2kCheckLeftInputFiles() {
         return;
     }
 
-    if (checkFileSequence(inLeftDir.entryList()) != OPENDCP_NO_ERROR) {
+    if (checkFileSequence(inLeftList) == OPENDCP_ERROR) {
+       ui->inImageLeftEdit->setText(NULL);
        return;
     }
-
 
     ui->endSpinBox->setMaximum(inLeftList.size());
     ui->endSpinBox->setValue(inLeftList.size());
@@ -218,6 +222,10 @@ void MainWindow::j2kCheckLeftInputFiles() {
 void MainWindow::j2kCheckRightInputFiles() {
     QString filter = "*.tif;*.tiff;*.dpx;*.bmp";
     QDir inRightDir;
+
+    if (ui->inImageRightEdit->text() == NULL) {
+        return;
+    }
 
     inRightDir.cd(ui->inImageRightEdit->text());
     inRightDir.setFilter(QDir::Files | QDir::NoSymLinks);
@@ -231,7 +239,8 @@ void MainWindow::j2kCheckRightInputFiles() {
         return;
     }
 
-    if (checkFileSequence(inRightDir.entryList()) != OPENDCP_NO_ERROR) {
+    if (checkFileSequence(inRightList) == OPENDCP_ERROR) {
+       ui->inImageRightEdit->setText(NULL);
        return;
     }
 

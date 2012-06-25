@@ -252,6 +252,9 @@ void MainWindow::mxfStart() {
 }
 
 void MainWindow::mxfCreateSubtitle() {
+    QFileInfoList inputList;
+    QString       outputFile;
+
     if (ui->subInEdit->text().isEmpty()) {
         QMessageBox::critical(this, tr("Source subtitle needed"),tr("Please specify an input subtitle XML file."));
         return;
@@ -266,26 +269,12 @@ void MainWindow::mxfCreateSubtitle() {
 
     opendcp->ns = XML_NS_SMPTE;
 
-    filelist_t *fileList = filelist_alloc(1);
-    strcpy(fileList->files[0], ui->subInEdit->text().toStdString().c_str());
+    inputList.append(QFileInfo(ui->subInEdit->text()));
+    outputFile = ui->sMxfOutEdit->text();
 
-    char *outputFile = new char [ui->sMxfOutEdit->text().toStdString().size()+1];
-    strcpy(outputFile, ui->sMxfOutEdit->text().toStdString().c_str());
-
-/*
-    if (write_mxf(opendcp,fileList,outputFile) != 0 )  {
-        QMessageBox::critical(this, tr("MXF Creation Error"),
-                             tr("Subtitle MXF creation failed."));
-    } else {
-        QMessageBox::information(this, tr("MXF Creation Error"),
-                         tr("Subtitle MXF creation succeeded."));
-    }
-*/
+    mxfStartThread(opendcp, inputList, outputFile);
 
     opendcp_delete(opendcp);
-    filelist_free(fileList);
-
-    delete[] outputFile;
 
     return;
 }
@@ -361,7 +350,7 @@ void MainWindow::mxfCreatePicture() {
         pLeftDir.setFilter(QDir::Files | QDir::NoSymLinks);
         pLeftDir.setSorting(QDir::Name);
         pLeftList = pLeftDir.entryInfoList();
-        if (checkFileSequence(pLeftDir.entryList()) != OPENDCP_NO_ERROR) {
+        if (checkFileSequence(pLeftList) != OPENDCP_NO_ERROR) {
             goto Done;
         }
     } else {
@@ -376,7 +365,7 @@ void MainWindow::mxfCreatePicture() {
         pRightDir.setSorting(QDir::Name);
         pRightList = pRightDir.entryInfoList();
 
-        if (checkFileSequence(pRightDir.entryList()) != OPENDCP_NO_ERROR) {
+        if (checkFileSequence(pRightList) != OPENDCP_NO_ERROR) {
             goto Done;
         }
 
