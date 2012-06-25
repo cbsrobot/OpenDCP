@@ -84,7 +84,7 @@ protected:
 
     void connectXmlSlots();
     void showImage(QImage image);
-    int  checkFileSequence(QStringList list);
+    int  checkFileSequence(QFileInfoList list);
     int  checkSequential(const char str1[], const char str2[]); 
 
 protected slots:
@@ -101,6 +101,7 @@ private:
     void loadLanguage(const QString& rLanguage);
     void createLanguageMenu(void);
     void mxfStartThread(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
+    filelist_t *QStringToFilelist(QFileInfoList list);
 
     Ui::MainWindow      *ui;
     Settings            *settings;
