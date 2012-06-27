@@ -41,16 +41,27 @@ void MainWindow::mxfConnectSlots() {
     // Picture input lines
     signalMapper.setMapping(ui->pictureLeftButton, ui->pictureLeftEdit);
     signalMapper.setMapping(ui->pictureRightButton, ui->pictureRightEdit);
-
+ 
     // Sound input lines
-    signalMapper.setMapping(ui->aLeftButton, ui->aLeftEdit);
-    signalMapper.setMapping(ui->aRightButton, ui->aRightEdit);
-    signalMapper.setMapping(ui->aCenterButton, ui->aCenterEdit);
-    signalMapper.setMapping(ui->aSubButton, ui->aSubEdit);
-    signalMapper.setMapping(ui->aLeftSButton, ui->aLeftSEdit);
-    signalMapper.setMapping(ui->aRightSButton, ui->aRightSEdit);
-    signalMapper.setMapping(ui->aHIButton, ui->aHIEdit);
-    signalMapper.setMapping(ui->aVIButton, ui->aVIEdit);
+    wavSignalMapper.setMapping(ui->aLeftButton,   ui->aLeftEdit);
+    wavSignalMapper.setMapping(ui->aRightButton,  ui->aRightEdit);
+    wavSignalMapper.setMapping(ui->aCenterButton, ui->aCenterEdit);
+    wavSignalMapper.setMapping(ui->aSubButton,    ui->aSubEdit);
+    wavSignalMapper.setMapping(ui->aLeftSButton,  ui->aLeftSEdit);
+    wavSignalMapper.setMapping(ui->aRightSButton, ui->aRightSEdit);
+    wavSignalMapper.setMapping(ui->aHIButton,     ui->aHIEdit);
+    wavSignalMapper.setMapping(ui->aVIButton,     ui->aVIEdit);
+
+    connect(ui->aLeftButton,   SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aRightButton,  SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aCenterButton, SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aSubButton,    SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aLeftSButton,  SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aRightSButton, SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aHIButton,     SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aVIButton,     SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+
+    connect(&wavSignalMapper, SIGNAL(mapped(QWidget*)),this, SLOT(wavInputSlot(QWidget*)));
 
     // Subtitle input lines
     signalMapper.setMapping(ui->subInButton, ui->subInEdit);
@@ -63,18 +74,21 @@ void MainWindow::mxfConnectSlots() {
     // Signal Connections
     connect(ui->pictureLeftButton, SIGNAL(clicked()),&signalMapper, SLOT(map()));
     connect(ui->pictureRightButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->aLeftButton, SIGNAL(clicked()),&signalMapper, SLOT(map()));
-    connect(ui->aRightButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->aCenterButton, SIGNAL(clicked()),&signalMapper, SLOT(map()));
-    connect(ui->aSubButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->aLeftSButton, SIGNAL(clicked()),&signalMapper, SLOT(map()));
-    connect(ui->aRightSButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->aHIButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->aVIButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
     connect(ui->pMxfOutButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
     connect(ui->aMxfOutButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
     connect(ui->subInButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
     connect(ui->sMxfOutButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
+}
+
+void MainWindow::wavInputSlot(QWidget *w)
+{
+    QString path;
+    QString filter;
+
+    filter = "*.wav";
+    path = QFileDialog::getOpenFileName(this, tr("Choose a wav file to open"),lastDir,filter);
+    w->setProperty("text", path);
+    lastDir = path;
 }
 
 void MainWindow::mxfSetSlideState() {

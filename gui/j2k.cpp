@@ -26,28 +26,70 @@
 
 void MainWindow::j2kConnectSlots()
 {
+    QSignalMapper *j2kInSignalMapper = new QSignalMapper(this);
+
     // connect slots
-    connect(ui->stereoscopicCheckBox, SIGNAL(stateChanged(int)), this, SLOT(j2kSetStereoscopicState()));
-    connect(ui->bwSlider,SIGNAL(valueChanged(int)),this, SLOT(j2kBwSliderUpdate()));
-    connect(ui->encodeButton,SIGNAL(clicked()),this,SLOT(j2kStart()));
-    connect(ui->profileComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(j2kCinemaProfileUpdate()));
+    connect(ui->stereoscopicCheckBox, SIGNAL(stateChanged(int)),        this, SLOT(j2kSetStereoscopicState()));
+    connect(ui->bwSlider,             SIGNAL(valueChanged(int)),        this, SLOT(j2kBwSliderUpdate()));
+    connect(ui->encodeButton,         SIGNAL(clicked()),                this, SLOT(j2kStart()));
+    connect(ui->profileComboBox,      SIGNAL(currentIndexChanged(int)), this, SLOT(j2kCinemaProfileUpdate()));
 
-    // set signal mapper to handle file dialogs
-    signalMapper.setMapping(ui->inImageLeftButton, ui->inImageLeftEdit);
-    signalMapper.setMapping(ui->inImageRightButton, ui->inImageRightEdit);
-    signalMapper.setMapping(ui->outJ2kLeftButton, ui->outJ2kLeftEdit);
-    signalMapper.setMapping(ui->outJ2kRightButton, ui->outJ2kRightEdit);
+    // connect j2k input signals 
+    j2kInSignalMapper->setMapping(ui->inImageLeftButton,  ui->inImageLeftEdit);
+    j2kInSignalMapper->setMapping(ui->inImageRightButton, ui->inImageRightEdit);
 
-    // connect j2k signals
-    connect(ui->inImageLeftButton, SIGNAL(clicked()),&signalMapper, SLOT(map()));
-    connect(ui->inImageRightButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->outJ2kLeftButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->outJ2kRightButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
+    connect(ui->inImageLeftButton,  SIGNAL(clicked()), j2kInSignalMapper, SLOT(map()));
+    connect(ui->inImageRightButton, SIGNAL(clicked()), j2kInSignalMapper, SLOT(map()));
+
+    connect(j2kInSignalMapper, SIGNAL(mapped(QWidget*)),this, SLOT(j2kInputSlot(QWidget*)));
+
+    // connect j2k output signals
+    signalMapper.setMapping(ui->outJ2kLeftButton,   ui->outJ2kLeftEdit);
+    signalMapper.setMapping(ui->outJ2kRightButton,  ui->outJ2kRightEdit);
+
+    connect(ui->outJ2kLeftButton,   SIGNAL(clicked()), &signalMapper, SLOT(map()));
+    connect(ui->outJ2kRightButton,  SIGNAL(clicked()), &signalMapper, SLOT(map()));
 
     // update file
-    connect(ui->inImageLeftEdit, SIGNAL(textChanged(QString)),this,SLOT(j2kCheckLeftInputFiles()));
-    connect(ui->inImageRightEdit, SIGNAL(textChanged(QString)),this,SLOT(j2kCheckRightInputFiles()));
-    connect(ui->endSpinBox, SIGNAL(valueChanged(int)),this,SLOT(j2kUpdateEndSpinBox()));
+    connect(ui->endSpinBox,       SIGNAL(valueChanged(int)),    this,SLOT(j2kUpdateEndSpinBox()));
+}
+
+void MainWindow::j2kInputSlot(QWidget *w)
+{
+    QString path;
+    QString filter = "*.tif;*.tiff;*.dpx;*.bmp";
+
+    path = QFileDialog::getExistingDirectory(this, tr("Choose a directory of images"), lastDir);
+
+    if (path == NULL) {
+        return;
+    }
+
+    lastDir = path;
+
+    QDir inDir(path);
+    inDir.setFilter(QDir::Files | QDir::NoSymLinks);
+    inDir.setNameFilters(filter.split(';'));
+    inDir.setSorting(QDir::Name);
+    QFileInfoList fileList = inDir.entryInfoList();
+
+    if (fileList.size() < 1) {
+        QMessageBox::warning(this, tr("No image files found"),
+                                   tr("No valid image files were found in the selected directory"));
+        return;
+    }
+
+    if (checkFileSequence(fileList) == OPENDCP_ERROR) {
+       return;
+    }
+
+    ui->endSpinBox->setMaximum(fileList.size());
+    ui->endSpinBox->setValue(fileList.size());
+    ui->startSpinBox->setMaximum(ui->endSpinBox->value());
+
+    w->setProperty("text", path);
+
+    preview(fileList.at(0).absoluteFilePath());
 }
 
 void MainWindow::j2kSetStereoscopicState() {
@@ -93,20 +135,12 @@ void MainWindow::j2kBwSliderUpdate() {
 // globals for threads
 opendcp_t *context;
 int iterations = 0;
-QFileInfoList inLeftList;
-QFileInfoList inRightList;
-QString outLeftDir;
-QString outRightDir;
 
-void MainWindow::preview(int index = 0) {
-    QFileInfo fileInfo;
-    QString file;
+void MainWindow::preview(QString filename)
+{
     QImage image;
-
-    fileInfo = inLeftList.at(index);
-    file = fileInfo.absoluteFilePath();
-
-    if (!image.load(file)) {
+    
+    if (!image.load(filename)) {
         ui->previewLabel->setText(tr("Image preview not supported for this file"));
     } else {
         QPixmap pixmap(QPixmap::fromImage(image).scaled(ui->previewLabel->size(), Qt::KeepAspectRatio));
@@ -119,10 +153,12 @@ void j2kEncode(QStringList pair) {
 }
 
 void MainWindow::j2kConvert() {
-     int threadCount = 0;
-     QString inFile;
-     QString outFile;
-     QList<QStringList> list; 
+    int threadCount = 0;
+    QString inFile;
+    QString outFile;
+    QList<QStringList> list; 
+    QFileInfoList inLeftList;
+    QFileInfoList inRightList;
 
     // reset iterations
     iterations = 0;
@@ -130,13 +166,31 @@ void MainWindow::j2kConvert() {
     // set thread limit
     QThreadPool::globalInstance()->setMaxThreadCount(ui->threadsSpinBox->value());
 
+    QString outLeftDir = ui->outJ2kLeftEdit->text();
+    QString outRightDir = ui->outJ2kRightEdit->text();
+
+    QString filter = "*.tif;*.tiff;*.dpx;*.bmp";
+    QDir inDir(ui->inImageLeftEdit->text());
+    inDir.setFilter(QDir::Files | QDir::NoSymLinks);
+    inDir.setNameFilters(filter.split(';'));
+    inDir.setSorting(QDir::Name);
+    inLeftList = inDir.entryInfoList();
+
+    if (context->stereoscopic) {
+        QDir inDir(ui->inImageRightEdit->text());
+        inDir.setFilter(QDir::Files | QDir::NoSymLinks);
+        inDir.setNameFilters(filter.split(';'));
+        inDir.setSorting(QDir::Name);
+        inRightList = inDir.entryInfoList();
+    }
+
     // build conversion list 
     for (int i = ui->startSpinBox->value() - 1; i < ui->endSpinBox->value(); i++) {
         QStringList pair;
 
         inFile  = inLeftList.at(i).absoluteFilePath();
         outFile = outLeftDir % "/" % inLeftList.at(i).completeBaseName() % ".j2c";
-        pair << inFile << outFile ;
+        pair << inFile << outFile;
 
         if (!QFileInfo(outFile).exists() || context->j2k.no_overwrite == 0) {
             list.append(pair);
@@ -187,148 +241,85 @@ void MainWindow::j2kUpdateEndSpinBox() {
     ui->startSpinBox->setMaximum(ui->endSpinBox->value());
 }
 
-void MainWindow::j2kCheckLeftInputFiles() {
-    QString filter = "*.tif;*.tiff;*.dpx;*.bmp";
-    QDir inLeftDir;
-   
-    if (ui->inImageLeftEdit->text() == NULL) {
-        return;
+void MainWindow::processOptions(opendcp_t *opendcp) {
+    opendcp->log_level = 0;
+
+    dcp_log_init(opendcp->log_level, NULL);
+
+    if (ui->profileComboBox->currentIndex() == 0) {
+        opendcp->cinema_profile = DCP_CINEMA2K;
+    } else {
+        opendcp->cinema_profile = DCP_CINEMA4K;
     }
 
-    inLeftDir.cd(ui->inImageLeftEdit->text());
-    inLeftDir.setFilter(QDir::Files | QDir::NoSymLinks);
-    inLeftDir.setNameFilters(filter.split(';'));
-    inLeftDir.setSorting(QDir::Name);
-    inLeftList = inLeftDir.entryInfoList();
-
-    if (inLeftList.size() < 1) {
-        QMessageBox::warning(this, tr("No image files found"),
-                                   tr("No valid image files were found in the selected directory"));
-        return;
+    if (ui->encoderComboBox->currentIndex() == 0) {
+        opendcp->j2k.encoder = J2K_OPENJPEG;
+    } else {
+        opendcp->j2k.encoder = J2K_KAKADU;
     }
 
-    if (checkFileSequence(inLeftList) == OPENDCP_ERROR) {
-       ui->inImageLeftEdit->setText(NULL);
-       return;
+    opendcp->j2k.lut    = ui->colorComboBox->currentIndex();
+    opendcp->j2k.resize = ui->resizeComboBox->currentIndex();
+
+    if (ui->dpxLogCheckBox->checkState()) {
+        opendcp->j2k.dpx = 1;
+    } else {
+        opendcp->j2k.dpx = 0;
     }
 
-    ui->endSpinBox->setMaximum(inLeftList.size());
-    ui->endSpinBox->setValue(inLeftList.size());
-    ui->startSpinBox->setMaximum(ui->endSpinBox->value());
-
-    preview();
-}
-
-void MainWindow::j2kCheckRightInputFiles() {
-    QString filter = "*.tif;*.tiff;*.dpx;*.bmp";
-    QDir inRightDir;
-
-    if (ui->inImageRightEdit->text() == NULL) {
-        return;
+    if (ui->stereoscopicCheckBox->checkState()) {
+        opendcp->stereoscopic = 1;
+    } else {
+        opendcp->stereoscopic = 0;
     }
 
-    inRightDir.cd(ui->inImageRightEdit->text());
-    inRightDir.setFilter(QDir::Files | QDir::NoSymLinks);
-    inRightDir.setNameFilters(filter.split(';'));
-    inRightDir.setSorting(QDir::Name);
-    inRightList = inRightDir.entryInfoList();
-
-    if (inRightList.size() < 1) {
-        QMessageBox::warning(this, tr("No image files found"),
-                                   tr("No valid image files were found in the selected directory"));
-        return;
+    if (ui->xyzCheckBox->checkState()) {
+        opendcp->j2k.xyz = 1;
+    } else {
+        opendcp->j2k.xyz = 0;
     }
 
-    if (checkFileSequence(inRightList) == OPENDCP_ERROR) {
-       ui->inImageRightEdit->setText(NULL);
-       return;
+    if (ui->overwritej2kCB->checkState())
+        opendcp->j2k.no_overwrite = 0;
+    else {
+        opendcp->j2k.no_overwrite = 1;
     }
 
-    ui->endSpinBox->setValue(inRightList.size());
-    ui->startSpinBox->setMaximum(ui->endSpinBox->value());
+    opendcp->frame_rate = ui->frameRateComboBox->currentText().toInt();
+    opendcp->j2k.bw = ui->bwSlider->value() * 1000000;
 }
 
 void MainWindow::j2kStart() {
     // create opendcp context
     context = opendcp_create();
 
-    // process options
-    context->log_level = 0;
-    dcp_log_init(context->log_level, NULL);
 
-    if (ui->profileComboBox->currentIndex() == 0) {
-        context->cinema_profile = DCP_CINEMA2K;
-    } else {
-        context->cinema_profile = DCP_CINEMA4K;
-    }
-
-    if (ui->encoderComboBox->currentIndex() == 0) {
-        context->j2k.encoder = J2K_OPENJPEG;
-    } else {
-        context->j2k.encoder = J2K_KAKADU;
-    }
-
-    context->j2k.lut = ui->colorComboBox->currentIndex();
-    context->j2k.resize = ui->resizeComboBox->currentIndex();
-
-    if (ui->dpxLogCheckBox->checkState()) {
-        context->j2k.dpx = 1;
-    } else {
-        context->j2k.dpx = 0;
-    }
-
-    if (ui->stereoscopicCheckBox->checkState()) {
-        context->stereoscopic = 1;
-    } else {
-        context->stereoscopic = 0;
-    }
-
-    if (ui->xyzCheckBox->checkState()) {
-        context->j2k.xyz = 1;
-    } else {
-        context->j2k.xyz = 0;
-    }
-
-    if (ui->overwritej2kCB->checkState())
-        context->j2k.no_overwrite = 0;
-    else {
-        context->j2k.no_overwrite = 1;
-    }
-
-    context->frame_rate = ui->frameRateComboBox->currentText().toInt();
-    context->j2k.bw = ui->bwSlider->value() * 1000000;
+    // get all options
+    processOptions(context);
 
     // validate destination directories
     if (context->stereoscopic) {
-        outLeftDir = ui->outJ2kLeftEdit->text();
-        outRightDir = ui->outJ2kRightEdit->text();
-
         if (ui->inImageLeftEdit->text().isEmpty() || ui->inImageRightEdit->text().isEmpty()) {
             QMessageBox::warning(this, tr("Source Directories Needed"),tr("Please select source directories"));
             goto Done;
-        } else if (ui->outJ2kLeftEdit->text().isEmpty() || ui->outJ2kRightEdit->text().isEmpty()) {
+        }
+        if (ui->outJ2kLeftEdit->text().isEmpty() || ui->outJ2kRightEdit->text().isEmpty()) {
             QMessageBox::warning(this, tr("Destination Directories Needed"),tr("Please select destination directories"));
             goto Done;
         }
     } else {
-        outLeftDir = ui->outJ2kLeftEdit->text();
-
         if (ui->inImageLeftEdit->text().isEmpty()) {
             QMessageBox::warning(this, tr("Source Directory Needed"),tr("Please select a source directory"));
             goto Done;
-        } else if (ui->outJ2kLeftEdit->text().isEmpty()) {
+        } 
+        if (ui->outJ2kLeftEdit->text().isEmpty()) {
             QMessageBox::warning(this, tr("Destination Directory Needed"),tr("Please select a destination directory"));
             goto Done;
         }
     }
 
-    if (inLeftList.size() < 1) {
-            QMessageBox::critical(this, tr("No files to encode"),
-                                 tr("The selected directory does not contain any valid image files. Please select a new directory."));
-            goto Done;
-    }
-
     // check left and right files are equal
+    /*
     if (context->stereoscopic) {
         if (inLeftList.size() != inRightList.size()) {
             QMessageBox::critical(this, tr("File Count Mismatch"),
@@ -345,6 +336,7 @@ void MainWindow::j2kStart() {
             return;
         }
     }
+    */
 
     j2kConvert();
 
