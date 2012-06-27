@@ -107,6 +107,29 @@ extern "C" int get_wav_duration(const char *filename, int frame_rate) {
     return duration;
 }
 
+/* get wav file info  */
+extern "C" int get_wav_info(const char *filename, int frame_rate, wav_info_t *wav) {
+    PCM::WAVParser       pcm_parser;
+    PCM::AudioDescriptor audio_desc;
+    Result_t             result   = RESULT_OK;
+
+    Rational edit_rate(frame_rate,1);
+
+    result = pcm_parser.OpenRead(filename, edit_rate);
+
+    if (ASDCP_SUCCESS(result)) {
+        pcm_parser.FillAudioDescriptor(audio_desc);
+        wav->nframes    = audio_desc.ContainerDuration;
+        wav->nchannels  = audio_desc.ChannelCount;
+        wav->bitdepth   = audio_desc.QuantizationBits;
+        wav->samplerate = audio_desc.AudioSamplingRate.Numerator;
+    } else {
+        return OPENDCP_FILEOPEN_WAV;
+    }
+
+    return OPENDCP_NO_ERROR;
+}
+
 /* get the essence class of a file */
 extern "C" int get_file_essence_class(char *filename) {
     Result_t      result = RESULT_OK;

@@ -102,6 +102,7 @@ private:
     void createLanguageMenu(void);
     void mxfStartThread(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
     filelist_t *QStringToFilelist(QFileInfoList list);
+    int checkWavInfo(opendcp_t *opendcp, QFileInfoList filelist);
 
     Ui::MainWindow      *ui;
     Settings            *settings;

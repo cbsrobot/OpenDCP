@@ -66,10 +66,11 @@ extern "C" {
         OPENDCP_ERROR_MSG(OPENDCP_SPECIFICATION_MISMATCH,  "DCP contains MXF and SMPTE track") \
         OPENDCP_ERROR_MSG(OPENDCP_TRACK_NO_DURATION,       "Track has no duration") \
         OPENDCP_ERROR_MSG(OPENDCP_J2K_ERROR,               "JPEG2000 error") \
-        OPENDCP_ERROR_MSG(OPENDCP_CALC_DIGEST,             "Could not caclulate MXF digest") \
+        OPENDCP_ERROR_MSG(OPENDCP_CALC_DIGEST,             "Could not calculate MXF digest") \
         OPENDCP_ERROR_MSG(OPENDCP_DETECT_TRACK_TYPE,       "Could not determine MXF track type") \
         OPENDCP_ERROR_MSG(OPENDCP_INVALID_TRACK_TYPE,      "Invalid MXF track type") \
         OPENDCP_ERROR_MSG(OPENDCP_UNKNOWN_TRACK_TYPE,      "Unknown MXF track type") \
+        OPENDCP_ERROR_MSG(OPENDCP_INVALID_WAV_BITDEPTH,    "WAV is not 24-bit") \
         OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_MPEG2,          "Could not open MPEG2 file") \
         OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_J2K,            "Could not open JPEG200 file") \
         OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_WAV,            "Could not open wav file") \
@@ -173,10 +174,17 @@ typedef struct {
     void  *argument;
 } opendcp_cb_t;
 
-typedef struct filelist_t {
+typedef struct {
     char           **files;
     int              nfiles;
 } filelist_t;
+
+typedef struct {
+    int nframes;
+    int nchannels;
+    int samplerate;
+    int bitdepth;
+} wav_info_t;
 
 typedef struct {
     filelist_t *filelist;
@@ -355,6 +363,7 @@ int read_asset_info(asset_t *asset);
 void uuid_random(char *uuid);
 int calculate_digest(const char *filename, char *digest);
 int get_wav_duration(const char *filename, int frame_rate);
+int get_wav_info(const char *filename, int frame_rate, wav_info_t *wav);
 int get_file_essence_type(char *in_path);
 
 /* MXF functions */

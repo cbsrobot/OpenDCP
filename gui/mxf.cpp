@@ -279,6 +279,26 @@ void MainWindow::mxfCreateSubtitle() {
     return;
 }
 
+int MainWindow::checkWavInfo(opendcp_t *opendcp, QFileInfoList filelist) {
+    QFileInfo  s;
+    wav_info_t wav;
+    int        rc;
+
+    foreach(s, filelist) {
+        rc = get_wav_info(s.absoluteFilePath().toStdString().c_str(), opendcp->frame_rate, &wav);
+
+        if (rc) {
+            return rc;
+        }
+
+        if (wav.bitdepth != 24) {
+            return OPENDCP_INVALID_WAV_BITDEPTH;
+        } 
+    }
+
+    return OPENDCP_NO_ERROR;
+}
+
 void MainWindow::mxfCreateAudio() {
     QFileInfoList inputList;
     QString       outputFile;
@@ -310,6 +330,11 @@ void MainWindow::mxfCreateAudio() {
     if (ui->mxfHVCheckBox->checkState()) {
         inputList.append(QFileInfo(ui->aHIEdit->text()));
         inputList.append(QFileInfo(ui->aVIEdit->text()));
+    }
+
+    if (checkWavInfo(opendcp, inputList)) {
+        QMessageBox::critical(this, tr("Invalid Wav Files"),tr("Input WAV files must be 24-bit"));
+        return;
     }
 
     // get wav duration
