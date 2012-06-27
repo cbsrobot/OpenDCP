@@ -37,13 +37,13 @@ class MainWindow : public QMainWindow
 
 public slots:
     void getPath(QWidget *w);
+    void wavInputSlot(QWidget*);
+    void j2kInputSlot(QWidget *w);
     void setPictureTrack();
     void setSoundTrack();
     void setSubtitleTrack();
 
     void j2kStart();
-    void j2kCheckLeftInputFiles();
-    void j2kCheckRightInputFiles();
     void j2kBwSliderUpdate();
     void j2kCinemaProfileUpdate();
     void j2kUpdateEndSpinBox();
@@ -63,7 +63,7 @@ public slots:
     void updateSubtitleDuration();
 
     void getTitle();
-    void preview(int index);
+    void preview(QString filename);
 
 private slots:
     void newFile();
@@ -101,12 +101,15 @@ private:
     void loadLanguage(const QString& rLanguage);
     void createLanguageMenu(void);
     void mxfStartThread(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
+    void processOptions(opendcp_t *opendcp);
     filelist_t *QStringToFilelist(QFileInfoList list);
 
     Ui::MainWindow      *ui;
     Settings            *settings;
 
     QSignalMapper       signalMapper;
+    QSignalMapper       wavSignalMapper;
+
     GenerateTitle       *generateTitle;
     QString             lastDir;
     J2kConversionDialog *dJ2kConversion;
