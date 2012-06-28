@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <stdint.h>
 
 #include "opendcp.h"
 #include "opendcp_cli.h"
@@ -62,6 +63,28 @@ char *get_basename(const char *filename) {
     return(base);
 }
 
+int file_selector(const char *filename, const char *filter) {
+    char *extension;
+
+    extension = strrchr(filename,'.');
+
+    if ( extension == NULL ) {
+        return 0;
+    }
+
+    extension++;
+
+    if (strlen(extension) < 3) {
+        return 0;
+    }
+
+    if (strstr(filter, extension) != NULL) {
+        return 1;
+    } 
+
+    return 0;
+}
+
 static int filter;
 int file_filter(struct dirent *filename) {
     char *extension;
@@ -92,7 +115,6 @@ int file_filter(struct dirent *filename) {
 int get_file_count(char *path, int file_type) {
     struct dirent **files;
     struct stat st_in;
-
     int x,count;
 
     filter = file_type;
@@ -114,6 +136,63 @@ int get_file_count(char *path, int file_type) {
     }
 
     return count;
+}
+
+filelist_t *get_filelist(const char *path, const char *filter) {
+    DIR *d;
+    struct stat st_in;
+    struct dirent *de, **names=0, **tmp;
+    size_t cnt=0, len=0;
+    filelist_t *filelist;
+
+    if (stat(path, &st_in) != 0 ) {
+        return NULL;
+    }
+
+    if (!S_ISDIR(st_in.st_mode)) {
+        filelist = filelist_alloc(1);
+        sprintf(filelist->files[0],"%s",path);
+        return filelist;
+    }
+
+	if ((d = opendir(path)) == NULL) {
+		return(NULL);
+    }
+
+    while ((de = readdir(d))) {
+        if (!file_selector(de->d_name, filter)) {
+            continue;
+        }
+        if (cnt >= len) {
+            len = 2*len+1;
+            if (len > SIZE_MAX/sizeof *names) {
+                break;
+            }
+            tmp = realloc(names, len * sizeof *names);
+            if (!tmp) {
+                break;
+            }
+            names = tmp;
+        }
+        names[cnt] = malloc(de->d_reclen);
+        if (!names[cnt]) {
+            break;
+        }
+        memcpy(names[cnt++], de, de->d_reclen);
+    }
+    closedir(d);
+
+    filelist = filelist_alloc(cnt);
+
+    if (names) {
+        while (cnt-->0) {
+            sprintf(filelist->files[cnt],"%s/%s",path,names[cnt]->d_name);
+            free(names[cnt]);
+        }
+       free(names);
+    }
+
+    return filelist;
 }
 
 int build_filelist(char *input, filelist_t *filelist) {

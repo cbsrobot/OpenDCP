@@ -44,8 +44,7 @@ int SIGINT_received = 0;
 /* prototypes */
 char *basename_noext(const char *str);
 int   is_dir(char *path);
-void  build_j2k_filename(char *in, char *path, char *out);
-int   get_filelist(char *path, filelist_t *filelist);
+void  build_j2k_filename(const char *in, char *path, char *out);
 void  progress_bar(int val, int total);
 void  version();
 void  dcp_usage();
@@ -101,13 +100,13 @@ char *substring(const char *str, size_t begin, size_t len) {
     char   *result;
  
     if (str == 0 || strlen(str) == 0 || strlen(str) < begin || strlen(str) < (begin + len)) {
-        return 0;
+        return NULL;
     }
 
     result = (char *)malloc(len);
 
     if (!result) {
-        return 0;
+        return NULL;
     }
 
     result[0] = '\0';
@@ -120,21 +119,22 @@ char *basename_noext(const char *str) {
     int start, end;
 
     if (str == 0 || strlen(str) == 0) {
-        return 0;
+        return NULL;
     }
 
     char *base = strrchr(str,'/') + 1;
     char *ext  = strrchr(str,'.');
 
-    start = strlen(str) - strlen(base);
+    start = strlen(str)  - strlen(base);
     end   = strlen(base) - strlen(ext);
-
+   
     char *substr = substring(str, start, end); 
 
     return(substr);
 }
 
-void build_j2k_filename(char *in, char *path, char *out) {
+void build_j2k_filename(const char *in, char *path, char *out) {
+    dcp_log(LOG_DEBUG,"Building filename from %s\n",in);
     if (!is_dir(path)) {
         sprintf(out,"%s",path);
     } else {
@@ -157,22 +157,6 @@ int is_dir(char *path) {
     }
 
     return 0;
-}
-
-int get_filelist(char *path, filelist_t *filelist) {
-    char *extension;
-
-    if (is_dir(path)) {
-        build_filelist(path, filelist);
-    } else {
-        dcp_log(LOG_DEBUG,"%-15.15s: input is a single file %s","get_filelist", path);
-        extension = strrchr(path,'.');
-        ++extension;
-        filelist->nfiles = 1;
-        sprintf(filelist->files[0],"%s",path);
-    }
-
-   return OPENDCP_NO_ERROR;
 }
 
 void progress_bar(int val, int total) {
@@ -204,7 +188,7 @@ int main (int argc, char **argv) {
     int rc, c, result, count = 0;
     int openmp_flag = 0;
     opendcp_t *opendcp;
-    char *in_path = NULL;
+    char *in_path  = NULL;
     char *out_path = NULL;
     char *tmp_path = NULL;
     char *log_file = NULL;
@@ -226,16 +210,16 @@ int main (int argc, char **argv) {
     opendcp = opendcp_create();
 
     /* set initial values */
-    opendcp->j2k.xyz         = 1;
     opendcp->log_level       = LOG_WARN;
     opendcp->cinema_profile  = DCP_CINEMA2K;
-    opendcp->j2k.encoder     = J2K_OPENJPEG;
     opendcp->frame_rate      = 24;
+    opendcp->j2k.xyz         = 1;
+    opendcp->j2k.encoder     = J2K_OPENJPEG;
     opendcp->j2k.start_frame = 1;
     opendcp->j2k.bw          = 250;
 #ifdef OPENMP
     openmp_flag              = 1;
-    opendcp->threads = omp_get_num_procs();
+    opendcp->threads         = omp_get_num_procs();
 #endif
  
     /* parse options */
@@ -409,7 +393,7 @@ int main (int argc, char **argv) {
 
     /* bandwidth check */
     if (opendcp->j2k.bw < 10 || opendcp->j2k.bw > 250) {
-        dcp_fatal(opendcp,"Bandwidth must be between 10 and 250");
+        dcp_fatal(opendcp,"Bandwidth must be between 10 and 250, but %d was specified", opendcp->j2k.bw);
     } else {
         opendcp->j2k.bw *= 1000000;
     }
@@ -429,12 +413,9 @@ int main (int argc, char **argv) {
         dcp_fatal(opendcp,"Input is a directory, so output must also be a directory");
     }
 
-
     /* get file list */
     dcp_log(LOG_DEBUG,"%-15.15s: getting files in %s","opendcp_j2k_cmd",in_path);
-    count = get_file_count(in_path, J2K_INPUT);
-    filelist = (filelist_t *)filelist_alloc(count);
-    get_filelist(in_path, filelist);
+    filelist = get_filelist(in_path, "bmp,dpx,tif");
 
     if (filelist->nfiles < 1) {
         dcp_fatal(opendcp,"No input files located");

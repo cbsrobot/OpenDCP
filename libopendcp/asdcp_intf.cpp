@@ -531,10 +531,8 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
         result = mxf_writer.WriteFrame(frame_buffer, writer_info.aes_context, writer_info.hmac_context);
 
         /* frame done callback (also check for interrupt) */
-        if (opendcp->mxf.frame_done.callback != NULL) {
-            if (opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument)) {
-                return OPENDCP_NO_ERROR;
-            }
+        if (opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument)) {
+            return OPENDCP_NO_ERROR;
         }
     }
 
@@ -549,9 +547,7 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     result = mxf_writer.Finalize();
 
     /* file done callback) */
-    if (opendcp->mxf.file_done.callback != NULL) {
-        opendcp->mxf.file_done.callback(opendcp->mxf.file_done.argument);
-    }
+    opendcp->mxf.file_done.callback(opendcp->mxf.file_done.argument);
 
     if (ASDCP_FAILURE(result)) {
         return OPENDCP_FINALIZE_MXF;
@@ -675,17 +671,13 @@ int write_j2k_s_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file)
         result = mxf_writer.WriteFrame(frame_buffer_left, JP2K::SP_LEFT, writer_info.aes_context, writer_info.hmac_context);
 
         /* frame done callback (also check for interrupt) */
-        if (opendcp->mxf.frame_done.callback != NULL) {
-            opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument);
-        }
+        opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument);
 
         /* write the frame */
         result = mxf_writer.WriteFrame(frame_buffer_right, JP2K::SP_RIGHT, writer_info.aes_context, writer_info.hmac_context);
 
         /* frame done callback (also check for interrupt) */
-        if (opendcp->mxf.frame_done.callback != NULL) {
-            opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument);
-        }
+        opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument);
     }
 
     if (result == RESULT_ENDOFFILE) {
@@ -698,9 +690,7 @@ int write_j2k_s_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file)
 
     result = mxf_writer.Finalize();
 
-    if (opendcp->mxf.file_done.callback != NULL) {
-        opendcp->mxf.file_done.callback(opendcp->mxf.file_done.argument);
-    }
+    opendcp->mxf.file_done.callback(opendcp->mxf.file_done.argument);
 
     if (ASDCP_FAILURE(result)) {
         return OPENDCP_FINALIZE_MXF;
@@ -828,9 +818,7 @@ int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
             result = mxf_writer.WriteFrame(frame_buffer, writer_info.aes_context, writer_info.hmac_context);
 
             /* frame done callback (also check for interrupt) */
-            if (opendcp->mxf.frame_done.callback != NULL) {
-                opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument);
-            }
+            opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument);
         }
     }
 
@@ -845,9 +833,7 @@ int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     /* write footer information */
     result = mxf_writer.Finalize();
 
-    if (opendcp->mxf.file_done.callback !=NULL) {
-        opendcp->mxf.file_done.callback(opendcp->mxf.file_done.argument);
-    }
+    opendcp->mxf.file_done.callback(opendcp->mxf.file_done.argument);
 
     if (ASDCP_FAILURE(result)) {
         return OPENDCP_FINALIZE_MXF;
