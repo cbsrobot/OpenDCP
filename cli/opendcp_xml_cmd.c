@@ -328,10 +328,10 @@ int main (int argc, char **argv) {
             sprintf(buffer,"Could not add reel %d to DCP\n",c+1); 
             dcp_fatal(opendcp,buffer);
         }
-       if (validate_reel(opendcp, &opendcp->pkl[0].cpl[0], c) != OPENDCP_NO_ERROR) {
-            sprintf(buffer,"Could validate reel %d\n",c+1); 
+        if (validate_reel(opendcp, &opendcp->pkl[0].cpl[0], c) != OPENDCP_NO_ERROR) {
+            sprintf(buffer,"Could not validate reel %d\n",c+1); 
             dcp_fatal(opendcp,buffer);
-       }
+        }
     }
 
     /* set ASSETMAP/VOLINDEX path */

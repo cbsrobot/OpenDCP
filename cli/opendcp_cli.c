@@ -27,11 +27,10 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <stdint.h>
 
 #include "opendcp.h"
 #include "opendcp_cli.h"
-
-extern int get_file_count(char *path, int file_type);
 
 int check_extension(char *filename, char *pattern) {
     char *extension;
@@ -62,11 +61,10 @@ char *get_basename(const char *filename) {
     return(base);
 }
 
-static int filter;
-int file_filter(struct dirent *filename) {
+int file_selector(const char *filename, const char *filter) {
     char *extension;
 
-    extension = strrchr(filename->d_name,'.');
+    extension = strrchr(filename,'.');
 
     if ( extension == NULL ) {
         return 0;
@@ -74,70 +72,72 @@ int file_filter(struct dirent *filename) {
 
     extension++;
 
-    /* return only known asset types */
-    if (filter == MXF_INPUT) {
-        if (strncasecmp(extension,"j2c",3) != 0 &&
-            strncasecmp(extension,"j2k",3) != 0 &&
-            strncasecmp(extension,"wav",3) != 0)
-        return 0;
-    } else if (filter == J2K_INPUT) {
-        if (strncasecmp(extension,"tif",3) != 0 &&
-            strncasecmp(extension,"dpx",3) != 0)
+    if (strlen(extension) < 3) {
         return 0;
     }
 
-    return 1;
+    if (strstr(filter, extension) != NULL) {
+        return 1;
+    } 
+
+    return 0;
 }
 
-int get_file_count(char *path, int file_type) {
-    struct dirent **files;
+filelist_t *get_filelist(const char *path, const char *filter) {
+    DIR *d;
     struct stat st_in;
-
-    int x,count;
-
-    filter = file_type;
+    struct dirent *de, **names=0, **tmp;
+    size_t cnt=0, len=0;
+    filelist_t *filelist;
 
     if (stat(path, &st_in) != 0 ) {
-        dcp_log(LOG_ERROR,"Could not open input file %s",path);
-        return 0;
+        return NULL;
     }
 
-    if (S_ISDIR(st_in.st_mode)) {
-        count = scandir(path,&files,(void *)file_filter,alphasort);
-        for (x=0;x<count;x++) {
-            free(files[x]);
+    if (!S_ISDIR(st_in.st_mode)) {
+        filelist = filelist_alloc(1);
+        sprintf(filelist->files[0],"%s",path);
+        return filelist;
+    }
+
+	if ((d = opendir(path)) == NULL) {
+		return(NULL);
+    }
+
+    while ((de = readdir(d))) {
+        if (!file_selector(de->d_name, filter)) {
+            continue;
         }
-        free(files);
-
-    } else {
-        count = 1;
-    }
-
-    return count;
-}
-
-int build_filelist(char *input, filelist_t *filelist) {
-    struct dirent **files;
-    int x = 0;
-    struct stat st_in;
-
-    if (stat(input, &st_in) != 0 ) {
-        dcp_log(LOG_ERROR,"Could not open input file %s",input);
-        return OPENDCP_ERROR;
-    }
-
-    filelist->nfiles = scandir(input, &files, (void *)file_filter, alphasort);
-    if (filelist->nfiles) {
-        for (x=0;x<filelist->nfiles;x++) {
-            sprintf(filelist->files[x],"%s/%s",input,files[x]->d_name);
+        if (cnt >= len) {
+            len = 2*len+1;
+            if (len > SIZE_MAX/sizeof *names) {
+                break;
+            }
+            tmp = realloc(names, len * sizeof *names);
+            if (!tmp) {
+                break;
+            }
+            names = tmp;
         }
-     }
-    for (x=0;x<filelist->nfiles;x++) {
-        free(files[x]);
+        names[cnt] = malloc(de->d_reclen);
+        if (!names[cnt]) {
+            break;
+        }
+        memcpy(names[cnt++], de, de->d_reclen);
     }
-    free(files);
+    closedir(d);
 
-    return OPENDCP_NO_ERROR;
+    filelist = filelist_alloc(cnt);
+
+    if (names) {
+        while (cnt-->0) {
+            sprintf(filelist->files[cnt],"%s/%s",path,names[cnt]->d_name);
+            free(names[cnt]);
+        }
+       free(names);
+    }
+
+    return filelist;
 }
 
 int find_seq_offset(char str1[], char str2[]) {

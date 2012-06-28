@@ -51,6 +51,8 @@ extern "C" {
 #define DCP_TITLE       "OPENDCP-FILM-TITLE"
 #define DCP_KIND        "feature"
 
+#define UNUSED(x) ( (void)(x) )
+
 /* generate error message */
 #define FOREACH_OPENDCP_ERROR_MSG(OPENDCP_ERROR_MSG) \
         OPENDCP_ERROR_MSG(OPENDCP_NO_ERROR,                "No error")  \
@@ -334,7 +336,7 @@ typedef struct {
 
 /* common functions */
 void  dcp_log(int level, const char *fmt, ...);
-void  dcp_fatal(opendcp_t *opendcp, char *error);
+void  dcp_fatal(opendcp_t *opendcp, char *error, ...);
 void  get_timestamp(char *timestamp);
 int   get_asset_type(asset_t asset);
 int   get_file_essence_class(char *filename);
