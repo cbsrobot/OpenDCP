@@ -25,7 +25,6 @@
 #include <opendcp.h>
 #include "opendcp_cli.h"
 
-int  get_filelist(char *path, filelist_t *filelist);
 void progress_bar();
 
 void version() {
@@ -64,35 +63,32 @@ void dcp_usage() {
     exit(0);
 }
 
-int get_filelist_3d(char *in_path_left,char *in_path_right,filelist_t *filelist) {
-    filelist_t  *filelist_left;
-    filelist_t  *filelist_right;
-    int x,y;
+filelist_t *get_filelist_3d(char *in_path_left, char *in_path_right) {
+    int x = 0; 
+    int y = 0;
+    filelist_t *left, *right, *filelist;
 
-    filelist_left  = filelist_alloc(filelist->nfiles/2);
-    filelist_right = filelist_alloc(filelist->nfiles/2);
+    left  = get_filelist(in_path_left, "j2c,j2k");
+    right = get_filelist(in_path_right, "j2c,j2k");
 
-    get_filelist(in_path_left,filelist_left);
-    get_filelist(in_path_right,filelist_right);
-
-    if (filelist_left->nfiles != filelist_right->nfiles) {
-        dcp_log(LOG_ERROR,"Mismatching file count for 3D images left: %d right: %d\n",filelist_left->nfiles,filelist_right->nfiles);
-        filelist_free(filelist_left);
-        filelist_free(filelist_right);
-        return OPENDCP_ERROR; 
+    if (left->nfiles != right->nfiles) {
+        dcp_log(LOG_ERROR,"Mismatching file count for 3D images left: %d right: %d",left->nfiles,right->nfiles);
+        filelist_free(left);
+        filelist_free(right);
+        return NULL; 
     }
 
-    y = 0;
-    filelist->nfiles = filelist_left->nfiles * 2;
-    for (x=0;x<filelist_left->nfiles;x++) {
-        strcpy(filelist->files[y++],filelist_left->files[x]);
-        strcpy(filelist->files[y++],filelist_right->files[x]);
+    filelist = filelist_alloc(left->nfiles + right->nfiles);
+
+    for (x=0; x < filelist->nfiles; y++,x+=2) {
+        strcpy(filelist->files[x],   left->files[y]);
+        strcpy(filelist->files[x+1], right->files[y]);
     }
 
-    filelist_free(filelist_left);
-    filelist_free(filelist_right);
+    filelist_free(left);
+    filelist_free(right);
 
-    return OPENDCP_NO_ERROR;
+    return filelist;
 }
 
 int total = 0;
@@ -100,14 +96,14 @@ int val   = 0;
 
 int frame_done_cb(void *p) {
     val++;
-    p = NULL;
+    UNUSED(p);
     progress_bar();
 
     return 0;
 }
 
 int write_done_cb(void *p) {
-    p = NULL;
+    UNUSED(p);
     printf("\n  MXF Complete\n");
    
     return 0;
@@ -130,31 +126,8 @@ void progress_bar() {
     fflush(stdout);
 }
 
-int get_filelist(char *path, filelist_t *filelist) {
-    struct stat st_in;
-
-    if (stat(path, &st_in) != 0 ) {
-        dcp_log(LOG_ERROR,"Could not open input file %s",path);
-        return OPENDCP_ERROR;
-    }
-
-    if (S_ISDIR(st_in.st_mode)) {
-        build_filelist(path, filelist);
-    } else {
-        /* mpeg2 or time_text */
-        int essence_type = get_file_essence_type(path);
-        if (essence_type == AET_UNKNOWN) {
-            return OPENDCP_ERROR;
-        }
-        filelist->nfiles = 1;
-        sprintf(filelist->files[0],"%s",path);
-    }
-
-    return OPENDCP_NO_ERROR;
-}
-
 int main (int argc, char **argv) {
-    int c,count;
+    int c;
     opendcp_t *opendcp;
     char *in_path = NULL;
     char *in_path_left = NULL;
@@ -307,13 +280,13 @@ int main (int argc, char **argv) {
     }
 
     if (opendcp->stereoscopic) {
-        count = get_file_count(in_path_left, MXF_INPUT);
-        filelist = (filelist_t *)filelist_alloc(count*2);
-        get_filelist_3d(in_path_left,in_path_right,filelist);
+        filelist = get_filelist_3d(in_path_left, in_path_right);
     } else {
-        count = get_file_count(in_path, MXF_INPUT);
-        filelist = (filelist_t *)filelist_alloc(count);
-        get_filelist(in_path, filelist);
+        filelist = get_filelist(in_path, "j2c,j2k");
+    }
+
+    if (!filelist) {
+        dcp_fatal(opendcp,"Could not read input files");
     }
 
     if (filelist->nfiles < 1) {

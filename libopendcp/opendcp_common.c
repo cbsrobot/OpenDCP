@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -71,8 +72,14 @@ const char *DCP_LOG[] = { "NONE",
                           "DEBUG"
                         };
 
-void dcp_fatal(opendcp_t *opendcp, char *error) {
-    dcp_log(LOG_ERROR, "%s",error);
+void dcp_fatal(opendcp_t *opendcp, char *format, ...) {
+    char msg[1024];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(msg, sizeof(msg), format, args);
+    dcp_log(LOG_ERROR, msg);
+    va_end(args);
+    opendcp_delete(opendcp);
     exit(OPENDCP_ERROR);
 }
 
@@ -229,7 +236,7 @@ Allocate a list of filenames
 This function allocates memory for a list of filenames. 
 
 @param  nfiles is the number of files to allocate 
-@return filelist_t  
+@return filelist_t pointer 
 */
 filelist_t *filelist_alloc(int nfiles) {
     int x;
@@ -254,7 +261,7 @@ free a filelist_t structure
 
 This function frees memory used by filelist_t. 
 
-@param  filelist_t 
+@param  filelist_t a pointer to a filelist
 @return NONE  
 */
 void filelist_free(filelist_t *filelist) {
@@ -274,6 +281,14 @@ void filelist_free(filelist_t *filelist) {
     free(filelist);
 }
 
+/**
+generate a timestamp string 
+
+This function will generate a timestamp string based on the current local time. 
+
+@param  timestamp buffer that will hold the timestamp
+@return NONE  
+*/
 void get_timestamp(char *timestamp) { 
     time_t time_ptr;
     struct tm *time_struct;
@@ -285,6 +300,14 @@ void get_timestamp(char *timestamp) {
     sprintf(timestamp,"%.30s",buffer);
 }  
 
+/**
+determine an assets type 
+
+This function will return the class type of an asset essence. 
+
+@param  asset_t
+@return int 
+*/
 int get_asset_type(asset_t asset) {
     switch (asset.essence_type) {
        case AET_MPEG2_VES:
@@ -304,11 +327,29 @@ int get_asset_type(asset_t asset) {
     }
 }
 
+int opendcp_callback_null(void *args) {
+    UNUSED(args);
+    return OPENDCP_NO_ERROR;
+}
+
+/**
+create an opendcp context
+
+This function will allocate and initialize an opendcp context. 
+
+@param  NONE 
+@return An initialized opendcp_t structure on success, otherwise returns NULL
+*/
 opendcp_t *opendcp_create() {
     opendcp_t *opendcp;
 
     /* allocation opendcp memory */
     opendcp = malloc(sizeof(opendcp_t));
+
+    if (!opendcp) {
+        return NULL;
+    }
+
     memset(opendcp,0,sizeof (opendcp_t));
 
     /* initialize opendcp */
@@ -321,14 +362,22 @@ opendcp_t *opendcp_create() {
     get_timestamp(opendcp->xml.timestamp);
 
     /* initialize callbacks */
-    opendcp->mxf.frame_done.callback  = NULL;
+    opendcp->mxf.frame_done.callback  = opendcp_callback_null;
     opendcp->mxf.frame_done.argument  = NULL;
-    opendcp->mxf.file_done.callback   = NULL;
+    opendcp->mxf.file_done.callback   = opendcp_callback_null;
     opendcp->mxf.file_done.argument   = NULL;
 
     return opendcp;
 }
 
+/**
+delete an opendcp context
+
+This function will de-allocate an opendcp context. 
+
+@param  opendcp an opendcp_t structure
+@return returns OPENDCP_NO_ERROR on success 
+*/
 int opendcp_delete(opendcp_t *opendcp) {
     if ( opendcp != NULL) {
         free(opendcp);
@@ -336,6 +385,14 @@ int opendcp_delete(opendcp_t *opendcp) {
     return OPENDCP_NO_ERROR;
 }
 
+/**
+add packaging list to dcp
+
+This function populates the pkl information of a DCP 
+
+@param  opendcp an opendcp_t structure
+@return returns OPENDCP_NO_ERROR on success 
+*/
 int add_pkl(opendcp_t *opendcp) {
     char uuid_s[40];
     int i = opendcp->pkl_count++;
@@ -361,6 +418,15 @@ int add_pkl(opendcp_t *opendcp) {
     return OPENDCP_NO_ERROR;
 }
 
+/**
+add content playlist to packaging list 
+
+This function populates the cpl in a packaging list 
+
+@param  opendcp an opendcp_t structure
+@param  pkl     a pkl structure 
+@return returns OPENDCP_NO_ERROR on success 
+*/
 int add_cpl(opendcp_t *opendcp, pkl_t *pkl) {
     char uuid_s[40];
     int i = pkl->cpl_count;
