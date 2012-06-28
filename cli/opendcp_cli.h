@@ -19,19 +19,9 @@
 #ifndef OPENDCP_CLI_H
 #define OPENDCP_CLI_H
 
-enum FILE_FILTER {
-    J2K_INPUT,
-    MXF_INPUT
-};
-
 int check_extension(char *filename, char *pattern);
 char *get_basename(const char *filename);
-int get_file_count(char *path, int file_type);
 int find_ext_offset(char str[]);
 int find_seq_offset (char str1[], char str2[]);
-int check_increment(char *str[], int index,int str_size);
-int check_sequential(char str1[],char str2[]);
-int check_file_sequence(char *str[], int count);
-int build_filelist(char *input, filelist_t *filelist);
 filelist_t *get_filelist(const char *path, const char *filter);
 #endif

@@ -32,8 +32,6 @@
 #include "opendcp.h"
 #include "opendcp_cli.h"
 
-extern int get_file_count(char *path, int file_type);
-
 int check_extension(char *filename, char *pattern) {
     char *extension;
 
@@ -83,59 +81,6 @@ int file_selector(const char *filename, const char *filter) {
     } 
 
     return 0;
-}
-
-static int filter;
-int file_filter(struct dirent *filename) {
-    char *extension;
-
-    extension = strrchr(filename->d_name,'.');
-
-    if ( extension == NULL ) {
-        return 0;
-    }
-
-    extension++;
-
-    /* return only known asset types */
-    if (filter == MXF_INPUT) {
-        if (strncasecmp(extension,"j2c",3) != 0 &&
-            strncasecmp(extension,"j2k",3) != 0 &&
-            strncasecmp(extension,"wav",3) != 0)
-        return 0;
-    } else if (filter == J2K_INPUT) {
-        if (strncasecmp(extension,"tif",3) != 0 &&
-            strncasecmp(extension,"dpx",3) != 0)
-        return 0;
-    }
-
-    return 1;
-}
-
-int get_file_count(char *path, int file_type) {
-    struct dirent **files;
-    struct stat st_in;
-    int x,count;
-
-    filter = file_type;
-
-    if (stat(path, &st_in) != 0 ) {
-        dcp_log(LOG_ERROR,"Could not open input file %s",path);
-        return 0;
-    }
-
-    if (S_ISDIR(st_in.st_mode)) {
-        count = scandir(path,&files,(void *)file_filter,alphasort);
-        for (x=0;x<count;x++) {
-            free(files[x]);
-        }
-        free(files);
-
-    } else {
-        count = 1;
-    }
-
-    return count;
 }
 
 filelist_t *get_filelist(const char *path, const char *filter) {
@@ -193,30 +138,6 @@ filelist_t *get_filelist(const char *path, const char *filter) {
     }
 
     return filelist;
-}
-
-int build_filelist(char *input, filelist_t *filelist) {
-    struct dirent **files;
-    int x = 0;
-    struct stat st_in;
-
-    if (stat(input, &st_in) != 0 ) {
-        dcp_log(LOG_ERROR,"Could not open input file %s",input);
-        return OPENDCP_ERROR;
-    }
-
-    filelist->nfiles = scandir(input, &files, (void *)file_filter, alphasort);
-    if (filelist->nfiles) {
-        for (x=0;x<filelist->nfiles;x++) {
-            sprintf(filelist->files[x],"%s/%s",input,files[x]->d_name);
-        }
-     }
-    for (x=0;x<filelist->nfiles;x++) {
-        free(files[x]);
-    }
-    free(files);
-
-    return OPENDCP_NO_ERROR;
 }
 
 int find_seq_offset(char str1[], char str2[]) {
