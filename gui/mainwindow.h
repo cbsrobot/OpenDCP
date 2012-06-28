@@ -55,6 +55,12 @@ public slots:
     void mxfSetSlideState();
     void mxfSetHVState();
     void mxfSetSoundState();
+    void mxfSetSound71State(int state);
+    void mxfSetSound51State(int state);
+    int  mxfCheckSoundInput20();
+    int  mxfCheckSoundInput51();
+    int  mxfCheckSoundInput71();
+
     void mxfCreateSubtitle();
 
     void startDcp();

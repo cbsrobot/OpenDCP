@@ -26,6 +26,27 @@
 #include "mxf-writer.h"
 #include "mxfconversion_dialog.h"
 
+enum MXF_ESSENCE_TYPE {
+    JPEG2000 = 0,
+    MPEG2,
+    WAV
+};
+
+enum MXF_LABEL_TYPE {
+    MXF_INTEROP = 0,
+    SMPTE
+};
+
+enum MXF_CLASS_TYPE {
+    PICTURE = 0,
+    SOUND
+};
+
+enum MXF_STATE {
+    DISABLED = 0,
+    ENABLED  = 1
+};
+
 void MainWindow::mxfConnectSlots() {
     // connect slots
     connect(ui->mxfStereoscopicCheckBox, SIGNAL(stateChanged(int)), this, SLOT(mxfSetStereoscopicState()));
@@ -49,6 +70,8 @@ void MainWindow::mxfConnectSlots() {
     wavSignalMapper.setMapping(ui->aSubButton,    ui->aSubEdit);
     wavSignalMapper.setMapping(ui->aLeftSButton,  ui->aLeftSEdit);
     wavSignalMapper.setMapping(ui->aRightSButton, ui->aRightSEdit);
+    wavSignalMapper.setMapping(ui->aLeftCButton,  ui->aLeftCEdit);
+    wavSignalMapper.setMapping(ui->aRightCButton, ui->aRightCEdit);
     wavSignalMapper.setMapping(ui->aHIButton,     ui->aHIEdit);
     wavSignalMapper.setMapping(ui->aVIButton,     ui->aVIEdit);
 
@@ -58,6 +81,8 @@ void MainWindow::mxfConnectSlots() {
     connect(ui->aSubButton,    SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
     connect(ui->aLeftSButton,  SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
     connect(ui->aRightSButton, SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aLeftCButton,  SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aRightCButton, SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
     connect(ui->aHIButton,     SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
     connect(ui->aVIButton,     SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
 
@@ -94,11 +119,11 @@ void MainWindow::wavInputSlot(QWidget *w)
 void MainWindow::mxfSetSlideState() {
     int value;
 
-    if (ui->mxfSourceTypeComboBox->currentIndex() == 0) {
+    if (ui->mxfSourceTypeComboBox->currentIndex() == JPEG2000) {
         value = ui->mxfSlideCheckBox->checkState();
-        ui->mxfSlideCheckBox->setEnabled(1);
+        ui->mxfSlideCheckBox->setEnabled(ENABLED);
     } else {
-        ui->mxfSlideCheckBox->setEnabled(0);
+        ui->mxfSlideCheckBox->setEnabled(DISABLED);
         value = 0;
     }
 
@@ -108,28 +133,21 @@ void MainWindow::mxfSetSlideState() {
 
 void MainWindow::mxfSourceTypeUpdate() {
     // JPEG2000
-    if (ui->mxfSourceTypeComboBox->currentIndex() == 0) {
-        ui->mxfStereoscopicCheckBox->setEnabled(1);
-        ui->mxfTypeComboBox->setCurrentIndex(1);
-        ui->mxfInputStack->setCurrentIndex(0);
-        ui->mxfSoundRadio2->setEnabled(0);
-        ui->mxfSoundRadio5->setEnabled(0);
+    if (ui->mxfSourceTypeComboBox->currentIndex() == JPEG2000) {
+        ui->mxfStereoscopicCheckBox->setEnabled(ENABLED);
+        ui->mxfInputStack->setCurrentIndex(PICTURE);
     }
     // MPEG2
-    if (ui->mxfSourceTypeComboBox->currentIndex() == 1) {
-        ui->mxfStereoscopicCheckBox->setEnabled(0);
-        ui->mxfStereoscopicCheckBox->setChecked(0);
-        ui->mxfTypeComboBox->setCurrentIndex(1);
-        ui->mxfInputStack->setCurrentIndex(0);
-        ui->mxfSoundRadio2->setEnabled(0);
-        ui->mxfSoundRadio5->setEnabled(0);
+    if (ui->mxfSourceTypeComboBox->currentIndex() == MPEG2) {
+        ui->mxfStereoscopicCheckBox->setEnabled(DISABLED);
+        ui->mxfStereoscopicCheckBox->setChecked(DISABLED);
+        ui->mxfTypeComboBox->setCurrentIndex(MXF_INTEROP);
+        ui->mxfInputStack->setCurrentIndex(PICTURE);
     }
     // WAV
-    if (ui->mxfSourceTypeComboBox->currentIndex() == 2) {
-        ui->mxfInputStack->setCurrentIndex(1);
-        ui->mxfStereoscopicCheckBox->setEnabled(0);
-        ui->mxfSoundRadio2->setEnabled(1);
-        ui->mxfSoundRadio5->setEnabled(1);
+    if (ui->mxfSourceTypeComboBox->currentIndex() == WAV) {
+        ui->mxfInputStack->setCurrentIndex(SOUND);
+        ui->mxfSoundTypeRadioMono->setChecked(ENABLED);
     }
 
     // update
@@ -141,7 +159,7 @@ void MainWindow::mxfSetHVState() {
     int value = ui->mxfHVCheckBox->checkState();
     ui->mxfSoundRadio2->setEnabled(!value);
     if (value) {
-        ui->mxfSoundRadio5->setChecked(1); 
+        ui->mxfSoundRadio5->setChecked(ENABLED);
     }
     mxfSetSoundState();
     ui->aHILabel->setEnabled(value);
@@ -161,7 +179,7 @@ void MainWindow::mxfSetStereoscopicState() {
         ui->pictureRightEdit->show();
         ui->pictureRightButton->show();
     } else {
-        if (ui->mxfSourceTypeComboBox->currentIndex() == 0) {
+        if (ui->mxfSourceTypeComboBox->currentIndex() == JPEG2000) {
             ui->pictureLeftLabel->setText(tr("Directory:"));
         } else {
             ui->pictureLeftLabel->setText(tr("M2V:"));
@@ -172,25 +190,84 @@ void MainWindow::mxfSetStereoscopicState() {
     }
 }
 
-void MainWindow::mxfSetSoundState() {
-    int value = ui->mxfSoundRadio5->isChecked();
-    ui->aCenterLabel->setEnabled(value);
-    ui->aCenterEdit->setEnabled(value);
-    ui->aCenterButton->setEnabled(value);
-    ui->aLeftSLabel->setEnabled(value);
-    ui->aLeftSEdit->setEnabled(value);
-    ui->aLeftSButton->setEnabled(value);
-    ui->aRightSLabel->setEnabled(value);
-    ui->aRightSEdit->setEnabled(value);
-    ui->aRightSButton->setEnabled(value);
-    ui->aSubLabel->setEnabled(value);
-    ui->aSubEdit->setEnabled(value);
-    ui->aSubButton->setEnabled(value);
+void MainWindow::mxfSetSound51State(int state)
+{
+    ui->aCenterLabel->setEnabled(state);
+    ui->aCenterEdit->setEnabled(state);
+    ui->aCenterButton->setEnabled(state);
+    ui->aLeftSLabel->setEnabled(state);
+    ui->aLeftSEdit->setEnabled(state);
+    ui->aLeftSButton->setEnabled(state);
+    ui->aRightSLabel->setEnabled(state);
+    ui->aRightSEdit->setEnabled(state);
+    ui->aRightSButton->setEnabled(state);
+    ui->aSubLabel->setEnabled(state);
+    ui->aSubEdit->setEnabled(state);
+    ui->aSubButton->setEnabled(state);
 }
+
+void MainWindow::mxfSetSound71State(int state)
+{
+    if (state) {
+        mxfSetSound51State(1);
+    }
+
+    ui->aLeftCLabel->setEnabled(state);
+    ui->aLeftCEdit->setEnabled(state);
+    ui->aLeftCButton->setEnabled(state);
+    ui->aRightCLabel->setEnabled(state);
+    ui->aRightCEdit->setEnabled(state);
+    ui->aRightCButton->setEnabled(state);
+}
+
+void MainWindow::mxfSetSoundState()
+{
+    mxfSetSound51State(ui->mxfSoundRadio5->isChecked());
+    mxfSetSound71State(ui->mxfSoundRadio7->isChecked());
+}
+
+int MainWindow::mxfCheckSoundInput20() {
+    if (ui->aLeftEdit->text().isEmpty() ||
+        ui->aRightEdit->text().isEmpty()) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int MainWindow::mxfCheckSoundInput51() {
+    if (mxfCheckSoundInput20()) {
+        return 1;
+    }
+
+    if (ui->aCenterEdit->text().isEmpty() ||
+        ui->aSubEdit->text().isEmpty() ||
+        ui->aLeftSEdit->text().isEmpty() ||
+        ui->aRightSEdit->text().isEmpty()) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int MainWindow::mxfCheckSoundInput71() {
+    if (mxfCheckSoundInput20() ||
+        mxfCheckSoundInput51()) {
+        return 1;
+    }
+
+    if (ui->aLeftCEdit->text().isEmpty() ||
+        ui->aRightCEdit->text().isEmpty()) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 
 void MainWindow::mxfStart() {
     // JPEG2000
-    if(ui->mxfSourceTypeComboBox->currentIndex()== 0) {
+    if(ui->mxfSourceTypeComboBox->currentIndex()== JPEG2000) {
         if (ui->pMxfOutEdit->text().isEmpty()) {
             QMessageBox::critical(this, tr("Destination file needed"),tr("Please select a destination picture MXF file."));
             return;
@@ -216,7 +293,7 @@ void MainWindow::mxfStart() {
     }
 
     // MPEG2
-    if(ui->mxfSourceTypeComboBox->currentIndex() == 1) {
+    if(ui->mxfSourceTypeComboBox->currentIndex() == MPEG2) {
         if (ui->pMxfOutEdit->text().isEmpty()) {
             QMessageBox::critical(this, tr("Destination file needed"),tr("Please select a destination picture MXF file."));
             return;
@@ -228,24 +305,26 @@ void MainWindow::mxfStart() {
     }
 
     // WAV
-    if (ui->mxfSourceTypeComboBox->currentIndex() == 2) {
+    if (ui->mxfSourceTypeComboBox->currentIndex() == WAV) {
         if (ui->aMxfOutEdit->text().isEmpty()) {
             QMessageBox::critical(this, tr("Destination file needed"),tr("Please select a destination sound MXF file."));
             return;
         }
         if (ui->mxfSoundRadio2->isChecked()) {
-            if (ui->aLeftEdit->text().isEmpty() ||
-                ui->aRightEdit->text().isEmpty()) {
-                QMessageBox::critical(this, tr("Source content needed"),tr("Please specify left and right wav files."));
+            if (mxfCheckSoundInput20()) {
+                QMessageBox::critical(this, tr("Source content needed"),tr("Please specify stereo wav files."));
                 return;
             }
         }
         if (ui->mxfSoundRadio5->isChecked()) {
-            if (ui->aCenterEdit->text().isEmpty() ||
-                ui->aSubEdit->text().isEmpty() ||
-                ui->aLeftSEdit->text().isEmpty() ||
-                ui->aLeftSEdit->text().isEmpty()) {
+            if (mxfCheckSoundInput51()) {
                 QMessageBox::critical(this, tr("Source content needed"),tr("Please specify 5.1 wav files."));
+                    return;
+            }
+        }
+        if (ui->mxfSoundRadio7->isChecked()) {
+            if (mxfCheckSoundInput71()) {
+                QMessageBox::critical(this, tr("Source content needed"),tr("Please specify 7.1 wav files."));
                     return;
             }
         }
@@ -255,12 +334,12 @@ void MainWindow::mxfStart() {
     dcp_log_init(4, "opendcp.log");
 
     // create picture mxf file
-    if (ui->mxfSourceTypeComboBox->currentIndex() == 0 || ui->mxfSourceTypeComboBox->currentIndex() == 1) {
+    if (ui->mxfSourceTypeComboBox->currentIndex() == JPEG2000 || ui->mxfSourceTypeComboBox->currentIndex() == MPEG2) {
         mxfCreatePicture();
     }
 
     // create sound mxf file
-    if (ui->mxfSourceTypeComboBox->currentIndex() == 2) {
+    if (ui->mxfSourceTypeComboBox->currentIndex() == WAV) {
         mxfCreateAudio();
     }
 }
@@ -319,7 +398,7 @@ void MainWindow::mxfCreateAudio() {
 
     opendcp_t     *opendcp = opendcp_create();
 
-    if (ui->mxfTypeComboBox->currentIndex() == 0) {
+    if (ui->mxfTypeComboBox->currentIndex() == MXF_INTEROP) {
         opendcp->ns = XML_NS_INTEROP;
     } else {
         opendcp->ns = XML_NS_SMPTE;
@@ -374,7 +453,7 @@ void MainWindow::mxfCreatePicture() {
 
     opendcp_t *opendcp = opendcp_create();
 
-    if (ui->mxfTypeComboBox->currentIndex() == 0) {
+    if (ui->mxfTypeComboBox->currentIndex() == MXF_INTEROP) {
         opendcp->ns = XML_NS_INTEROP;
     } else {
         opendcp->ns = XML_NS_SMPTE;
@@ -383,7 +462,7 @@ void MainWindow::mxfCreatePicture() {
     opendcp->frame_rate = ui->mxfFrameRateComboBox->currentText().toInt();
     opendcp->stereoscopic = 0;
 
-    if (ui->mxfSourceTypeComboBox->currentIndex() == 0) {
+    if (ui->mxfSourceTypeComboBox->currentIndex() == JPEG2000) {
         pLeftDir.cd(ui->pictureLeftEdit->text());
         pLeftDir.setNameFilters(QStringList() << "*.j2c");
         pLeftDir.setFilter(QDir::Files | QDir::NoSymLinks);
