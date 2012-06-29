@@ -860,7 +860,7 @@
           <widget class="QPushButton" name="encodeButton">
            <property name="geometry">
             <rect>
-             <x>570</x>
+             <x>565</x>
              <y>580</y>
              <width>115</width>
              <height>40</height>
@@ -1213,7 +1213,7 @@
          <widget class="QPushButton" name="mxfButton">
           <property name="geometry">
            <rect>
-            <x>570</x>
+            <x>565</x>
             <y>720</y>
             <width>115</width>
             <height>40</height>
@@ -1229,7 +1229,7 @@
             <x>70</x>
             <y>150</y>
             <width>631</width>
-            <height>551</height>
+            <height>561</height>
            </rect>
           </property>
           <property name="currentIndex">
@@ -1240,9 +1240,9 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>70</y>
+              <y>90</y>
               <width>600</width>
-              <height>101</height>
+              <height>100</height>
              </rect>
             </property>
             <property name="title">
@@ -1379,9 +1379,9 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>180</y>
+              <y>205</y>
               <width>600</width>
-              <height>71</height>
+              <height>70</height>
              </rect>
             </property>
             <property name="title">
@@ -1455,7 +1455,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>0</y>
+              <y>10</y>
               <width>600</width>
               <height>70</height>
              </rect>
@@ -1527,522 +1527,11 @@
            </widget>
           </widget>
           <widget class="QWidget" name="page_2">
-           <widget class="QGroupBox" name="inputSGroupBox">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>140</y>
-              <width>600</width>
-              <height>335</height>
-             </rect>
-            </property>
-            <property name="title">
-             <string>Input Files</string>
-            </property>
-            <widget class="QLabel" name="aLeftLabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>30</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Left:</string>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aLeftEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>30</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QLabel" name="aCenterLabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>90</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Center:</string>
-             </property>
-            </widget>
-            <widget class="QLabel" name="aRightLabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>60</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Right:</string>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aSubEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>120</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aLeftButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>30</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aRightEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>60</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QLabel" name="aSubLabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>120</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Sub:</string>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aCenterEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>90</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aLeftSEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>150</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aRightSEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>180</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aRightButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>60</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aCenterButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>90</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aSubButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>120</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aLeftSButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>150</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aRightSButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>180</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QLabel" name="aLeftSLabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>150</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Left Surround:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-            <widget class="QLabel" name="aRightSLabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>180</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Right Surround:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aVIEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>300</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aVIButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>300</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QLabel" name="aVILabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>300</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true">VI-N:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-            <widget class="QLabel" name="aHILabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>270</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true">HI:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aHIEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>270</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aHIButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>270</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QLabel" name="aLeftCLabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>210</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Left Center:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aLeftCButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>210</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QToolButton" name="aRightCButton">
-             <property name="geometry">
-              <rect>
-               <x>565</x>
-               <y>240</y>
-               <width>27</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>27</horstretch>
-               <verstretch>25</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string notr="true">...</string>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aLeftCEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>210</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="aRightCEdit">
-             <property name="geometry">
-              <rect>
-               <x>135</x>
-               <y>240</y>
-               <width>425</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true"/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QLabel" name="aRightCLabel">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>240</y>
-               <width>115</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Right Center:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </widget>
            <widget class="QGroupBox" name="amxfOutGroupBox">
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>480</y>
+              <y>490</y>
               <width>600</width>
               <height>70</height>
              </rect>
@@ -2054,7 +1543,7 @@
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>30</y>
+               <y>25</y>
                <width>70</width>
                <height>25</height>
               </rect>
@@ -2079,7 +1568,7 @@
              <property name="geometry">
               <rect>
                <x>565</x>
-               <y>30</y>
+               <y>25</y>
                <width>27</width>
                <height>23</height>
               </rect>
@@ -2098,7 +1587,7 @@
              <property name="geometry">
               <rect>
                <x>80</x>
-               <y>30</y>
+               <y>25</y>
                <width>480</width>
                <height>23</height>
               </rect>
@@ -2117,81 +1606,13 @@
              </property>
             </widget>
            </widget>
-           <widget class="QGroupBox" name="soundParametersGroupBox">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>70</y>
-              <width>600</width>
-              <height>70</height>
-             </rect>
-            </property>
-            <property name="title">
-             <string>Sound Output Parameters</string>
-            </property>
-            <widget class="QRadioButton" name="mxfSoundRadio2">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>30</y>
-               <width>71</width>
-               <height>27</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Stereo</string>
-             </property>
-            </widget>
-            <widget class="QRadioButton" name="mxfSoundRadio7">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="geometry">
-              <rect>
-               <x>140</x>
-               <y>30</y>
-               <width>51</width>
-               <height>27</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true">7.1</string>
-             </property>
-            </widget>
-            <widget class="QRadioButton" name="mxfSoundRadio5">
-             <property name="geometry">
-              <rect>
-               <x>90</x>
-               <y>30</y>
-               <width>51</width>
-               <height>27</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string notr="true">5.1</string>
-             </property>
-            </widget>
-            <widget class="QCheckBox" name="mxfHVCheckBox">
-             <property name="geometry">
-              <rect>
-               <x>200</x>
-               <y>30</y>
-               <width>201</width>
-               <height>27</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Hearing/Visually Impaired</string>
-             </property>
-            </widget>
-           </widget>
            <widget class="QGroupBox" name="soundTypeGroupBox">
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>0</y>
+              <y>10</y>
               <width>600</width>
-              <height>70</height>
+              <height>65</height>
              </rect>
             </property>
             <property name="title">
@@ -2201,7 +1622,7 @@
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>30</y>
+               <y>25</y>
                <width>71</width>
                <height>27</height>
               </rect>
@@ -2214,7 +1635,7 @@
              <property name="geometry">
               <rect>
                <x>90</x>
-               <y>30</y>
+               <y>25</y>
                <width>121</width>
                <height>27</height>
               </rect>
@@ -2222,6 +1643,663 @@
              <property name="text">
               <string notr="true">Multi-Channel</string>
              </property>
+            </widget>
+           </widget>
+           <widget class="QStackedWidget" name="mxfSoundInputStack">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>70</y>
+              <width>631</width>
+              <height>411</height>
+             </rect>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="monoPage">
+             <widget class="QGroupBox" name="inputSGroupBox">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>80</y>
+                <width>600</width>
+                <height>331</height>
+               </rect>
+              </property>
+              <property name="title">
+               <string>Input Files</string>
+              </property>
+              <widget class="QLabel" name="aLeftLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>25</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Left:</string>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aLeftEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>25</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aCenterLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>85</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Center:</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aRightLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>55</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Right:</string>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aSubEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>115</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aLeftButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>25</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aRightEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>55</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aSubLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>115</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Sub:</string>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aCenterEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>85</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aLeftSEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>145</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aRightSEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>175</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aRightButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>55</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aCenterButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>85</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aSubButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>115</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aLeftSButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>145</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aRightSButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>175</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aLeftSLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>145</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Left Surround:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aRightSLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>175</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Right Surround:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aVIEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>295</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aVIButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>295</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aVILabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>295</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true">VI-N:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aHILabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>265</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true">HI:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aHIEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>265</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aHIButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>265</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aLeftCLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>205</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Left Center:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aLeftCButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>205</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aRightCButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>235</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aLeftCEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>205</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="aRightCEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>235</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aRightCLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>235</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Right Center:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QGroupBox" name="soundParametersGroupBox">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>600</width>
+                <height>65</height>
+               </rect>
+              </property>
+              <property name="title">
+               <string>Sound Output Parameters</string>
+              </property>
+              <widget class="QRadioButton" name="mxfSoundRadio2">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>25</y>
+                 <width>71</width>
+                 <height>27</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Stereo</string>
+               </property>
+              </widget>
+              <widget class="QRadioButton" name="mxfSoundRadio7">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="geometry">
+                <rect>
+                 <x>140</x>
+                 <y>25</y>
+                 <width>51</width>
+                 <height>27</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true">7.1</string>
+               </property>
+              </widget>
+              <widget class="QRadioButton" name="mxfSoundRadio5">
+               <property name="geometry">
+                <rect>
+                 <x>90</x>
+                 <y>25</y>
+                 <width>51</width>
+                 <height>27</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true">5.1</string>
+               </property>
+              </widget>
+              <widget class="QCheckBox" name="mxfHVCheckBox">
+               <property name="geometry">
+                <rect>
+                 <x>200</x>
+                 <y>25</y>
+                 <width>201</width>
+                 <height>27</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Hearing/Visually Impaired</string>
+               </property>
+              </widget>
+             </widget>
+            </widget>
+            <widget class="QWidget" name="multiPage">
+             <widget class="QGroupBox" name="multiGroupBox">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>600</width>
+                <height>65</height>
+               </rect>
+              </property>
+              <property name="title">
+               <string>Input File</string>
+              </property>
+              <widget class="QLineEdit" name="aMultiEdit">
+               <property name="geometry">
+                <rect>
+                 <x>135</x>
+                 <y>25</y>
+                 <width>425</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string notr="true"/>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+              <widget class="QToolButton" name="aMultiButton">
+               <property name="geometry">
+                <rect>
+                 <x>565</x>
+                 <y>25</y>
+                 <width>27</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>27</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aMultiLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>25</y>
+                 <width>115</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Wav File:</string>
+               </property>
+              </widget>
+             </widget>
             </widget>
            </widget>
           </widget>
@@ -2456,7 +2534,7 @@
          <widget class="QPushButton" name="subCreateButton">
           <property name="geometry">
            <rect>
-            <x>570</x>
+            <x>565</x>
             <y>280</y>
             <width>115</width>
             <height>40</height>
@@ -3265,7 +3343,7 @@
          <widget class="QPushButton" name="createDcpButton">
           <property name="geometry">
            <rect>
-            <x>570</x>
+            <x>565</x>
             <y>670</y>
             <width>115</width>
             <height>40</height>
@@ -3293,7 +3371,7 @@
              <x>10</x>
              <y>30</y>
              <width>186</width>
-             <height>40</height>
+             <height>48</height>
             </rect>
            </property>
            <layout class="QFormLayout" name="optionsLayout">
@@ -3340,7 +3418,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

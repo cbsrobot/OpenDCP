@@ -60,6 +60,7 @@ public slots:
     int  mxfCheckSoundInput20();
     int  mxfCheckSoundInput51();
     int  mxfCheckSoundInput71();
+    void mxfSetSoundInputTypeState();
 
     void mxfCreateSubtitle();
 
