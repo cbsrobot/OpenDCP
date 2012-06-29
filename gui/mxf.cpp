@@ -53,6 +53,8 @@ void MainWindow::mxfConnectSlots() {
     connect(ui->mxfSoundRadio2, SIGNAL(clicked()), this, SLOT(mxfSetSoundState()));
     connect(ui->mxfSoundRadio5, SIGNAL(clicked()), this, SLOT(mxfSetSoundState()));
     connect(ui->mxfSoundRadio7, SIGNAL(clicked()), this, SLOT(mxfSetSoundState()));
+    connect(ui->mxfSoundTypeRadioMono, SIGNAL(clicked()), this, SLOT(mxfSetSoundInputTypeState()));
+    connect(ui->mxfSoundTypeRadioMulti, SIGNAL(clicked()), this, SLOT(mxfSetSoundInputTypeState()));
     connect(ui->mxfHVCheckBox, SIGNAL(stateChanged(int)), this, SLOT(mxfSetHVState()));
     connect(ui->mxfSourceTypeComboBox,SIGNAL(currentIndexChanged(int)),this, SLOT(mxfSourceTypeUpdate()));
     connect(ui->mxfButton,SIGNAL(clicked()),this,SLOT(mxfStart()));
@@ -74,6 +76,7 @@ void MainWindow::mxfConnectSlots() {
     wavSignalMapper.setMapping(ui->aRightCButton, ui->aRightCEdit);
     wavSignalMapper.setMapping(ui->aHIButton,     ui->aHIEdit);
     wavSignalMapper.setMapping(ui->aVIButton,     ui->aVIEdit);
+    wavSignalMapper.setMapping(ui->aMultiButton,     ui->aMultiEdit);
 
     connect(ui->aLeftButton,   SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
     connect(ui->aRightButton,  SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
@@ -85,6 +88,7 @@ void MainWindow::mxfConnectSlots() {
     connect(ui->aRightCButton, SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
     connect(ui->aHIButton,     SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
     connect(ui->aVIButton,     SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
+    connect(ui->aMultiButton,  SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
 
     connect(&wavSignalMapper, SIGNAL(mapped(QWidget*)),this, SLOT(wavInputSlot(QWidget*)));
 
@@ -220,6 +224,14 @@ void MainWindow::mxfSetSound71State(int state)
     ui->aRightCButton->setEnabled(state);
 }
 
+void MainWindow::mxfSetSoundInputTypeState() {
+    if (ui->mxfSoundTypeRadioMono->isChecked()) {
+        ui->mxfSoundInputStack->setCurrentIndex(0);
+    } else {
+        ui->mxfSoundInputStack->setCurrentIndex(1);
+    }
+}
+
 void MainWindow::mxfSetSoundState()
 {
     mxfSetSound51State(ui->mxfSoundRadio5->isChecked());
@@ -310,22 +322,29 @@ void MainWindow::mxfStart() {
             QMessageBox::critical(this, tr("Destination file needed"),tr("Please select a destination sound MXF file."));
             return;
         }
-        if (ui->mxfSoundRadio2->isChecked()) {
-            if (mxfCheckSoundInput20()) {
-                QMessageBox::critical(this, tr("Source content needed"),tr("Please specify stereo wav files."));
-                return;
-            }
-        }
-        if (ui->mxfSoundRadio5->isChecked()) {
-            if (mxfCheckSoundInput51()) {
-                QMessageBox::critical(this, tr("Source content needed"),tr("Please specify 5.1 wav files."));
+        if (ui->mxfSoundTypeRadioMono->isChecked()) {
+            if (ui->mxfSoundRadio2->isChecked()) {
+                if (mxfCheckSoundInput20()) {
+                    QMessageBox::critical(this, tr("Source content needed"),tr("Please specify stereo wav files."));
                     return;
+                }
             }
-        }
-        if (ui->mxfSoundRadio7->isChecked()) {
-            if (mxfCheckSoundInput71()) {
-                QMessageBox::critical(this, tr("Source content needed"),tr("Please specify 7.1 wav files."));
-                    return;
+            if (ui->mxfSoundRadio5->isChecked()) {
+                if (mxfCheckSoundInput51()) {
+                    QMessageBox::critical(this, tr("Source content needed"),tr("Please specify 5.1 wav files."));
+                        return;
+                }
+            }
+            if (ui->mxfSoundRadio7->isChecked()) {
+                if (mxfCheckSoundInput71()) {
+                    QMessageBox::critical(this, tr("Source content needed"),tr("Please specify 7.1 wav files."));
+                       return;
+                }
+            }
+        } else {
+            if (ui->aMultiEdit->text().isEmpty()) {
+                QMessageBox::critical(this, tr("Source content needed"),tr("Please select a multi-channel wav file."));
+                   return;
             }
         }
     }

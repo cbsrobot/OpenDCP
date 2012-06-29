@@ -297,9 +297,9 @@ void MainWindow::setPictureTrack()
         ui->reelPictureEdit->setProperty("text", path);
         strcpy(pictureAsset.filename, ui->reelPictureEdit->text().toStdString().c_str());
         read_asset_info(&pictureAsset);
-        ui->reelPictureDurationSpinBox->setValue(pictureAsset.duration);
         ui->reelPictureDurationSpinBox->setMaximum(pictureAsset.intrinsic_duration);
         ui->reelPictureOffsetSpinBox->setMaximum(pictureAsset.intrinsic_duration-1);
+        ui->reelPictureDurationSpinBox->setValue(pictureAsset.duration);
     }
 
     delete[] file;
