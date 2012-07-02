@@ -39,6 +39,7 @@ public slots:
     void getPath(QWidget *w);
     void wavInputSlot(QWidget*);
     void j2kInputSlot(QWidget *w);
+    void mxfSoundOutputSlot();
     void setPictureTrack();
     void setSoundTrack();
     void setSubtitleTrack();
@@ -109,6 +110,8 @@ private:
     void createLanguageMenu(void);
     void mxfStartThread(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
     void processOptions(opendcp_t *opendcp);
+    void mxfAddInputWavFiles(QFileInfoList *inputList);
+
     filelist_t *QStringToFilelist(QFileInfoList list);
     int checkWavInfo(opendcp_t *opendcp, QFileInfoList filelist);
 
