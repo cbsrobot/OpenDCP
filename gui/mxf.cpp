@@ -47,25 +47,33 @@ enum MXF_STATE {
     ENABLED  = 1
 };
 
+enum WAV_INPUT_TYPE {
+    WAV_INPUT_MONO  = 0,
+    WAV_INPUT_MULTI
+};
+
 void MainWindow::mxfConnectSlots() {
     // connect slots
-    connect(ui->mxfStereoscopicCheckBox, SIGNAL(stateChanged(int)), this, SLOT(mxfSetStereoscopicState()));
-    connect(ui->mxfSoundRadio2, SIGNAL(clicked()), this, SLOT(mxfSetSoundState()));
-    connect(ui->mxfSoundRadio5, SIGNAL(clicked()), this, SLOT(mxfSetSoundState()));
-    connect(ui->mxfSoundRadio7, SIGNAL(clicked()), this, SLOT(mxfSetSoundState()));
-    connect(ui->mxfSoundTypeRadioMono, SIGNAL(clicked()), this, SLOT(mxfSetSoundInputTypeState()));
-    connect(ui->mxfSoundTypeRadioMulti, SIGNAL(clicked()), this, SLOT(mxfSetSoundInputTypeState()));
-    connect(ui->mxfHVCheckBox, SIGNAL(stateChanged(int)), this, SLOT(mxfSetHVState()));
-    connect(ui->mxfSourceTypeComboBox,SIGNAL(currentIndexChanged(int)),this, SLOT(mxfSourceTypeUpdate()));
-    connect(ui->mxfButton,SIGNAL(clicked()),this,SLOT(mxfStart()));
-    connect(ui->subCreateButton,SIGNAL(clicked()),this,SLOT(mxfCreateSubtitle()));
-    connect(ui->mxfSlideCheckBox, SIGNAL(stateChanged(int)), this, SLOT(mxfSetSlideState()));
+    connect(ui->mxfStereoscopicCheckBox, SIGNAL(stateChanged(int)),        this, SLOT(mxfSetStereoscopicState()));
+    connect(ui->mxfSoundRadio2,          SIGNAL(clicked()),                this, SLOT(mxfSetSoundState()));
+    connect(ui->mxfSoundRadio5,          SIGNAL(clicked()),                this, SLOT(mxfSetSoundState()));
+    connect(ui->mxfSoundRadio7,          SIGNAL(clicked()),                this, SLOT(mxfSetSoundState()));
+    connect(ui->mxfSoundTypeRadioMono,   SIGNAL(clicked()),                this, SLOT(mxfSetSoundInputTypeState()));
+    connect(ui->mxfSoundTypeRadioMulti,  SIGNAL(clicked()),                this, SLOT(mxfSetSoundInputTypeState()));
+    connect(ui->mxfHVCheckBox,           SIGNAL(stateChanged(int)),        this, SLOT(mxfSetHVState()));
+    connect(ui->mxfSourceTypeComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(mxfSourceTypeUpdate()));
+    connect(ui->mxfButton,               SIGNAL(clicked()),                this, SLOT(mxfStart()));
+    connect(ui->subCreateButton,         SIGNAL(clicked()),                this, SLOT(mxfCreateSubtitle()));
+    connect(ui->mxfSlideCheckBox,        SIGNAL(stateChanged(int)),       this,  SLOT(mxfSetSlideState()));
 
-    // Picture input lines
-    signalMapper.setMapping(ui->pictureLeftButton, ui->pictureLeftEdit);
+    // Picture input
+    signalMapper.setMapping(ui->pictureLeftButton,  ui->pictureLeftEdit);
     signalMapper.setMapping(ui->pictureRightButton, ui->pictureRightEdit);
+
+    connect(ui->pictureLeftButton,  SIGNAL(clicked()), &signalMapper, SLOT(map()));
+    connect(ui->pictureRightButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
  
-    // Sound input lines
+    // Sound input
     wavSignalMapper.setMapping(ui->aLeftButton,   ui->aLeftEdit);
     wavSignalMapper.setMapping(ui->aRightButton,  ui->aRightEdit);
     wavSignalMapper.setMapping(ui->aCenterButton, ui->aCenterEdit);
@@ -76,7 +84,7 @@ void MainWindow::mxfConnectSlots() {
     wavSignalMapper.setMapping(ui->aRightCButton, ui->aRightCEdit);
     wavSignalMapper.setMapping(ui->aHIButton,     ui->aHIEdit);
     wavSignalMapper.setMapping(ui->aVIButton,     ui->aVIEdit);
-    wavSignalMapper.setMapping(ui->aMultiButton,     ui->aMultiEdit);
+    wavSignalMapper.setMapping(ui->aMultiButton,  ui->aMultiEdit);
 
     connect(ui->aLeftButton,   SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
     connect(ui->aRightButton,  SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
@@ -90,23 +98,34 @@ void MainWindow::mxfConnectSlots() {
     connect(ui->aVIButton,     SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
     connect(ui->aMultiButton,  SIGNAL(clicked()), &wavSignalMapper, SLOT(map()));
 
-    connect(&wavSignalMapper, SIGNAL(mapped(QWidget*)),this, SLOT(wavInputSlot(QWidget*)));
+    connect(&wavSignalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(wavInputSlot(QWidget*)));
 
-    // Subtitle input lines
+    // Subtitle input
     signalMapper.setMapping(ui->subInButton, ui->subInEdit);
 
-    // MXF output lines
+    connect(ui->subInButton,        SIGNAL(clicked()), &signalMapper, SLOT(map()));
+
+    // MXF Sound output file
+    connect(ui->aMxfOutButton,      SIGNAL(clicked()), this, SLOT(mxfSoundOutputSlot()));
+    connect(ui->aMxfOutButtonMulti, SIGNAL(clicked()), this, SLOT(mxfSoundOutputSlot()));
+
+    // MXF Picture/Subtitle output file
     signalMapper.setMapping(ui->pMxfOutButton, ui->pMxfOutEdit);
-    signalMapper.setMapping(ui->aMxfOutButton, ui->aMxfOutEdit);
     signalMapper.setMapping(ui->sMxfOutButton, ui->sMxfOutEdit);
 
-    // Signal Connections
-    connect(ui->pictureLeftButton, SIGNAL(clicked()),&signalMapper, SLOT(map()));
-    connect(ui->pictureRightButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->pMxfOutButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->aMxfOutButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->subInButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
-    connect(ui->sMxfOutButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
+    connect(ui->pMxfOutButton,      SIGNAL(clicked()), &signalMapper, SLOT(map()));
+    connect(ui->sMxfOutButton,      SIGNAL(clicked()), &signalMapper, SLOT(map()));
+}
+
+void MainWindow::mxfSoundOutputSlot() {
+    QString path;
+    QString filter;
+
+    filter = "*.mxf";
+    path = QFileDialog::getSaveFileName(this, tr("Save MXF as"),lastDir,filter);
+
+    ui->aMxfOutEdit->setText(path);
+    ui->aMxfOutEditMulti->setText(path);
 }
 
 void MainWindow::wavInputSlot(QWidget *w)
@@ -128,7 +147,7 @@ void MainWindow::mxfSetSlideState() {
         ui->mxfSlideCheckBox->setEnabled(ENABLED);
     } else {
         ui->mxfSlideCheckBox->setEnabled(DISABLED);
-        value = 0;
+        value = DISABLED;
     }
 
     ui->mxfSlideSpinBox->setEnabled(value);
@@ -226,9 +245,9 @@ void MainWindow::mxfSetSound71State(int state)
 
 void MainWindow::mxfSetSoundInputTypeState() {
     if (ui->mxfSoundTypeRadioMono->isChecked()) {
-        ui->mxfSoundInputStack->setCurrentIndex(0);
+        ui->mxfSoundInputStack->setCurrentIndex(WAV_INPUT_MONO);
     } else {
-        ui->mxfSoundInputStack->setCurrentIndex(1);
+        ui->mxfSoundInputStack->setCurrentIndex(WAV_INPUT_MULTI);
     }
 }
 
@@ -276,6 +295,54 @@ int MainWindow::mxfCheckSoundInput71() {
     }
 }
 
+int MainWindow::checkWavInfo(opendcp_t *opendcp, QFileInfoList filelist) {
+    QFileInfo  s;
+    wav_info_t wav;
+    int        rc;
+
+    foreach(s, filelist) {
+        rc = get_wav_info(s.absoluteFilePath().toStdString().c_str(), opendcp->frame_rate, &wav);
+
+        if (rc) {
+            return rc;
+        }
+
+        if (wav.bitdepth != 24) {
+            return OPENDCP_INVALID_WAV_BITDEPTH;
+        }
+    }
+
+    return OPENDCP_NO_ERROR;
+}
+
+void MainWindow::mxfAddInputWavFiles(QFileInfoList *inputList) {
+    if (ui->mxfSoundTypeRadioMono->isChecked()) {
+        // stereo files
+        inputList->append(QFileInfo(ui->aLeftEdit->text()));
+        inputList->append(QFileInfo(ui->aRightEdit->text()));
+
+        // add 5.1
+        if (ui->mxfSoundRadio5->isChecked() || ui->mxfSoundRadio7->isChecked()) {
+            inputList->append(QFileInfo(ui->aCenterEdit->text()));
+            inputList->append(QFileInfo(ui->aSubEdit->text()));
+            inputList->append(QFileInfo(ui->aLeftSEdit->text()));
+            inputList->append(QFileInfo(ui->aRightSEdit->text()));
+        }
+
+        if (ui->mxfSoundRadio7->isChecked()) {
+            inputList->append(QFileInfo(ui->aLeftCEdit->text()));
+            inputList->append(QFileInfo(ui->aRightCEdit->text()));
+        }
+
+        // add HI/VI
+        if (ui->mxfHVCheckBox->checkState()) {
+            inputList->append(QFileInfo(ui->aHIEdit->text()));
+            inputList->append(QFileInfo(ui->aVIEdit->text()));
+        }
+    } else {
+        inputList->append(QFileInfo(ui->aMultiEdit->text()));
+    }
+}
 
 void MainWindow::mxfStart() {
     // JPEG2000
@@ -391,26 +458,6 @@ void MainWindow::mxfCreateSubtitle() {
     return;
 }
 
-int MainWindow::checkWavInfo(opendcp_t *opendcp, QFileInfoList filelist) {
-    QFileInfo  s;
-    wav_info_t wav;
-    int        rc;
-
-    foreach(s, filelist) {
-        rc = get_wav_info(s.absoluteFilePath().toStdString().c_str(), opendcp->frame_rate, &wav);
-
-        if (rc) {
-            return rc;
-        }
-
-        if (wav.bitdepth != 24) {
-            return OPENDCP_INVALID_WAV_BITDEPTH;
-        } 
-    }
-
-    return OPENDCP_NO_ERROR;
-}
-
 void MainWindow::mxfCreateAudio() {
     QFileInfoList inputList;
     QString       outputFile;
@@ -424,25 +471,10 @@ void MainWindow::mxfCreateAudio() {
     }
 
     opendcp->frame_rate = ui->mxfFrameRateComboBox->currentText().toInt();
-    opendcp->stereoscopic = 0;
+    opendcp->stereoscopic = DISABLED;
 
-    // stereo files
-    inputList.append(QFileInfo(ui->aLeftEdit->text()));
-    inputList.append(QFileInfo(ui->aRightEdit->text()));
-
-    // add 5.1
-    if (ui->mxfSoundRadio5->isChecked()) {
-        inputList.append(QFileInfo(ui->aCenterEdit->text()));
-        inputList.append(QFileInfo(ui->aSubEdit->text()));
-        inputList.append(QFileInfo(ui->aLeftSEdit->text()));
-        inputList.append(QFileInfo(ui->aRightSEdit->text()));
-    }
-
-    // add HI/VI
-    if (ui->mxfHVCheckBox->checkState()) {
-        inputList.append(QFileInfo(ui->aHIEdit->text()));
-        inputList.append(QFileInfo(ui->aVIEdit->text()));
-    }
+    // build input list
+    mxfAddInputWavFiles(&inputList);
 
     if (checkWavInfo(opendcp, inputList)) {
         QMessageBox::critical(this, tr("Invalid Wav Files"),tr("Input WAV files must be 24-bit"));
@@ -450,7 +482,7 @@ void MainWindow::mxfCreateAudio() {
     }
 
     // get wav duration
-    opendcp->mxf.duration = get_wav_duration(ui->aLeftEdit->text().toStdString().c_str(),
+    opendcp->mxf.duration = get_wav_duration(inputList.at(0).absoluteFilePath().toStdString().c_str(),
                                              opendcp->frame_rate);
 
     outputFile = ui->aMxfOutEdit->text();
@@ -479,7 +511,7 @@ void MainWindow::mxfCreatePicture() {
     }
 
     opendcp->frame_rate = ui->mxfFrameRateComboBox->currentText().toInt();
-    opendcp->stereoscopic = 0;
+    opendcp->stereoscopic = DISABLED;
 
     if (ui->mxfSourceTypeComboBox->currentIndex() == JPEG2000) {
         pLeftDir.cd(ui->pictureLeftEdit->text());
@@ -495,7 +527,7 @@ void MainWindow::mxfCreatePicture() {
     }
 
     if (ui->mxfStereoscopicCheckBox->checkState()) {
-        opendcp->stereoscopic = 1;
+        opendcp->stereoscopic = ENABLED;
         pRightDir.cd(ui->pictureRightEdit->text());
         pRightDir.setNameFilters(QStringList() << "*.j2c");
         pRightDir.setFilter(QDir::Files | QDir::NoSymLinks);
