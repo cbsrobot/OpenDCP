@@ -49,6 +49,37 @@ void MainWindow::getTitle() {
     }
 }
 
+int MainWindow::mxfCopy(QString source, QString destination) {
+    QFileInfo   sourceFileInfo;
+    QFileInfo   destinationFileInfo;
+
+    if (source == NULL) {
+        return OPENDCP_NO_ERROR;
+    }
+
+    // set source/destination files
+    sourceFileInfo.setFile(source);
+    destinationFileInfo.setFile(destination + "/" + sourceFileInfo.fileName());
+
+    // check if file exists
+    if (destinationFileInfo.isFile()) {
+        if (QMessageBox::question(this, tr("Move MXF File"), tr("The destination picture MXF already exists, do you want to replace?"),
+                                  QMessageBox::No,QMessageBox::Yes) == QMessageBox::No) {
+                return OPENDCP_NO_ERROR;
+        }
+        QFile::remove(destinationFileInfo.absoluteFilePath());
+    }
+
+    // copy/move the file
+    if (ui->rbMoveMxf->isChecked()) {
+        QFile::rename(sourceFileInfo.absoluteFilePath(), destinationFileInfo.absoluteFilePath());
+    } else {
+        fileCopy(sourceFileInfo.absoluteFilePath(), destinationFileInfo.absoluteFilePath());
+    }
+
+    return OPENDCP_NO_ERROR;
+}
+
 void MainWindow::startDcp()
 {
     QString     path;
@@ -73,11 +104,13 @@ void MainWindow::startDcp()
     }
 
     dcp_log_init(xmlContext->log_level, ".log");
-    strcpy(xmlContext->xml.title, ui->cplTitleEdit->text().toStdString().c_str());
-    strcpy(xmlContext->xml.annotation, ui->cplAnnotationEdit->text().toStdString().c_str());
-    strcpy(xmlContext->xml.issuer, ui->cplIssuerEdit->text().toStdString().c_str());
-    strcpy(xmlContext->xml.kind, ui->cplKindComboBox->currentText().toStdString().c_str());
-    strcpy(xmlContext->xml.rating, ui->cplRatingComboBox->currentText().toStdString().c_str());
+
+    // set XML attribues
+    strcpy(xmlContext->xml.title, ui->cplTitleEdit->text().toUtf8().constData());
+    strcpy(xmlContext->xml.annotation, ui->cplAnnotationEdit->text().toUtf8().constData());
+    strcpy(xmlContext->xml.issuer, ui->cplIssuerEdit->text().toUtf8().constData());
+    strcpy(xmlContext->xml.kind, ui->cplKindComboBox->currentText().toUtf8().constData());
+    strcpy(xmlContext->xml.rating, ui->cplRatingComboBox->currentText().toUtf8().constData());
 
     // check picture track is supplied
     if (ui->reelPictureEdit->text().isEmpty()) {
@@ -94,7 +127,7 @@ void MainWindow::startDcp()
         goto Done;
     }
 
-    // copy assets
+    // set asset filenames
     reelList->asset_count = 0;
     if (!ui->reelPictureEdit->text().isEmpty()) {
         strcpy(reelList[0].asset_list[0].filename, ui->reelPictureEdit->text().toStdString().c_str());
@@ -143,19 +176,19 @@ void MainWindow::startDcp()
     }
 
     filename = path + "/" + xmlContext->pkl[0].cpl[0].uuid + "_cpl.xml";
-    strcpy(xmlContext->pkl[0].cpl[0].filename,filename.toStdString().c_str());
+    strcpy(xmlContext->pkl[0].cpl[0].filename,filename.toUtf8().constData());
     filename = path + "/" + xmlContext->pkl[0].uuid + "_pkl.xml";
     strcpy(xmlContext->pkl[0].filename,filename.toStdString().c_str());
     if (xmlContext->ns == XML_NS_SMPTE) {
         filename = path + "/" + "ASSETMAP.xml";
-        strcpy(xmlContext->assetmap.filename,filename.toStdString().c_str());
+        strcpy(xmlContext->assetmap.filename,filename.toUtf8().constData());
         filename = path + "/" + "VOLINDEX.xml";
-        strcpy(xmlContext->volindex.filename,filename.toStdString().c_str());
+        strcpy(xmlContext->volindex.filename,filename.toUtf8().constData());
     } else {
         filename = path + "/" + "ASSETMAP";
-        strcpy(xmlContext->assetmap.filename,filename.toStdString().c_str());
+        strcpy(xmlContext->assetmap.filename,filename.toUtf8().constData());
         filename = path + "/" + "VOLINDEX";
-        strcpy(xmlContext->volindex.filename,filename.toStdString().c_str());
+        strcpy(xmlContext->volindex.filename,filename.toUtf8().constData());
     }
 
     // write XML Files
@@ -180,73 +213,14 @@ void MainWindow::startDcp()
         goto Done;
     }
 
-    // copy the picture mxf files
-    source.setFile(xmlContext->pkl[0].cpl[0].reel[0].asset[0].filename);
-    destination.setFile(path + "/" + source.fileName());
+    // copy picture mxf
+    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[0].filename), path);
 
-    if (!ui->reelPictureEdit->text().isEmpty() && source.absoluteFilePath() != destination.absoluteFilePath()) {
-        if (destination.isFile()) {
-            if (QMessageBox::question(this,tr("Move MXF File"),tr("The destination picture MXF already exists, do you want to replace?"),
-                                      QMessageBox::No,QMessageBox::Yes) == QMessageBox::Yes) {
-                QFile::remove(destination.absoluteFilePath());
-            }
-        }
-        if (ui->rbMoveMxf->isChecked()) {
-            QFile::rename(source.absoluteFilePath(), destination.absoluteFilePath());
-        } else {
-            //QMessageBox* msgBox = new QMessageBox( this );
-            //msgBox->setWindowTitle("File Copy");
-            //msgBox->setText("Copying picture file...");
-            //msgBox->open();
-            fileCopy(source.absoluteFilePath(), destination.absoluteFilePath());
-            //msgBox->close();;
-        }
-    }
+    // copy audio mxf
+    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[1].filename), path);
 
-    // copy the sound mxf files
-    source.setFile(xmlContext->pkl[0].cpl[0].reel[0].asset[1].filename);
-    destination.setFile(path + "/" + source.fileName());
-    if (!ui->reelSoundEdit->text().isEmpty() && source.absoluteFilePath() != destination.absoluteFilePath()) {
-        if (destination.isFile()) {
-            if (QMessageBox::question(this,tr("Move MXF File"),tr("The destination sound MXF already exists, do you want to replace?"),
-                                      QMessageBox::No,QMessageBox::Yes) == QMessageBox::Yes) {
-                QFile::remove(destination.absoluteFilePath());
-            }
-        }
-        if (ui->rbMoveMxf->isChecked()) {
-            QFile::rename(source.absoluteFilePath(), destination.absoluteFilePath());
-        } else {
-            QMessageBox* msgBox = new QMessageBox( this );
-            //msgBox->setAttribute( QWidget::WA_DeleteOnClose );
-            msgBox->setWindowTitle("File Copy");
-            msgBox->setText("Copying sound file...");
-            msgBox->open();
-            QFile::copy(source.absoluteFilePath(), destination.absoluteFilePath());
-            msgBox->close();
-        }
-    }
-
-    // copy the subtitle mxf files
-    source.setFile(xmlContext->pkl[0].cpl[0].reel[0].asset[2].filename);
-    destination.setFile(path + "/" + source.fileName());
-    if (!ui->reelSubtitleEdit->text().isEmpty() && source.absoluteFilePath() != destination.absoluteFilePath()) {
-        if (destination.isFile()) {
-            if (QMessageBox::question(this,tr("Move MXF File"),tr("The destination subtitle MXF already exists, do you want to replace?"),
-                                      QMessageBox::No,QMessageBox::Yes) == QMessageBox::Yes) {
-                QFile::remove(destination.absoluteFilePath());
-            }
-        }
-        if (ui->rbMoveMxf->isChecked()) {
-            QFile::rename(source.absoluteFilePath(), destination.absoluteFilePath());
-        } else {
-            QMessageBox* msgBox = new QMessageBox( this );
-            msgBox->setWindowTitle("File Copy");
-            msgBox->setText("Copying subtitle file...");
-            msgBox->open();
-            QFile::copy(source.absoluteFilePath(), destination.absoluteFilePath());
-            msgBox->close();;
-        }
-    }
+    // copy subtitle mxf
+    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[2].filename), path);
 
     msgBox.setText("DCP Created successfully");
     msgBox.exec();
@@ -295,7 +269,7 @@ void MainWindow::setPictureTrack()
                               tr("The selected file is not a valid MXF picture track."));
     } else {
         ui->reelPictureEdit->setProperty("text", path);
-        strcpy(pictureAsset.filename, ui->reelPictureEdit->text().toStdString().c_str());
+        strcpy(pictureAsset.filename, ui->reelPictureEdit->text().toUtf8().constData());
         read_asset_info(&pictureAsset);
         ui->reelPictureDurationSpinBox->setMaximum(pictureAsset.intrinsic_duration);
         ui->reelPictureOffsetSpinBox->setMaximum(pictureAsset.intrinsic_duration-1);
@@ -326,7 +300,7 @@ void MainWindow::setSoundTrack()
                              tr("The selected file is not a valid MXF sound track."));
     } else {
         ui->reelSoundEdit->setProperty("text", path);
-        strcpy(soundAsset.filename, ui->reelSoundEdit->text().toStdString().c_str());
+        strcpy(soundAsset.filename, ui->reelSoundEdit->text().toUtf8().constData());
         read_asset_info(&soundAsset);
         ui->reelSoundDurationSpinBox->setValue(soundAsset.duration);
         ui->reelSoundDurationSpinBox->setMaximum(soundAsset.intrinsic_duration);
@@ -357,7 +331,7 @@ void MainWindow::setSubtitleTrack()
                               tr("The selected file is not a valid MXF subtitle track."));
     } else {
         ui->reelSubtitleEdit->setProperty("text", path);
-        strcpy(subtitleAsset.filename, ui->reelSubtitleEdit->text().toStdString().c_str());
+        strcpy(subtitleAsset.filename, ui->reelSubtitleEdit->text().toUtf8().constData());
         read_asset_info(&subtitleAsset);
         ui->reelSubtitleDurationSpinBox->setValue(subtitleAsset.duration);
         ui->reelSubtitleDurationSpinBox->setMaximum(subtitleAsset.intrinsic_duration);
