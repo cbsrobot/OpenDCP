@@ -74,10 +74,10 @@ void MxfWriter::run()
     filelist_t *fileList = filelist_alloc(mxfFileList.size());
 
     while (!mxfFileList.isEmpty()) {
-        sprintf(fileList->files[i++],"%s",mxfFileList.takeFirst().absoluteFilePath().toStdString().c_str());
+        sprintf(fileList->files[i++],"%s",mxfFileList.takeFirst().absoluteFilePath().toUtf8().data());
     }
 
-    rc = write_mxf(opendcpMxf, fileList, mxfOutputFile.toAscii().data());
+    rc = write_mxf(opendcpMxf, fileList, mxfOutputFile.toUtf8().data());
 
     filelist_free(fileList);
 

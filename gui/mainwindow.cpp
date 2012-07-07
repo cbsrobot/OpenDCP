@@ -219,7 +219,7 @@ filelist_t *MainWindow::QStringToFilelist(QFileInfoList list)
     filelist_t *fileList = filelist_alloc(list.size());
 
     while (!list.isEmpty()) {
-        sprintf(fileList->files[i++],"%s",list.takeFirst().absoluteFilePath().toStdString().c_str());
+        sprintf(fileList->files[i++],"%s",list.takeFirst().absoluteFilePath().toUtf8().data());
     }
 
     return fileList;
