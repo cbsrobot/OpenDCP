@@ -1,6 +1,6 @@
 /*
      OpenDCP: Builds Digital Cinema Packages
-     Copyright (c) 2010-2011 Terrence Meiczinger, All Rights Reserved
+     Copyright (c) 2010-2012 Terrence Meiczinger, All Rights Reserved
 
      This program is free software: you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
@@ -28,27 +28,29 @@ GenerateTitle::GenerateTitle(QWidget *parent) :
 {
     ui->setupUi(this);
     load(":naming.xml");
+
     QDateTime now = QDateTime::currentDateTime();
     ui->dateYearSB->setValue(now.date().year());
     ui->dateMonthSB->setValue(now.date().month());
     ui->dateDaySB->setValue(now.date().day());
-    connect(ui->aspectComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->audioComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->languageAudioComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->languageSubtitleComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->narrativeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->ratingComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->resolutionComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->studioComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->territoryComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->typeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->facilityComboBox,SIGNAL(editTextChanged(const QString &)),this,SLOT(updateTitle()));
-    connect(ui->stereoscopicComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->packageComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->filmEdit,SIGNAL(textChanged(QString)),this,SLOT(updateTitle()));
-    connect(ui->dateYearSB,SIGNAL(valueChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->dateMonthSB,SIGNAL(valueChanged(int)),this,SLOT(updateTitle()));
-    connect(ui->dateDaySB,SIGNAL(valueChanged(int)),this,SLOT(updateTitle()));
+
+    connect(ui->aspectComboBox,           SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->audioComboBox,            SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->languageAudioComboBox,    SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->languageSubtitleComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->narrativeComboBox,        SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->ratingComboBox,           SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->resolutionComboBox,       SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->studioComboBox,           SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->territoryComboBox,        SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->typeComboBox,             SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->stereoscopicComboBox,     SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->packageComboBox,          SIGNAL(currentIndexChanged(int)), this, SLOT(updateTitle()));
+    connect(ui->filmEdit,                 SIGNAL(textChanged(QString)),     this, SLOT(updateTitle()));
+    connect(ui->dateYearSB,               SIGNAL(valueChanged(int)),        this, SLOT(updateTitle()));
+    connect(ui->dateMonthSB,              SIGNAL(valueChanged(int)),        this, SLOT(updateTitle()));
+    connect(ui->dateDaySB,                SIGNAL(valueChanged(int)),        this, SLOT(updateTitle()));
+    connect(ui->facilityComboBox,         SIGNAL(editTextChanged(const QString &)), this, SLOT(updateTitle()));
 }
 
 GenerateTitle::~GenerateTitle()
@@ -72,13 +74,13 @@ QString GenerateTitle::getTitle()
     QString text;
 
     text.append(ui->filmEdit->text().split(" ").first());
-    if (ui->typeComboBox->currentIndex() != 0) {
+    if (ui->typeComboBox->currentIndex()) {
         text.append("_" + ui->typeComboBox->currentText().split(" ").first());
     }
-    if (ui->aspectComboBox->currentIndex() != 0) {
+    if (ui->aspectComboBox->currentIndex()) {
         text.append("_" + ui->aspectComboBox->currentText().split(" ").first());
     }
-    if (ui->languageAudioComboBox->currentIndex() != 0) {
+    if (ui->languageAudioComboBox->currentIndex()) {
         text.append("_" + ui->languageAudioComboBox->currentText().split(" ").first());
         if (ui->languageSubtitleComboBox->currentIndex() == 0) {
             text.append("-XX");
@@ -86,32 +88,32 @@ QString GenerateTitle::getTitle()
             text.append("-" + ui->languageSubtitleComboBox->currentText().split(" ").first());
         }
     }
-    if (ui->territoryComboBox->currentIndex() != 0) {
+    if (ui->territoryComboBox->currentIndex()) {
         text.append("_" + ui->territoryComboBox->currentText().split(" ").first());
     }
-    if (ui->ratingComboBox->currentIndex() != 0) {
+    if (ui->ratingComboBox->currentIndex()) {
         text.append("-" + ui->ratingComboBox->currentText().split(" ").first());
     }
-    if (ui->audioComboBox->currentIndex() != 0) {
+    if (ui->audioComboBox->currentIndex()) {
         text.append("_" + ui->audioComboBox->currentText().split(" ").first());
-        if (ui->narrativeComboBox->currentIndex() != 0) {
+        if (ui->narrativeComboBox->currentIndex()) {
             text.append("-" + ui->narrativeComboBox->currentText().split(" ").first());
         }
     }
-    if (ui->resolutionComboBox->currentIndex() != 0) {
+    if (ui->resolutionComboBox->currentIndex()) {
         text.append("_" + ui->resolutionComboBox->currentText().split(" ").first());
     }
-    if (ui->studioComboBox->currentIndex() != 0) {
+    if (ui->studioComboBox->currentIndex()) {
         text.append("_" + ui->studioComboBox->currentText().split(" ").first());
     }
     text.append("_" + ui->dateYearSB->text() + QString().sprintf("%02d%02d",ui->dateMonthSB->text().toInt(),ui->dateDaySB->text().toInt()));
-    if (ui->facilityComboBox->currentIndex() >= 0) {
+    if (ui->facilityComboBox->currentIndex()) {
         text.append("_" + ui->facilityComboBox->currentText().split(" ").first().left(3));
     }
-    if (ui->stereoscopicComboBox->currentIndex() != 0) {
+    if (ui->stereoscopicComboBox->currentIndex()) {
         text.append("_" + ui->stereoscopicComboBox->currentText().split(" ").first());
     }
-    if (ui->packageComboBox->currentIndex() != 0) {
+    if (ui->packageComboBox->currentIndex()) {
         text.append("_" + ui->packageComboBox->currentText().split(" ").first());
     }
 

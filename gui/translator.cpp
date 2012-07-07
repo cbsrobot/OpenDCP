@@ -34,7 +34,7 @@ Translator::Translator()
 #endif
 
 #ifdef Q_OS_LINUX
-    m_langPath = "/usr/share/opendcp";
+    m_langPath = "../share/opendcp";
 #endif
 
     m_langPath.append("/translation");
