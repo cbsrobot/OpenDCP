@@ -29,6 +29,12 @@ asset_t pictureAsset;
 asset_t soundAsset;
 asset_t subtitleAsset;
 
+enum ASSET_TYPE {
+    PICTURE = 0,
+    SOUND,
+    SUBTITLE
+};
+
 void MainWindow::connectXmlSlots()
 {
     // connect slots
@@ -83,9 +89,6 @@ int MainWindow::mxfCopy(QString source, QString destination) {
 void MainWindow::startDcp()
 {
     QString     path;
-    QString     filename;
-    QFileInfo   source;
-    QFileInfo   destination;
     QMessageBox msgBox;
     QString     DCP_FAIL_MSG;
 
@@ -130,15 +133,15 @@ void MainWindow::startDcp()
     // set asset filenames
     reelList->asset_count = 0;
     if (!ui->reelPictureEdit->text().isEmpty()) {
-        strcpy(reelList[0].asset_list[0].filename, ui->reelPictureEdit->text().toStdString().c_str());
+        strcpy(reelList[0].asset_list[PICTURE].filename, ui->reelPictureEdit->text().toUtf8().constData());
         reelList->asset_count++;
     }
     if (!ui->reelSoundEdit->text().isEmpty()) {
-        strcpy(reelList[0].asset_list[1].filename, ui->reelSoundEdit->text().toStdString().c_str());
+        strcpy(reelList[0].asset_list[SOUND].filename, ui->reelSoundEdit->text().toUtf8().constData());
         reelList->asset_count++;
     }
     if (!ui->reelSubtitleEdit->text().isEmpty()) {
-        strcpy(reelList[0].asset_list[2].filename, ui->reelSubtitleEdit->text().toStdString().c_str());
+        strcpy(reelList[0].asset_list[SUBTITLE].filename, ui->reelSubtitleEdit->text().toUtf8().constData());
         reelList->asset_count++;
     }
 
@@ -155,12 +158,12 @@ void MainWindow::startDcp()
     }
 
     // adjust durations
-    xmlContext->pkl[0].cpl[0].reel[0].asset[0].duration = ui->reelPictureDurationSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[0].entry_point = ui->reelPictureOffsetSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[1].duration = ui->reelSoundDurationSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[1].entry_point = ui->reelSoundOffsetSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[2].duration = ui->reelSubtitleDurationSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[2].entry_point = ui->reelSubtitleOffsetSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].duration = ui->reelPictureDurationSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].entry_point = ui->reelPictureOffsetSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].duration = ui->reelSoundDurationSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].entry_point = ui->reelSoundOffsetSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[SUBTITLE].duration = ui->reelSubtitleDurationSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[SUBTITLE].entry_point = ui->reelSubtitleOffsetSpinBox->value();
 
     if (validate_reel(xmlContext,&xmlContext->pkl[0].cpl[0],0) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG,
@@ -175,20 +178,15 @@ void MainWindow::startDcp()
         goto Done;
     }
 
-    filename = path + "/" + xmlContext->pkl[0].cpl[0].uuid + "_cpl.xml";
-    strcpy(xmlContext->pkl[0].cpl[0].filename,filename.toUtf8().constData());
-    filename = path + "/" + xmlContext->pkl[0].uuid + "_pkl.xml";
-    strcpy(xmlContext->pkl[0].filename,filename.toStdString().c_str());
+    sprintf(xmlContext->pkl[0].cpl[0].filename,"%s/%s_cpl.xml", path.toUtf8().constData(), xmlContext->pkl[0].cpl[0].uuid);
+    sprintf(xmlContext->pkl[0].filename,"%s/%s_pkl.xml", path.toUtf8().constData(), xmlContext->pkl[0].uuid);
+
     if (xmlContext->ns == XML_NS_SMPTE) {
-        filename = path + "/" + "ASSETMAP.xml";
-        strcpy(xmlContext->assetmap.filename,filename.toUtf8().constData());
-        filename = path + "/" + "VOLINDEX.xml";
-        strcpy(xmlContext->volindex.filename,filename.toUtf8().constData());
+        sprintf(xmlContext->assetmap.filename,"%s/ASSETMAP.xml",path.toUtf8().constData());
+        sprintf(xmlContext->volindex.filename,"%s/VOLINDEX.xml",path.toUtf8().constData());
     } else {
-        filename = path + "/" + "ASSETMAP";
-        strcpy(xmlContext->assetmap.filename,filename.toUtf8().constData());
-        filename = path + "/" + "VOLINDEX";
-        strcpy(xmlContext->volindex.filename,filename.toUtf8().constData());
+        sprintf(xmlContext->assetmap.filename,"%s/ASSETMAP",path.toUtf8().constData());
+        sprintf(xmlContext->volindex.filename,"%s/VOLINDEX",path.toUtf8().constData());
     }
 
     // write XML Files
@@ -214,13 +212,13 @@ void MainWindow::startDcp()
     }
 
     // copy picture mxf
-    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[0].filename), path);
+    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].filename), path);
 
     // copy audio mxf
-    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[1].filename), path);
+    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].filename), path);
 
     // copy subtitle mxf
-    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[2].filename), path);
+    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[SUBTITLE].filename), path);
 
     msgBox.setText("DCP Created successfully");
     msgBox.exec();
@@ -254,7 +252,6 @@ void MainWindow::setPictureTrack()
 {
     QString path;
     QString filter = "*.mxf";
-    char *file;
 
     path = QFileDialog::getOpenFileName(this, tr("Choose a file to open"),QString::null,filter);
 
@@ -262,9 +259,7 @@ void MainWindow::setPictureTrack()
         return;
     }
 
-    file = new char [path.toStdString().size()+1];
-    strcpy(file, path.toStdString().c_str());
-    if (get_file_essence_class(file) != ACT_PICTURE) {
+    if (get_file_essence_class(path.toUtf8().data()) != ACT_PICTURE) {
         QMessageBox::critical(this, tr("Not a Picture Track"),
                               tr("The selected file is not a valid MXF picture track."));
     } else {
@@ -276,8 +271,6 @@ void MainWindow::setPictureTrack()
         ui->reelPictureDurationSpinBox->setValue(pictureAsset.duration);
     }
 
-    delete[] file;
-
     return;
 }
 
@@ -285,7 +278,6 @@ void MainWindow::setSoundTrack()
 {
     QString path;
     QString filter = "*.mxf";
-    char *file;
 
     path = QFileDialog::getOpenFileName(this, tr("Choose a file to open"),QString::null,filter);
 
@@ -293,9 +285,7 @@ void MainWindow::setSoundTrack()
         return;
     }
 
-    file = new char [path.toStdString().size()+1];
-    strcpy(file, path.toStdString().c_str());
-    if (get_file_essence_class(file) != ACT_SOUND) {
+    if (get_file_essence_class(path.toUtf8().data()) != ACT_SOUND) {
         QMessageBox::critical(this, tr("Not a Sound Track"),
                              tr("The selected file is not a valid MXF sound track."));
     } else {
@@ -307,8 +297,6 @@ void MainWindow::setSoundTrack()
         ui->reelSoundOffsetSpinBox->setMaximum(soundAsset.intrinsic_duration-1);
     }
 
-    delete[] file;
-
     return;
 }
 
@@ -316,7 +304,6 @@ void MainWindow::setSubtitleTrack()
 {
     QString path;
     QString filter = "*.mxf";
-    char *file;
 
     path = QFileDialog::getOpenFileName(this, tr("Choose an file to open"),QString::null,filter);
 
@@ -324,9 +311,7 @@ void MainWindow::setSubtitleTrack()
         return;
     }
 
-    file = new char [path.toStdString().size()+1];
-    strcpy(file, path.toStdString().c_str());
-    if (get_file_essence_class(file) != ACT_TIMED_TEXT) {
+    if (get_file_essence_class(path.toUtf8().data()) != ACT_TIMED_TEXT) {
         QMessageBox::critical(this, tr("Not a Subtitle Track"),
                               tr("The selected file is not a valid MXF subtitle track."));
     } else {
@@ -337,8 +322,6 @@ void MainWindow::setSubtitleTrack()
         ui->reelSubtitleDurationSpinBox->setMaximum(subtitleAsset.intrinsic_duration);
         ui->reelSubtitleOffsetSpinBox->setMaximum(subtitleAsset.intrinsic_duration-1);
     }
-
-    delete[] file;
 
     return;
 }

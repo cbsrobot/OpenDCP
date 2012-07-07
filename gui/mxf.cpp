@@ -301,7 +301,7 @@ int MainWindow::checkWavInfo(opendcp_t *opendcp, QFileInfoList filelist) {
     int        rc;
 
     foreach(s, filelist) {
-        rc = get_wav_info(s.absoluteFilePath().toStdString().c_str(), opendcp->frame_rate, &wav);
+        rc = get_wav_info(s.absoluteFilePath().toUtf8().data(), opendcp->frame_rate, &wav);
 
         if (rc) {
             return rc;
@@ -482,7 +482,7 @@ void MainWindow::mxfCreateAudio() {
     }
 
     // get wav duration
-    opendcp->mxf.duration = get_wav_duration(inputList.at(0).absoluteFilePath().toStdString().c_str(),
+    opendcp->mxf.duration = get_wav_duration(inputList.at(0).absoluteFilePath().toUtf8().data(),
                                              opendcp->frame_rate);
 
     outputFile = ui->aMxfOutEdit->text();
