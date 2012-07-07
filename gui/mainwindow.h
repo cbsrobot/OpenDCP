@@ -111,6 +111,7 @@ private:
     void mxfStartThread(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile);
     void processOptions(opendcp_t *opendcp);
     void mxfAddInputWavFiles(QFileInfoList *inputList);
+    int  mxfCopy(QString source, QString destination);
 
     filelist_t *QStringToFilelist(QFileInfoList list);
     int checkWavInfo(opendcp_t *opendcp, QFileInfoList filelist);
