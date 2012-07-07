@@ -29,7 +29,7 @@ asset_t pictureAsset;
 asset_t soundAsset;
 asset_t subtitleAsset;
 
-enum ASSET_TYPE {
+enum ASSET_INDEX {
     PICTURE = 0,
     SOUND,
     SUBTITLE
@@ -93,6 +93,13 @@ void MainWindow::startDcp()
     QString     DCP_FAIL_MSG;
 
     asset_list_t reelList[MAX_REELS];
+
+    // get dcp destination directory
+    path = QFileDialog::getExistingDirectory(this, tr("Choose destination folder"),QString::null);
+
+    if (path.isEmpty()) {
+        return;
+    }
 
     opendcp_t *xmlContext = opendcp_create();
 
@@ -168,13 +175,6 @@ void MainWindow::startDcp()
     if (validate_reel(xmlContext,&xmlContext->pkl[0].cpl[0],0) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG,
                               tr("Could not valiate reel."));
-        goto Done;
-    }
-
-    // set filenames
-    path = QFileDialog::getExistingDirectory(this, tr("Choose destination folder"),QString::null);
-
-    if (path.isEmpty()) {
         goto Done;
     }
 
