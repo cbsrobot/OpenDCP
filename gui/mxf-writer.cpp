@@ -81,5 +81,6 @@ void MxfWriter::run()
 
     filelist_free(fileList);
 
-    emit finished(rc);
+    emit setResult(rc);
+    emit finished();
 }

@@ -17,89 +17,95 @@
 */
 
 #include <QDir>
-#include "j2kconversion_dialog.h"
+#include "conversion_dialog.h"
 
-enum J2K_STATE {
+enum CONVERSION_STATE {
     IDLE  = 0,
     START,
     STOP, 
     RUN
 };
 
-J2kConversionDialog::J2kConversionDialog(QWidget *parent) : QDialog(parent)
+ConversionDialog::ConversionDialog(QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
 
     setWindowFlags(Qt::Dialog | Qt::WindowMinimizeButtonHint);
 
     connect(buttonClose, SIGNAL(clicked()), this, SLOT(close()));
-    connect(buttonStop, SIGNAL(clicked()), this, SLOT(stop()));
+    connect(buttonStop,  SIGNAL(clicked()), this, SLOT(stop()));
 }
 
-void J2kConversionDialog::init(int imageCount, int threadCount)
+void ConversionDialog::init(int nFrames, int threadCount)
 {
     QString labelText;
 
-    currentCount = 0;
-    cancelled    = 0;
-    totalCount   = imageCount;
+    m_currentCount = 0;
+    m_canceled    = false;
+    m_totalCount   = nFrames;
 
     progressBar->reset();
-    progressBar->setRange(0, totalCount);
+    progressBar->setRange(0, nFrames);
 
-    labelText.sprintf("Conversion using %d threads(s)",threadCount);
+    labelText.sprintf("Conversion using %d threads(s)", threadCount);
     labelThreadCount->setText(labelText);
 
     setButtons(RUN);
 }
 
-void J2kConversionDialog::step()
+void ConversionDialog::stop()
+{
+    setButtons(STOP);
+    labelTotal->setText("Cancelling...");
+    m_canceled = true;
+    emit cancel();
+}
+
+void ConversionDialog::update()
 {
     QString labelText;
   
-    if (cancelled) {
+    if (m_canceled == true) {
         return;
     }
 
-    labelText.sprintf("Completed %d of %d.",currentCount,totalCount);
+    labelText.sprintf("Completed frame %d of %d.",m_currentCount, m_totalCount);
 
     labelTotal->setText(labelText);
-    progressBar->setValue(currentCount);
+    progressBar->setValue(m_currentCount);
 
     // make sure current doesn't exceed total (shouldn't happen)
-    if (currentCount < totalCount) {
-        currentCount++;
+    if (m_currentCount < m_totalCount) {
+        m_currentCount++;
     }
 }
 
-void J2kConversionDialog::finished()
+void ConversionDialog::setResult(int result) {
+    m_result = result;
+}
+
+void ConversionDialog::finished()
 {
     QString t;
     QString labelText;
 
-    if (cancelled) {
-        t = "cancelled.";
+    if (m_canceled == true) {
+        t = "canceled.";
+    } else if (m_result){
+        t = "failed.";
     } else {
         t = "completed.";
-        currentCount = totalCount;
-     }
+        m_currentCount = m_totalCount;
+    }
 
-    progressBar->setValue(currentCount);
-    labelText.sprintf("Completed %d of %d. Conversion ",currentCount,totalCount);
+    progressBar->setValue(m_currentCount);
+    labelText.sprintf("Completed %d of %d. Conversion ",m_currentCount, m_totalCount);
     labelText.append(t);
     labelTotal->setText(labelText);
     setButtons(IDLE);
 }
 
-void J2kConversionDialog::stop()
-{
-    setButtons(STOP);
-    labelTotal->setText("Cancelling...");
-    cancelled = 1;
-    emit cancel();
-}
-
-void J2kConversionDialog::setButtons(int state)
+void ConversionDialog::setButtons(int state)
 {
     switch (state)
     {

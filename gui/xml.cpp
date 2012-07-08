@@ -69,9 +69,10 @@ int MainWindow::mxfCopy(QString source, QString destination) {
 
     // check if file exists
     if (destinationFileInfo.isFile()) {
-        if (QMessageBox::question(this, tr("Move MXF File"), tr("The destination picture MXF already exists, do you want to replace?"),
+        if (QMessageBox::question(this, tr("Move MXF File"),
+                                  tr("The destination picture MXF already exists, do you want to replace?"),
                                   QMessageBox::No,QMessageBox::Yes) == QMessageBox::No) {
-                return OPENDCP_NO_ERROR;
+            return OPENDCP_NO_ERROR;
         }
         QFile::remove(destinationFileInfo.absoluteFilePath());
     }
@@ -165,16 +166,15 @@ void MainWindow::startDcp()
     }
 
     // adjust durations
-    xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].duration = ui->reelPictureDurationSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].entry_point = ui->reelPictureOffsetSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].duration = ui->reelSoundDurationSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].entry_point = ui->reelSoundOffsetSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[SUBTITLE].duration = ui->reelSubtitleDurationSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].duration     = ui->reelPictureDurationSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].entry_point  = ui->reelPictureOffsetSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].duration       = ui->reelSoundDurationSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].entry_point    = ui->reelSoundOffsetSpinBox->value();
+    xmlContext->pkl[0].cpl[0].reel[0].asset[SUBTITLE].duration    = ui->reelSubtitleDurationSpinBox->value();
     xmlContext->pkl[0].cpl[0].reel[0].asset[SUBTITLE].entry_point = ui->reelSubtitleOffsetSpinBox->value();
 
     if (validate_reel(xmlContext,&xmlContext->pkl[0].cpl[0],0) != OPENDCP_NO_ERROR) {
-        QMessageBox::critical(this, DCP_FAIL_MSG,
-                              tr("Could not valiate reel."));
+        QMessageBox::critical(this, DCP_FAIL_MSG, tr("Could not valiate reel."));
         goto Done;
     }
 
@@ -191,23 +191,19 @@ void MainWindow::startDcp()
 
     // write XML Files
     if (write_cpl(xmlContext,&xmlContext->pkl[0].cpl[0]) != OPENDCP_NO_ERROR) {
-        QMessageBox::critical(this, DCP_FAIL_MSG,
-                              tr("Failed to create composition playlist."));
+        QMessageBox::critical(this, DCP_FAIL_MSG, tr("Failed to create composition playlist."));
         goto Done;
     }
     if (write_pkl(xmlContext,&xmlContext->pkl[0]) != OPENDCP_NO_ERROR) {
-        QMessageBox::critical(this, DCP_FAIL_MSG,
-                              tr("Failed to create packaging list."));
+        QMessageBox::critical(this, DCP_FAIL_MSG, tr("Failed to create packaging list."));
         goto Done;
     }
     if (write_volumeindex(xmlContext) != OPENDCP_NO_ERROR) {
-        QMessageBox::critical(this, DCP_FAIL_MSG,
-                              tr("Failed to create volume index."));
+        QMessageBox::critical(this, DCP_FAIL_MSG, tr("Failed to create volume index."));
         goto Done;
     }
     if (write_assetmap(xmlContext) != OPENDCP_NO_ERROR) {
-        QMessageBox::critical(this, DCP_FAIL_MSG,
-                              tr("Failed to create assetmap."));
+        QMessageBox::critical(this, DCP_FAIL_MSG, tr("Failed to create assetmap."));
         goto Done;
     }
 

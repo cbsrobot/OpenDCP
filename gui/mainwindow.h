@@ -22,7 +22,6 @@
 #include <QMainWindow>
 #include <QtGui>
 #include <opendcp.h>
-#include "j2kconversion_dialog.h"
 #include "settings.h"
 
 class GenerateTitle;
@@ -124,7 +123,6 @@ private:
 
     GenerateTitle       *generateTitle;
     QString             lastDir;
-    J2kConversionDialog *dJ2kConversion;
 
     // copy/paste
     QPlainTextEdit *textEdit;
