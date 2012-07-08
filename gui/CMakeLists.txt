@@ -22,8 +22,7 @@ SET(OPENDCP_GUI_CXX_SRC
     mxf.cpp
     xml.cpp
     generatetitle.cpp
-    j2kconversion_dialog.cpp
-    mxfconversion_dialog.cpp
+    conversion_dialog.cpp
     mxf-writer.cpp
     settings.cpp
     translator.cpp
@@ -33,8 +32,7 @@ SET(OPENDCP_GUI_CXX_SRC
 SET(OPENDCP_GUI_H_SRC
     mainwindow.h
     generatetitle.h
-    j2kconversion_dialog.h
-    mxfconversion_dialog.h
+    conversion_dialog.h
     mxf-writer.h
     settings.h
     translator.h

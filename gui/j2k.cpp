@@ -18,6 +18,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "conversion_dialog.h"
 #include <QtGui>
 #include <QDir>
 #include <QPixmap>
@@ -217,22 +218,26 @@ void MainWindow::j2kConvert() {
     }
 
     threadCount = QThreadPool::globalInstance()->maxThreadCount();
-    dJ2kConversion->init(iterations, threadCount);
+
+    ConversionDialog *dialog = new ConversionDialog();
+    dialog->init(iterations, threadCount);
 
     // Create a QFutureWatcher and conncect signals and slots.
     QFutureWatcher<void> futureWatcher;
-    QObject::connect(dJ2kConversion, SIGNAL(cancel()), &futureWatcher, SLOT(cancel()));
-    QObject::connect(&futureWatcher, SIGNAL(progressValueChanged(int)), dJ2kConversion, SLOT(step()));
-    QObject::connect(&futureWatcher, SIGNAL(finished()), dJ2kConversion, SLOT(finished()));
+    QObject::connect(dialog,         SIGNAL(cancel()), &futureWatcher, SLOT(cancel()));
+    QObject::connect(&futureWatcher, SIGNAL(progressValueChanged(int)), dialog, SLOT(update()));
+    QObject::connect(&futureWatcher, SIGNAL(finished()), dialog, SLOT(finished()));
 
     // Start the computation
     futureWatcher.setFuture(QtConcurrent::map(list, j2kEncode));
 
     // open conversion dialog box
-    dJ2kConversion->exec();
+    dialog->exec();
 
     // wait to ensure all threads are finished
     futureWatcher.waitForFinished();
+
+    delete dialog;
 
     return;
 }

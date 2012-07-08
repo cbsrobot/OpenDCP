@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <opendcp.h>
 #include "mxf-writer.h"
-#include "mxfconversion_dialog.h"
+#include "conversion_dialog.h"
 
 enum MXF_ESSENCE_TYPE {
     JPEG2000 = 0,
@@ -577,15 +577,19 @@ Done:
 
 void MainWindow::mxfStartThread(opendcp_t *opendcp, QFileInfoList inputList, QString outputFile)
 {
-    MxfConversionDialog *dialog = new MxfConversionDialog();
-    MxfWriter           *writer = new MxfWriter(this);
+    ConversionDialog *dialog = new ConversionDialog();
+    MxfWriter        *writer = new MxfWriter(this);
 
-    connect(writer, SIGNAL(frameDone()),    dialog,  SLOT(step()));
-    connect(writer, SIGNAL(finished(int)),  dialog,  SLOT(finished(int)));
+    connect(writer, SIGNAL(frameDone()),    dialog,  SLOT(update()));
+    connect(writer, SIGNAL(setResult(int)), dialog,  SLOT(setResult(int)));
+    connect(writer, SIGNAL(finished()),     dialog,  SLOT(finished()));
     connect(dialog, SIGNAL(cancel()),       writer,  SLOT(cancel()));
 
-    writer->init(opendcp,inputList,outputFile);
-    dialog->init(opendcp->mxf.duration, outputFile);
+    writer->init(opendcp, inputList, outputFile);
+
+    dialog->init(opendcp->mxf.duration, 1);
+    dialog->setWindowTitle("MXF Conversion");
+
     writer->start();
     dialog->exec();
 

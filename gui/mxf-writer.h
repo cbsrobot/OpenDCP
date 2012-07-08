@@ -46,7 +46,8 @@ private:
     static int frameDoneCb(void *data);
 
 signals:
-    void finished(int);
+    void finished();
+    void setResult(int);
     void errorMessage(QString);
     void frameDone();
 

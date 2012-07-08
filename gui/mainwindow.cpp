@@ -19,10 +19,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "generatetitle.h"
-#include "j2kconversion_dialog.h"
-#include "mxfconversion_dialog.h"
 #include "settings.h"
-#include "mxf-writer.h"
 #include "opendcp.h"
 #include <QtGui>
 
@@ -38,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
     textEdit = new QPlainTextEdit;
 
     generateTitle   = new GenerateTitle(this);
-    dJ2kConversion  = new J2kConversionDialog();
 
     // create menus
     createActions();
