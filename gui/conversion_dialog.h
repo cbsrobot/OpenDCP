@@ -26,7 +26,7 @@ class ConversionDialog : public QDialog, private Ui::ConversionDialog {
 
 public:
     ConversionDialog(QWidget *parent = 0);
-    void init(int imageCount, int threadCount);
+    void init(int nFrames, int threadCount);
 
 private:
     int  m_totalCount;
