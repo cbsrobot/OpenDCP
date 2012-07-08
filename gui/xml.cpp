@@ -63,9 +63,15 @@ int MainWindow::mxfCopy(QString source, QString destination) {
         return OPENDCP_NO_ERROR;
     }
 
+
     // set source/destination files
     sourceFileInfo.setFile(source);
     destinationFileInfo.setFile(destination + "/" + sourceFileInfo.fileName());
+
+    // no need to copy if the source/destination are the same
+    if (sourceFileInfo.absoluteFilePath() == destinationFileInfo.absoluteFilePath()) {
+        return OPENDCP_NO_ERROR;
+    }
 
     // check if file exists
     if (destinationFileInfo.isFile()) {
