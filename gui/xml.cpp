@@ -38,14 +38,14 @@ enum ASSET_INDEX {
 void MainWindow::connectXmlSlots()
 {
     // connect slots
-    connect(ui->reelPictureButton, SIGNAL(clicked()), this, SLOT(setPictureTrack()));
-    connect(ui->reelPictureOffsetSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePictureDuration()));
-    connect(ui->reelSoundButton, SIGNAL(clicked()), this, SLOT(setSoundTrack()));
-    connect(ui->reelSoundOffsetSpinBox, SIGNAL(valueChanged(int)), SLOT(updateSoundDuration()));
-    connect(ui->reelSubtitleButton, SIGNAL(clicked()), this, SLOT(setSubtitleTrack()));
-    connect(ui->reelSubtitleOffsetSpinBox, SIGNAL(valueChanged(int)), SLOT(updateSubtitleDuration()));
-    connect(ui->createDcpButton, SIGNAL(clicked()), SLOT(startDcp()));
-    connect(ui->cplTitleGenButton, SIGNAL(clicked()), SLOT(getTitle()));
+    connect(ui->reelPictureButton,         SIGNAL(clicked()),         this, SLOT(setPictureTrack()));
+    connect(ui->reelSoundButton,           SIGNAL(clicked()),         this, SLOT(setSoundTrack()));
+    connect(ui->reelSubtitleButton,        SIGNAL(clicked()),         this, SLOT(setSubtitleTrack()));
+    connect(ui->reelPictureOffsetSpinBox,  SIGNAL(valueChanged(int)), this, SLOT(updatePictureDuration()));
+    connect(ui->reelSubtitleOffsetSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSubtitleDuration()));
+    connect(ui->reelSoundOffsetSpinBox,    SIGNAL(valueChanged(int)), this, SLOT(updateSoundDuration()));
+    connect(ui->createDcpButton,           SIGNAL(clicked()),         this, SLOT(startDcp()));
+    connect(ui->cplTitleGenButton,         SIGNAL(clicked()),         this, SLOT(getTitle()));
 }
 
 void MainWindow::getTitle() {
@@ -69,9 +69,7 @@ int MainWindow::mxfCopy(QString source, QString destination) {
 
     // check if file exists
     if (destinationFileInfo.isFile()) {
-        if (QMessageBox::question(this, tr("Move MXF File"),
-                                  tr("The destination picture MXF already exists, do you want to replace?"),
-                                  QMessageBox::No,QMessageBox::Yes) == QMessageBox::No) {
+        if (!ui->overwriteMxfCB->isChecked()) {
             return OPENDCP_NO_ERROR;
         }
         QFile::remove(destinationFileInfo.absoluteFilePath());
