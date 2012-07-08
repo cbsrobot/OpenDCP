@@ -149,12 +149,15 @@ void MainWindow::preview(QString filename)
     }
 }
 
-void j2kEncode(QStringList pair) {
-    convert_to_j2k(context,pair.at(0).toAscii().data(),pair.at(1).toAscii().data(), NULL);
+int j2kEncode(QStringList pair) {
+    int rc = convert_to_j2k(context,pair.at(0).toAscii().data(),pair.at(1).toAscii().data(), NULL);
+
+    return rc;
 }
 
 void MainWindow::j2kConvert() {
     int threadCount = 0;
+    QString detailText;
     QString inFile;
     QString outFile;
     QList<QStringList> list; 
@@ -223,19 +226,38 @@ void MainWindow::j2kConvert() {
     dialog->init(iterations, threadCount);
 
     // Create a QFutureWatcher and conncect signals and slots.
-    QFutureWatcher<void> futureWatcher;
+    QFutureWatcher<int>  futureWatcher;
+    QFuture<int>         result = QtConcurrent::mapped(list, j2kEncode);
     QObject::connect(dialog,         SIGNAL(cancel()), &futureWatcher, SLOT(cancel()));
     QObject::connect(&futureWatcher, SIGNAL(progressValueChanged(int)), dialog, SLOT(update()));
     QObject::connect(&futureWatcher, SIGNAL(finished()), dialog, SLOT(finished()));
 
     // Start the computation
-    futureWatcher.setFuture(QtConcurrent::map(list, j2kEncode));
+    futureWatcher.setFuture(result);
 
     // open conversion dialog box
     dialog->exec();
 
     // wait to ensure all threads are finished
     futureWatcher.waitForFinished();
+
+    for (int i = 0; i < result.resultCount(); i++) {
+        if (futureWatcher.resultAt(i)) {
+            QFileInfo filename = list.at(i).at(0);
+            detailText.append(filename.fileName());
+            detailText.append("\n");
+        }
+    }
+
+    if (!detailText.isEmpty()) {
+        QMessageBox msgBox;
+        msgBox.setText(tr("JPEG2000 Encoding Failure"));
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.setInformativeText(tr("Some files were unable to be encoded. Click 'show details' for a list.\n"));
+        msgBox.setDetailedText(detailText);
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.exec();
+    }
 
     delete dialog;
 

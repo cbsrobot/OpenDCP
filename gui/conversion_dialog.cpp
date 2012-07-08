@@ -41,8 +41,9 @@ void ConversionDialog::init(int nFrames, int threadCount)
     QString labelText;
 
     m_currentCount = 0;
-    m_canceled    = false;
+    m_canceled     = false;
     m_totalCount   = nFrames;
+    m_result       = 0;
 
     progressBar->reset();
     progressBar->setRange(0, nFrames);
