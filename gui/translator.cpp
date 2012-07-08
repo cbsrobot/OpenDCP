@@ -34,7 +34,9 @@ Translator::Translator()
 #endif
 
 #ifdef Q_OS_LINUX
-    m_langPath = "../share/opendcp";
+    m_langPath = QApplication::applicationDirPath();
+    m_langPath.replace(QString("bin"), QString("share"));
+    m_langPath.append("/opendcp");
 #endif
 
     m_langPath.append("/translation");
