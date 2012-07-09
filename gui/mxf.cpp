@@ -122,7 +122,15 @@ void MainWindow::mxfSoundOutputSlot() {
     QString filter;
 
     filter = "*.mxf";
+
     path = QFileDialog::getSaveFileName(this, tr("Save MXF as"),lastDir,filter);
+
+    if (path.isEmpty()) {
+        return;
+    }
+
+    QFileInfo fi(path);
+    lastDir = fi.absolutePath();
 
     ui->aMxfOutEdit->setText(path);
     ui->aMxfOutEditMulti->setText(path);
@@ -134,10 +142,19 @@ void MainWindow::wavInputSlot(QWidget *w)
     QString filter;
 
     filter = "*.wav";
-    path = QFileDialog::getOpenFileName(this, tr("Choose a wav file to open"),lastDir,filter);
+    path = QFileDialog::getOpenFileName(this, tr("Choose a wav file to open"), lastDir, filter);
+
+    if (path.isEmpty()) {
+        return;
+    }
+
+    QFileInfo fi(path);
+    lastDir = fi.absolutePath();
+
     w->setProperty("text", path);
-    lastDir = path;
 }
+
+
 
 void MainWindow::mxfSetSlideState() {
     int value;

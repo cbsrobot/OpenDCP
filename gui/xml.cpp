@@ -100,11 +100,13 @@ void MainWindow::startDcp()
     asset_list_t reelList[MAX_REELS];
 
     // get dcp destination directory
-    path = QFileDialog::getExistingDirectory(this, tr("Choose destination folder"),QString::null);
+    path = QFileDialog::getExistingDirectory(this, tr("Choose destination folder"), lastDir);
 
     if (path.isEmpty()) {
         return;
     }
+
+    lastDir = path;
 
     opendcp_t *xmlContext = opendcp_create();
 
@@ -253,11 +255,14 @@ void MainWindow::setPictureTrack()
     QString path;
     QString filter = "*.mxf";
 
-    path = QFileDialog::getOpenFileName(this, tr("Choose a file to open"),QString::null,filter);
+    path = QFileDialog::getOpenFileName(this, tr("Choose a file to open"), lastDir, filter);
 
     if (path.isEmpty()) {
         return;
     }
+
+    QFileInfo fi(path);
+    lastDir = fi.absolutePath();
 
     if (get_file_essence_class(path.toUtf8().data()) != ACT_PICTURE) {
         QMessageBox::critical(this, tr("Not a Picture Track"),
@@ -279,11 +284,14 @@ void MainWindow::setSoundTrack()
     QString path;
     QString filter = "*.mxf";
 
-    path = QFileDialog::getOpenFileName(this, tr("Choose a file to open"),QString::null,filter);
+    path = QFileDialog::getOpenFileName(this, tr("Choose a file to open"), lastDir, filter);
 
     if (path.isEmpty()) {
         return;
     }
+
+    QFileInfo fi(path);
+    lastDir = fi.absolutePath();
 
     if (get_file_essence_class(path.toUtf8().data()) != ACT_SOUND) {
         QMessageBox::critical(this, tr("Not a Sound Track"),
@@ -305,11 +313,14 @@ void MainWindow::setSubtitleTrack()
     QString path;
     QString filter = "*.mxf";
 
-    path = QFileDialog::getOpenFileName(this, tr("Choose an file to open"),QString::null,filter);
+    path = QFileDialog::getOpenFileName(this, tr("Choose an file to open"), lastDir, filter);
 
     if (path.isEmpty()) {
         return;
     }
+
+    QFileInfo fi(path);
+    lastDir = fi.absolutePath();
 
     if (get_file_essence_class(path.toUtf8().data()) != ACT_TIMED_TEXT) {
         QMessageBox::critical(this, tr("Not a Subtitle Track"),
