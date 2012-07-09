@@ -190,23 +190,29 @@ void MainWindow::getPath(QWidget *w)
         w->objectName().contains("J2k")) {
         if (w->objectName().contains("picture") && ui->mxfSourceTypeComboBox->currentIndex() == 1) {
             filter = "*.m2v";
-            path = QFileDialog::getOpenFileName(this, tr("Choose an mpeg2 file"),lastDir);
+            path = QFileDialog::getOpenFileName(this, tr("Choose an mpeg2 file"), lastDir);
         } else {
-            path = QFileDialog::getExistingDirectory(this, tr("Choose a directory of images"),lastDir);
+            path = QFileDialog::getExistingDirectory(this, tr("Choose a directory of images"), lastDir);
         }
     } else if (w->objectName().contains("subIn")) {
         filter = "*.xml";
-        path = QFileDialog::getOpenFileName(this, tr("DCDM Subtitle File"),lastDir);
+        path = QFileDialog::getOpenFileName(this, tr("DCDM Subtitle File"), lastDir);
     } else if (w->objectName().contains("MxfOut")) {
         filter = "*.mxf";
-        path = QFileDialog::getSaveFileName(this, tr("Save MXF as"),lastDir,filter);
+        path = QFileDialog::getSaveFileName(this, tr("Save MXF as"), lastDir, filter);
     } else {
         filter = "*.wav";
-        path = QFileDialog::getOpenFileName(this, tr("Choose a file to open"),lastDir,filter);
+        path = QFileDialog::getOpenFileName(this, tr("Choose a file to open"), lastDir, filter);
+    }
+
+    if (path.isEmpty()) {
+        return;
     }
 
     w->setProperty("text", path);
-    lastDir = path;
+
+    QFileInfo fi(path);
+    lastDir = fi.absolutePath();
 }
 
 filelist_t *MainWindow::QStringToFilelist(QFileInfoList list)
