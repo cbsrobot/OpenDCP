@@ -61,7 +61,7 @@
          </rect>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="j2kTab">
          <attribute name="title">
@@ -945,7 +945,7 @@
              <rect>
               <x>315</x>
               <y>30</y>
-              <width>131</width>
+              <width>151</width>
               <height>25</height>
              </rect>
             </property>
@@ -982,7 +982,7 @@
              <rect>
               <x>450</x>
               <y>30</y>
-              <width>140</width>
+              <width>141</width>
               <height>25</height>
              </rect>
             </property>
