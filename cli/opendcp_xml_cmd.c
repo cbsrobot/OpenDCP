@@ -25,6 +25,15 @@
 
 #include "opendcp.h"
 
+typedef struct {
+    char filename[FILENAME_MAX];
+} asset_list_t;
+
+typedef struct {
+    int          asset_count;
+    asset_list_t asset_list[3];
+} reel_list_t;
+
 void version() {
     FILE *fp;
 
@@ -87,7 +96,7 @@ int main (int argc, char **argv) {
     int width  = 0;
     char buffer[80];
     opendcp_t *opendcp;
-    asset_list_t reel_list[MAX_REELS];
+    reel_list_t reel_list[MAX_REELS];
 
     if ( argc <= 1 ) {
         dcp_usage();
@@ -125,14 +134,14 @@ int main (int argc, char **argv) {
 
         /* getopt_long stores the option index here. */
         int option_index = 0;
-     
+
         c = getopt_long (argc, argv, "a:b:e:svdhi:k:r:l:m:n:t:x:y:p:1:2:3:",
                          long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
             break;
-     
+
         switch (c)
         {
             case 0:
@@ -142,15 +151,15 @@ int main (int argc, char **argv) {
             break;
 
             case 'a':
-               sprintf(opendcp->xml.annotation,"%.128s",optarg);
+               sprintf(opendcp->dcp.annotation,"%.128s",optarg);
             break;
 
             case 'b':
-               sprintf(opendcp->xml.basename,"%.80s",optarg);
+               sprintf(opendcp->dcp.basename,"%.80s",optarg);
             break;
 
             case 'd':
-               opendcp->xml.digest_flag = 1;
+               opendcp->dcp.digest_flag = 1;
             break;
 
             case 'e':
@@ -160,13 +169,13 @@ int main (int argc, char **argv) {
             case 'h':
                dcp_usage();
             break;
-     
+
             case 'i':
-               sprintf(opendcp->xml.issuer,"%.80s",optarg);
+               sprintf(opendcp->dcp.issuer,"%.80s",optarg);
             break;
 
             case 'k':
-               sprintf(opendcp->xml.kind,"%.15s",optarg);
+               sprintf(opendcp->dcp.kind,"%.15s",optarg);
             break;
 
             case 'l':
@@ -179,7 +188,7 @@ int main (int argc, char **argv) {
                     || !strcmp(optarg,"PG-13")
                     || !strcmp(optarg,"R")
                     || !strcmp(optarg,"NC-17") ) {
-                   sprintf(opendcp->xml.rating,"%.5s",optarg);
+                   sprintf(opendcp->dcp.rating,"%.5s",optarg);
                } else {
                    sprintf(buffer,"Invalid rating %s\n",optarg);
                    dcp_fatal(opendcp,buffer);
@@ -189,12 +198,12 @@ int main (int argc, char **argv) {
             case 'n':
                opendcp->duration = atoi(optarg);
             break;
-     
+
             case 'r':
                j = 0;
                optind--;
                while ( optind<argc && strncmp("-",argv[optind],1) != 0) {
-				   sprintf(reel_list[reel_count].asset_list[j++].filename,"%s",argv[optind++]);
+                   sprintf(reel_list[reel_count].asset_list[j++].filename,"%s",argv[optind++]);
                }
                reel_list[reel_count++].asset_count = j--;
             break;
@@ -207,7 +216,7 @@ int main (int argc, char **argv) {
 #endif
 
             case 't':
-               sprintf(opendcp->xml.title,"%.80s",optarg);
+               sprintf(opendcp->dcp.title,"%.80s",optarg);
             break;
 
             case 'x':
@@ -302,7 +311,7 @@ int main (int argc, char **argv) {
             dcp_fatal(opendcp,"XML digital signature certifcates enabled, but private key file not specified");
         }
     }
-  
+
     /* set aspect ratio override */
     if (width || height) {
         if (!height) {
@@ -313,40 +322,52 @@ int main (int argc, char **argv) {
             dcp_fatal(opendcp,"You must specify widht, if you specify height");
         }
 
-        sprintf(opendcp->xml.aspect_ratio,"%d %d",width,height);
+        sprintf(opendcp->dcp.aspect_ratio,"%d %d",width,height);
     }
 
     /* add pkl to the DCP (only one PKL currently support) */
-    add_pkl(opendcp);
+    pkl_t pkl;
+    create_pkl(opendcp->dcp, &pkl);
+    add_pkl_to_dcp(&opendcp->dcp, pkl);
 
     /* add cpl to the DCP/PKL (only one CPL currently support) */
-    add_cpl(opendcp, &opendcp->pkl[0]);
+    cpl_t cpl;
+    create_cpl(opendcp->dcp, &cpl);
+    add_cpl_to_pkl(&opendcp->dcp.pkl[0], cpl);
 
     /* Add and validate reels */
-    for (c = 0;c<reel_count;c++) {
-        if (add_reel(opendcp, &opendcp->pkl[0].cpl[0], reel_list[c]) != OPENDCP_NO_ERROR) {
-            sprintf(buffer,"Could not add reel %d to DCP\n",c+1); 
-            dcp_fatal(opendcp,buffer);
+    for (c = 0; c<reel_count; c++) {
+        int a;
+        reel_t reel;
+        create_reel(opendcp->dcp, &reel);
+
+        for (a = 0; a < reel_list[c].asset_count; a++) {
+            asset_t asset;
+            add_asset(opendcp, &asset, reel_list[c].asset_list[a].filename);
+            add_asset_to_reel(opendcp, &reel, asset);
         }
-        if (validate_reel(opendcp, &opendcp->pkl[0].cpl[0], c) != OPENDCP_NO_ERROR) {
-            sprintf(buffer,"Could not validate reel %d\n",c+1); 
+
+        if (validate_reel(opendcp, reel, c) == OPENDCP_NO_ERROR) {
+            add_reel_to_cpl(&opendcp->dcp.pkl[0].cpl[0], reel);
+        } else {
+            sprintf(buffer,"Could not validate reel %d\n",c+1);
             dcp_fatal(opendcp,buffer);
         }
     }
 
     /* set ASSETMAP/VOLINDEX path */
     if (opendcp->ns == XML_NS_SMPTE) {
-        sprintf(opendcp->assetmap.filename,"%s","ASSETMAP.xml");
-        sprintf(opendcp->volindex.filename,"%s","VOLINDEX.xml");
+        sprintf(opendcp->dcp.assetmap.filename,"%s","ASSETMAP.xml");
+        sprintf(opendcp->dcp.volindex.filename,"%s","VOLINDEX.xml");
     } else {
-        sprintf(opendcp->assetmap.filename,"%s","ASSETMAP");
-        sprintf(opendcp->volindex.filename,"%s","VOLINDEX");
+        sprintf(opendcp->dcp.assetmap.filename,"%s","ASSETMAP");
+        sprintf(opendcp->dcp.volindex.filename,"%s","VOLINDEX");
     }
 
     /* Write XML Files */
-    if (write_cpl(opendcp, &opendcp->pkl[0].cpl[0]) != OPENDCP_NO_ERROR)
+    if (write_cpl(opendcp, &opendcp->dcp.pkl[0].cpl[0]) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing composition playlist failed");
-    if (write_pkl(opendcp, &opendcp->pkl[0]) != OPENDCP_NO_ERROR)
+    if (write_pkl(opendcp, &opendcp->dcp.pkl[0]) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing packing list failed");
     if (write_volumeindex(opendcp) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing volume index failed");

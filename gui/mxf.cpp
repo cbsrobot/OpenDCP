@@ -64,7 +64,7 @@ void MainWindow::mxfConnectSlots() {
     connect(ui->mxfSourceTypeComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(mxfSourceTypeUpdate()));
     connect(ui->mxfButton,               SIGNAL(clicked()),                this, SLOT(mxfStart()));
     connect(ui->subCreateButton,         SIGNAL(clicked()),                this, SLOT(mxfCreateSubtitle()));
-    connect(ui->mxfSlideCheckBox,        SIGNAL(stateChanged(int)),       this,  SLOT(mxfSetSlideState()));
+    connect(ui->mxfSlideCheckBox,        SIGNAL(stateChanged(int)),        this, SLOT(mxfSetSlideState()));
 
     // Picture input
     signalMapper.setMapping(ui->pictureLeftButton,  ui->pictureLeftEdit);
@@ -72,7 +72,7 @@ void MainWindow::mxfConnectSlots() {
 
     connect(ui->pictureLeftButton,  SIGNAL(clicked()), &signalMapper, SLOT(map()));
     connect(ui->pictureRightButton, SIGNAL(clicked()), &signalMapper, SLOT(map()));
- 
+
     // Sound input
     wavSignalMapper.setMapping(ui->aLeftButton,   ui->aLeftEdit);
     wavSignalMapper.setMapping(ui->aRightButton,  ui->aRightEdit);
@@ -140,6 +140,9 @@ void MainWindow::wavInputSlot(QWidget *w)
 {
     QString path;
     QString filter;
+    QFileInfoList inputList;
+    int     frameRate;
+    int     rc;
 
     filter = "*.wav";
     path = QFileDialog::getOpenFileName(this, tr("Choose a wav file to open"), lastDir, filter);
@@ -151,10 +154,30 @@ void MainWindow::wavInputSlot(QWidget *w)
     QFileInfo fi(path);
     lastDir = fi.absolutePath();
 
+    frameRate = ui->mxfFrameRateComboBox->currentText().toInt();
+    inputList.append(path);
+    rc = checkWavInfo(inputList, frameRate);
+
+    if (rc == OPENDCP_INVALID_WAV_CHANNELS) {
+        QMessageBox::warning(this, tr("Invalid Wav"),
+                                   tr("The selected wav file is not Mono"));
+        return;
+    }
+
+    if (rc == OPENDCP_INVALID_WAV_BITDEPTH) {
+        QMessageBox::warning(this, tr("Invalid Wav"),
+                                   tr("The selected wav file is not 24-bit"));
+        return;
+    }
+
+    if (rc) {
+        QMessageBox::warning(this, tr("Invalid Wav"),
+                                   tr("The selected wav file is invalid"));
+        return;
+    }
+
     w->setProperty("text", path);
 }
-
-
 
 void MainWindow::mxfSetSlideState() {
     int value;
@@ -312,20 +335,31 @@ int MainWindow::mxfCheckSoundInput71() {
     }
 }
 
-int MainWindow::checkWavInfo(opendcp_t *opendcp, QFileInfoList filelist) {
+int MainWindow::checkWavInfo(QFileInfoList filelist, int frameRate) {
     QFileInfo  s;
     wav_info_t wav;
     int        rc;
+    int        expectedChannels;
 
     foreach(s, filelist) {
-        rc = get_wav_info(s.absoluteFilePath().toUtf8().data(), opendcp->frame_rate, &wav);
+        rc = get_wav_info(s.absoluteFilePath().toUtf8().data(), frameRate, &wav);
 
-        if (rc) {
-            return rc;
+        if (ui->mxfSoundTypeRadioMono->isChecked()) {
+            expectedChannels = 1;
+        } else {
+            expectedChannels = wav.nchannels;
+        }
+
+        if (wav.nchannels != expectedChannels) {
+            return OPENDCP_INVALID_WAV_CHANNELS;
         }
 
         if (wav.bitdepth != 24) {
             return OPENDCP_INVALID_WAV_BITDEPTH;
+        }
+
+        if (rc) {
+            return rc;
         }
     }
 
@@ -493,7 +527,7 @@ void MainWindow::mxfCreateAudio() {
     // build input list
     mxfAddInputWavFiles(&inputList);
 
-    if (checkWavInfo(opendcp, inputList)) {
+    if (checkWavInfo(inputList, opendcp->frame_rate)) {
         QMessageBox::critical(this, tr("Invalid Wav Files"),tr("Input WAV files must be 24-bit"));
         return;
     }

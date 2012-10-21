@@ -1,4 +1,4 @@
-/* 
+/*
     OpenDCP: Builds Digital Cinema Packages
     Copyright (c) 2010-2011 Terrence Meiczinger, All Rights Reserved
 
@@ -30,18 +30,18 @@
 
 const char *XML_HEADER  = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
 
-const char *NS_CPL[]    = { "none", 
+const char *NS_CPL[]    = { "none",
                             "http://www.digicine.com/PROTO-ASDCP-CPL-20040511#", /* MXF Interop */
                             "http://www.smpte-ra.org/schemas/429-7/2006/CPL"     /* SMPTE */
                           };
 
-const char *NS_CPL_3D[] = { "none", 
+const char *NS_CPL_3D[] = { "none",
                             "http://www.digicine.com/schemas/437-Y/2007/Main-Stereo-Picture-CPL",   /* MXF Interop */
                             "http://www.smpte-ra.org/schemas/429-10/2008/Main-Stereo-Picture-CPL"   /* SMPTE */
                           };
 
-const char *NS_PKL[]    = { "none", 
-                            "http://www.digicine.com/PROTO-ASDCP-PKL-20040311#", /* MXF Interop */ 
+const char *NS_PKL[]    = { "none",
+                            "http://www.digicine.com/PROTO-ASDCP-PKL-20040311#", /* MXF Interop */
                             "http://www.smpte-ra.org/schemas/429-8/2007/PKL"     /* SMPTE */
                           };
 
@@ -55,7 +55,7 @@ const char *DS_CMA  = "http://www.w3.org/TR/2001/REC-xml-c14n-20010315";        
 const char *DS_DMA  = "http://www.w3.org/2000/09/xmldsig#sha1";                  /* digest method */
 const char *DS_TMA  = "http://www.w3.org/2000/09/xmldsig#enveloped-signature";   /* transport method */
 
-const char *DS_SMA[] = { "none", 
+const char *DS_SMA[] = { "none",
                          "http://www.w3.org/2000/09/xmldsig#rsa-sha1",           /* MXF Interop */
                          "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"     /* SMPTE */
                        };
@@ -85,7 +85,7 @@ void dcp_fatal(opendcp_t *opendcp, char *format, ...) {
 
 /*
 char *base64(const unsigned char *data, int length) {
-    int len; 
+    int len;
     char *b_ptr;
 
     BIO *b64 = BIO_new(BIO_s_mem());
@@ -153,7 +153,7 @@ static int get_index(char *file, int prefix_len) {
 }
 
 /**
-Ensure a list of ordered filenames are sequential 
+Ensure a list of ordered filenames are sequential
 
 @param  files is an array of file names
 @param  nfiles is the number of files
@@ -233,10 +233,10 @@ int order_indexed_files(char *files[], int nfiles) {
 /**
 Allocate a list of filenames
 
-This function allocates memory for a list of filenames. 
+This function allocates memory for a list of filenames.
 
-@param  nfiles is the number of files to allocate 
-@return filelist_t pointer 
+@param  nfiles is the number of files to allocate
+@return filelist_t pointer
 */
 filelist_t *filelist_alloc(int nfiles) {
     int x;
@@ -257,12 +257,12 @@ filelist_t *filelist_alloc(int nfiles) {
 }
 
 /**
-free a filelist_t structure 
+free a filelist_t structure
 
-This function frees memory used by filelist_t. 
+This function frees memory used by filelist_t.
 
 @param  filelist_t a pointer to a filelist
-@return NONE  
+@return NONE
 */
 void filelist_free(filelist_t *filelist) {
     int x;
@@ -282,14 +282,14 @@ void filelist_free(filelist_t *filelist) {
 }
 
 /**
-generate a timestamp string 
+generate a timestamp string
 
-This function will generate a timestamp string based on the current local time. 
+This function will generate a timestamp string based on the current local time.
 
 @param  timestamp buffer that will hold the timestamp
-@return NONE  
+@return NONE
 */
-void get_timestamp(char *timestamp) { 
+void get_timestamp(char *timestamp) {
     time_t time_ptr;
     struct tm *time_struct;
     char buffer[30];
@@ -298,15 +298,15 @@ void get_timestamp(char *timestamp) {
     time_struct = localtime(&time_ptr);
     strftime(buffer,30,"%Y-%m-%dT%I:%M:%S+00:00",time_struct);
     sprintf(timestamp,"%.30s",buffer);
-}  
+}
 
 /**
-determine an assets type 
+determine an assets type
 
-This function will return the class type of an asset essence. 
+This function will return the class type of an asset essence.
 
 @param  asset_t
-@return int 
+@return int
 */
 int get_asset_type(asset_t asset) {
     switch (asset.essence_type) {
@@ -335,9 +335,9 @@ int opendcp_callback_null(void *args) {
 /**
 create an opendcp context
 
-This function will allocate and initialize an opendcp context. 
+This function will allocate and initialize an opendcp context.
 
-@param  NONE 
+@param  NONE
 @return An initialized opendcp_t structure on success, otherwise returns NULL
 */
 opendcp_t *opendcp_create() {
@@ -354,12 +354,12 @@ opendcp_t *opendcp_create() {
 
     /* initialize opendcp */
     opendcp->log_level = LOG_WARN;
-    sprintf(opendcp->xml.issuer,"%.80s %.80s",OPENDCP_NAME,OPENDCP_VERSION);
-    sprintf(opendcp->xml.creator,"%.80s %.80s",OPENDCP_NAME, OPENDCP_VERSION);
-    sprintf(opendcp->xml.annotation,"%.128s",DCP_ANNOTATION);
-    sprintf(opendcp->xml.title,"%.80s",DCP_TITLE);
-    sprintf(opendcp->xml.kind,"%.15s",DCP_KIND);
-    get_timestamp(opendcp->xml.timestamp);
+    sprintf(opendcp->dcp.issuer,"%.80s %.80s",OPENDCP_NAME,OPENDCP_VERSION);
+    sprintf(opendcp->dcp.creator,"%.80s %.80s",OPENDCP_NAME, OPENDCP_VERSION);
+    sprintf(opendcp->dcp.annotation,"%.128s",DCP_ANNOTATION);
+    sprintf(opendcp->dcp.title,"%.80s",DCP_TITLE);
+    sprintf(opendcp->dcp.kind,"%.15s",DCP_KIND);
+    get_timestamp(opendcp->dcp.timestamp);
 
     /* initialize callbacks */
     opendcp->mxf.frame_done.callback  = opendcp_callback_null;
@@ -373,10 +373,10 @@ opendcp_t *opendcp_create() {
 /**
 delete an opendcp context
 
-This function will de-allocate an opendcp context. 
+This function will de-allocate an opendcp context.
 
 @param  opendcp an opendcp_t structure
-@return returns OPENDCP_NO_ERROR on success 
+@return returns OPENDCP_NO_ERROR on success
 */
 int opendcp_delete(opendcp_t *opendcp) {
     if ( opendcp != NULL) {
@@ -386,224 +386,273 @@ int opendcp_delete(opendcp_t *opendcp) {
 }
 
 /**
-add packaging list to dcp
+create a pkl and add information
 
-This function populates the pkl information of a DCP 
+This function populates a pkl data structure with DCP information
+from a dcp_t structure.
 
-@param  opendcp an opendcp_t structure
-@return returns OPENDCP_NO_ERROR on success 
+@param  dcp dcp_t structure
+@param  pkl pkl_t  structure
+@return NONE
 */
-int add_pkl(opendcp_t *opendcp) {
+void create_pkl(dcp_t dcp, pkl_t *pkl) {
     char uuid_s[40];
-    int i = opendcp->pkl_count++;
 
-    strcpy(opendcp->pkl[i].issuer,     opendcp->xml.issuer);
-    strcpy(opendcp->pkl[i].creator,    opendcp->xml.creator);
-    strcpy(opendcp->pkl[i].annotation, opendcp->xml.annotation);
-    strcpy(opendcp->pkl[i].timestamp,  opendcp->xml.timestamp);
+    strcpy(pkl->issuer,     dcp.issuer);
+    strcpy(pkl->creator,    dcp.creator);
+    strcpy(pkl->annotation, dcp.annotation);
+    strcpy(pkl->timestamp,  dcp.timestamp);
 
     /* Generate UUIDs */
     uuid_random(uuid_s);
-    sprintf(opendcp->pkl[i].uuid,"%.36s",uuid_s);
+    sprintf(pkl->uuid,"%.36s",uuid_s);
 
-    /* Generate XML filename */
-    if ( !strcmp(opendcp->xml.basename,"") ) {
-        sprintf(opendcp->pkl[i].filename,"%.40s_pkl.xml",opendcp->pkl[i].uuid);
+   /* Generate XML filename */
+    if ( !strcmp(dcp.basename,"") ) {
+        sprintf(pkl->filename,"%.40s_pkl.xml",pkl->uuid);
     } else {
-        sprintf(opendcp->pkl[i].filename,"%.40s_pkl.xml",opendcp->xml.basename);
+        sprintf(pkl->filename,"%.40s_pkl.xml",dcp.basename);
     }
 
-    opendcp->pkl_count++;
-
-    return OPENDCP_NO_ERROR;
+    return;
 }
 
 /**
-add content playlist to packaging list 
+add packaging list to dcp
 
-This function populates the cpl in a packaging list 
+This function adds a pkl to a dcp_t structure
 
-@param  opendcp an opendcp_t structure
-@param  pkl     a pkl structure 
-@return returns OPENDCP_NO_ERROR on success 
+@param  dcp dcp_t structure
+@param  pkl pkl_t structure
+@return NONE
 */
-int add_cpl(opendcp_t *opendcp, pkl_t *pkl) {
-    char uuid_s[40];
-    int i = pkl->cpl_count;
+void add_pkl_to_dcp(dcp_t *dcp, pkl_t pkl) {
+    memcpy(dcp[dcp->pkl_count].pkl, &pkl, sizeof(pkl_t));
+    dcp->pkl_count++;
 
-    strcpy(pkl->cpl[i].annotation, opendcp->xml.annotation);
-    strcpy(pkl->cpl[i].issuer,     opendcp->xml.issuer);
-    strcpy(pkl->cpl[i].creator,    opendcp->xml.creator);
-    strcpy(pkl->cpl[i].title,      opendcp->xml.title);
-    strcpy(pkl->cpl[i].kind,       opendcp->xml.kind);
-    strcpy(pkl->cpl[i].rating,     opendcp->xml.rating);
-    strcpy(pkl->cpl[i].timestamp,  opendcp->xml.timestamp);
+    return;
+}
+
+/**
+add content playlist to packaging list
+
+This function populates a cpl data structure with DCP information
+from a dcp_t structure.
+
+@param  dcp dcp_t structure
+@param  cpl cpl_t structure
+@return NONE
+*/
+void create_cpl(dcp_t dcp, cpl_t *cpl) {
+    char uuid_s[40];
+
+    strcpy(cpl->annotation, dcp.annotation);
+    strcpy(cpl->issuer,     dcp.issuer);
+    strcpy(cpl->creator,    dcp.creator);
+    strcpy(cpl->title,      dcp.title);
+    strcpy(cpl->kind,       dcp.kind);
+    strcpy(cpl->rating,     dcp.rating);
+    strcpy(cpl->timestamp,  dcp.timestamp);
 
     uuid_random(uuid_s);
-    sprintf(pkl->cpl[i].uuid,"%.36s",uuid_s);
+    sprintf(cpl->uuid,"%.36s",uuid_s);
 
     /* Generate XML filename */
-    if ( !strcmp(opendcp->xml.basename,"") ) {
-        sprintf(pkl->cpl[i].filename,"%.40s_cpl.xml",pkl->cpl[i].uuid);
+    if ( !strcmp(dcp.basename, "") ) {
+        sprintf(cpl->filename, "%.40s_cpl.xml", cpl->uuid);
     } else {
-        sprintf(pkl->cpl[i].filename,"%.40s_cpl.xml",opendcp->xml.basename);
+        sprintf(cpl->filename, "%.40s_cpl.xml", dcp.basename);
     }
 
+    return;
+}
+
+/**
+add packaging list to packaging list
+
+This functio adds a cpl to a pkl structure
+
+@param  dcp dcp_t structure
+@param  cpl cpl_t structure
+@return NONE
+*/
+void add_cpl_to_pkl(pkl_t *pkl, cpl_t cpl) {
+    memcpy(&pkl->cpl[pkl->cpl_count], &cpl, sizeof(cpl_t));
     pkl->cpl_count++;
 
-    return OPENDCP_NO_ERROR;
+    return;
 }
 
 int init_asset(asset_t *asset) {
-    memset(asset,0,sizeof(asset_t));
+    memset(asset, 0, sizeof(asset_t));
 
     return OPENDCP_NO_ERROR;
 }
 
-int validate_reel(opendcp_t *opendcp, cpl_t *cpl, int reel) {
+void create_reel(dcp_t dcp, reel_t *reel) {
+    char uuid_s[40];
+
+    strcpy(reel->annotation, dcp.annotation);
+
+    /* Generate UUIDs */
+    uuid_random(uuid_s);
+    sprintf(reel->uuid,"%.36s",uuid_s);
+}
+
+int validate_reel(opendcp_t *opendcp, reel_t reel, int reel_number) {
     int d = 0;
-    int x,a;
     int picture = 0;
     int duration_mismatch = 0;
 
-    dcp_log(LOG_INFO,"Validating Reel %d\n",reel+1);
+    /* change reel to 1 based for user */
+    reel_number += 1;
 
-    a = cpl->reel[reel].asset_count; 
+    dcp_log(LOG_DEBUG,"validate_reel: validating reel %d", reel_number);
 
-    /* check if reel has a picture track */ 
-    for (x=0;x<a;x++) {
-        if (cpl->reel[reel].asset[x].essence_class == ACT_PICTURE) {
-            picture++;
-        }
+    /* check if reel has a picture track */
+    if (reel.main_picture.essence_class == ACT_PICTURE) {
+        picture++;
     }
 
     if (picture < 1) {
-        dcp_log(LOG_ERROR,"Reel %d has no picture track",reel);
+        dcp_log(LOG_ERROR,"Reel %d has no picture track",reel_number);
         return OPENDCP_NO_PICTURE_TRACK;
     } else if (picture > 1) {
-        dcp_log(LOG_ERROR,"Reel %d has multiple picture tracks",reel);
+        dcp_log(LOG_ERROR,"Reel %d has multiple picture tracks",reel_number);
         return OPENDCP_MULTIPLE_PICTURE_TRACK;
     }
 
-    d = cpl->reel[reel].asset[0].duration;
+    d = reel.main_picture.duration;
 
     /* check durations */
-    for (x=0;x<a;x++) {
-        if (cpl->reel[reel].asset[x].duration) {
-            if (cpl->reel[reel].asset[x].duration != d) {
-                duration_mismatch = 1;
-                if (cpl->reel[reel].asset[x].duration < d) {
-                   d = cpl->reel[reel].asset[x].duration;
-                }
-            }
-        } else {
-            dcp_log(LOG_ERROR,"Asset %s has no duration",cpl->reel[reel].asset[x].filename);
-           return OPENDCP_TRACK_NO_DURATION;
+    if (reel.main_sound.duration != d) {
+        duration_mismatch = 1;
+        if (reel.main_sound.duration < d) {
+            d = reel.main_sound.duration;
+        }
+    }
+
+    if (reel.main_subtitle.duration != d) {
+        duration_mismatch = 1;
+        if (reel.main_subtitle.duration < d) {
+            d = reel.main_subtitle.duration;
         }
     }
 
     if (duration_mismatch) {
-       dcp_log(LOG_WARN,"Asset duration mismatch, adjusting all durations to shortest asset duration of %d frames", d);
-        for (x=0;x<a;x++) {
-            cpl->reel[reel].asset[x].duration = d;
-        }
+        reel.main_picture.duration = d;
+        reel.main_sound.duration = d;
+        reel.main_subtitle.duration = d;
+        dcp_log(LOG_WARN,"Asset duration mismatch, adjusting all durations to shortest asset duration of %d frames", d);
     }
-          
+
     return OPENDCP_NO_ERROR;
 }
 
-int add_reel(opendcp_t *opendcp, cpl_t *cpl, asset_list_t reel) {
-    int result;
-    int x,r;
-    FILE *fp;
-    char *filename;
-    asset_t asset;
+void add_reel_to_cpl(cpl_t *cpl, reel_t reel) {
+    memcpy(&cpl->reel[cpl->reel_count], &reel, sizeof(reel_t));
+    cpl->reel_count++;
+}
+
+int add_asset(opendcp_t *opendcp, asset_t *asset, char *filename) {
     struct stat st;
-    char uuid_s[40];
+    FILE   *fp;
+    int    result;
 
-    dcp_log(LOG_INFO,"Adding Reel");
+    dcp_log(LOG_INFO, "Adding asset %s", filename);
 
-    r = cpl->reel_count; 
+    init_asset(asset);
 
-    /* add reel uuid */
-    uuid_random(uuid_s);
-    sprintf(cpl->reel[r].uuid,"%.36s",uuid_s);
-
-    /* parse argument and read asset information */
-    for (x=0;x<reel.asset_count;x++) {
-        filename=reel.asset_list[x].filename;
-        init_asset(&asset);
-      
-        sprintf(asset.filename,"%s",filename);
-        sprintf(asset.annotation,"%s",basename(filename));
-
-        /* check if file exists */
-        if ((fp = fopen(filename, "r")) == NULL) {
-            dcp_log(LOG_ERROR,"add_reel: Could not open file: %s",filename);
-            return OPENDCP_FILEOPEN;
-        } else {
-            fclose (fp);
-        }
-
-        /* get file size */
-        stat(filename, &st);
-        sprintf(asset.size,"%"PRIu64, st.st_size);
-
-        /* read asset information */
-        dcp_log(LOG_INFO,"add_reel: Reading %s asset information",filename);
-
-        result = read_asset_info(&asset);
-
-        if (result == OPENDCP_ERROR) {
-            dcp_log(LOG_ERROR,"%s is not a proper essence file",filename);
-            return OPENDCP_INVALID_TRACK_TYPE;
-        }
-
-        if (x == 0) {
-            opendcp->ns = asset.xml_ns;
-            dcp_log(LOG_DEBUG,"add_reel: Label type detected: %d",opendcp->ns);
-        } else {
-            if (opendcp->ns != asset.xml_ns) {
-                dcp_log(LOG_ERROR,"Warning DCP specification mismatch in assets. Please make sure all assets are MXF Interop or SMPTE");
-                return OPENDCP_SPECIFICATION_MISMATCH;
-            }
-        }
-
-        /* force aspect ratio, if specified */
-        if (strcmp(opendcp->xml.aspect_ratio,"") ) {
-            sprintf(asset.aspect_ratio,"%s",opendcp->xml.aspect_ratio);
-        }
-
-        /* Set duration, if specified */
-        if (opendcp->duration) {
-            if  (opendcp->duration<asset.duration) {
-                asset.duration = opendcp->duration;
-            } else {
-                dcp_log(LOG_WARN,"Desired duration %d cannot be greater than assset duration %d, ignoring value",opendcp->duration,asset.duration);
-            }
-        }
-
-        /* Set entry point, if specified */
-        if (opendcp->entry_point) {
-            if (opendcp->entry_point<asset.duration) {
-                asset.entry_point = opendcp->entry_point;
-            } else {
-                dcp_log(LOG_WARN,"Desired entry point %d cannot be greater than assset duration %d, ignoring value",opendcp->entry_point,asset.duration);
-            }
-        }
-
-        /* calculate digest */
-        calculate_digest(filename,asset.digest);
-   
-        /* get asset type */
-        result = get_asset_type(asset);
-
-        /* add asset to cpl */
-        cpl->reel[r].asset[x] = asset;
-        cpl->reel[r].asset_count++;
+    /* check if file exists */
+    if ((fp = fopen(filename, "r")) == NULL) {
+        dcp_log(LOG_ERROR,"add_asset: Could not open file: %s",filename);
+        return OPENDCP_FILEOPEN;
+    } else {
+        fclose (fp);
     }
 
-    cpl->reel_count++;
+    sprintf(asset->filename,"%s",filename);
+    sprintf(asset->annotation,"%s",basename(filename));
+
+    /* get file size */
+    stat(filename, &st);
+    sprintf(asset->size,"%"PRIu64, st.st_size);
+
+    /* read asset information */
+    dcp_log(LOG_DEBUG,"add_asset: Reading %s asset information",filename);
+
+    result = read_asset_info(asset);
+
+    if (result == OPENDCP_ERROR) {
+        dcp_log(LOG_ERROR,"%s is not a proper essence file",filename);
+        return OPENDCP_INVALID_TRACK_TYPE;
+    }
+
+    /* force aspect ratio, if specified */
+    if (strcmp(opendcp->dcp.aspect_ratio,"") ) {
+        sprintf(asset->aspect_ratio,"%s",opendcp->dcp.aspect_ratio);
+    }
+
+    /* Set duration, if specified */
+    if (opendcp->duration) {
+        if  (opendcp->duration < asset->duration) {
+            asset->duration = opendcp->duration;
+        } else {
+            dcp_log(LOG_WARN,"Desired duration %d cannot be greater than assset duration %d, ignoring value",opendcp->duration,asset->duration);
+        }
+    }
+
+    /* Set entry point, if specified */
+    if (opendcp->entry_point) {
+        if (opendcp->entry_point < asset->duration) {
+            asset->entry_point = opendcp->entry_point;
+        } else {
+            dcp_log(LOG_WARN,"Desired entry point %d cannot be greater than assset duration %d, ignoring value",opendcp->entry_point,asset->duration);
+        }
+    }
+
+    /* calculate digest */
+    calculate_digest(opendcp, filename, asset->digest);
+
+    return OPENDCP_NO_ERROR;
+}
+
+int add_asset_to_reel(opendcp_t *opendcp, reel_t *reel, asset_t asset) {
+    int result;
+
+    dcp_log(LOG_INFO,"Adding asset to reel");
+
+    if (opendcp->ns == XML_NS_UNKNOWN) {
+        opendcp->ns = asset.xml_ns;
+        dcp_log(LOG_DEBUG,"add_asset_to_reel: Label type detected: %d",opendcp->ns);
+    } else {
+        if (opendcp->ns != asset.xml_ns) {
+            dcp_log(LOG_ERROR,"Warning DCP specification mismatch in assets. Please make sure all assets are MXF Interop or SMPTE");
+            return OPENDCP_SPECIFICATION_MISMATCH;
+        }
+    }
+
+    result = get_asset_type(asset);
+
+    switch (result) {
+       case ACT_PICTURE:
+           dcp_log(LOG_DEBUG,"add_asset_to_reel: adding picture");
+           reel->main_picture = asset;
+       break;
+
+       case ACT_SOUND:
+           dcp_log(LOG_DEBUG,"add_asset_to_reel: adding sound");
+           reel->main_sound = asset;
+       break;
+
+       case ACT_TIMED_TEXT:
+           dcp_log(LOG_DEBUG,"add_asset_to_reel: adding subtitle");
+           reel->main_subtitle = asset;
+       break;
+
+       default:
+           return OPENDCP_ERROR;
+    }
 
     return OPENDCP_NO_ERROR;
 }
