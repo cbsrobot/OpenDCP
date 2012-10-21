@@ -499,7 +499,7 @@ void create_reel(dcp_t dcp, reel_t *reel) {
     sprintf(reel->uuid,"%.36s",uuid_s);
 }
 
-int validate_reel(opendcp_t *opendcp, reel_t reel, int reel_number) {
+int validate_reel(opendcp_t *opendcp, reel_t *reel, int reel_number) {
     int d = 0;
     int picture = 0;
     int duration_mismatch = 0;
@@ -510,7 +510,7 @@ int validate_reel(opendcp_t *opendcp, reel_t reel, int reel_number) {
     dcp_log(LOG_DEBUG,"validate_reel: validating reel %d", reel_number);
 
     /* check if reel has a picture track */
-    if (reel.main_picture.essence_class == ACT_PICTURE) {
+    if (reel->main_picture.essence_class == ACT_PICTURE) {
         picture++;
     }
 
@@ -522,27 +522,27 @@ int validate_reel(opendcp_t *opendcp, reel_t reel, int reel_number) {
         return OPENDCP_MULTIPLE_PICTURE_TRACK;
     }
 
-    d = reel.main_picture.duration;
+    d = reel->main_picture.duration;
 
     /* check durations */
-    if (reel.main_sound.duration != d) {
+    if (reel->main_sound.duration && reel->main_sound.duration != d) {
         duration_mismatch = 1;
-        if (reel.main_sound.duration < d) {
-            d = reel.main_sound.duration;
+        if (reel->main_sound.duration < d) {
+            d = reel->main_sound.duration;
         }
     }
 
-    if (reel.main_subtitle.duration != d) {
+    if (reel->main_subtitle.duration && reel->main_subtitle.duration != d) {
         duration_mismatch = 1;
-        if (reel.main_subtitle.duration < d) {
-            d = reel.main_subtitle.duration;
+        if (reel->main_subtitle.duration < d) {
+            d = reel->main_subtitle.duration;
         }
     }
 
     if (duration_mismatch) {
-        reel.main_picture.duration = d;
-        reel.main_sound.duration = d;
-        reel.main_subtitle.duration = d;
+        reel->main_picture.duration = d;
+        reel->main_sound.duration = d;
+        reel->main_subtitle.duration = d;
         dcp_log(LOG_WARN,"Asset duration mismatch, adjusting all durations to shortest asset duration of %d frames", d);
     }
 

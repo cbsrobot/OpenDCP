@@ -343,7 +343,7 @@ void  dcp_fatal(opendcp_t *opendcp, char *error, ...);
 void  get_timestamp(char *timestamp);
 int   get_asset_type(asset_t asset);
 int   get_file_essence_class(char *filename);
-int   validate_reel(opendcp_t *opendcp, reel_t reel, int reel_number);
+int   validate_reel(opendcp_t *opendcp, reel_t *reel, int reel_number);
 int   add_asset(opendcp_t *opendcp, asset_t *asset, char *filename);
 int   add_asset_to_reel(opendcp_t *opendcp, reel_t *reel, asset_t asset);
 void  add_reel_to_cpl(cpl_t *cpl, reel_t reel);
