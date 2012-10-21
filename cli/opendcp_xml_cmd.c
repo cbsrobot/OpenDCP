@@ -347,7 +347,7 @@ int main (int argc, char **argv) {
             add_asset_to_reel(opendcp, &reel, asset);
         }
 
-        if (validate_reel(opendcp, reel, c) == OPENDCP_NO_ERROR) {
+        if (validate_reel(opendcp, &reel, c) == OPENDCP_NO_ERROR) {
             add_reel_to_cpl(&opendcp->dcp.pkl[0].cpl[0], reel);
         } else {
             sprintf(buffer,"Could not validate reel %d\n",c+1);
