@@ -97,8 +97,6 @@ void MainWindow::startDcp()
     QMessageBox msgBox;
     QString     DCP_FAIL_MSG;
 
-    asset_list_t reelList[MAX_REELS];
-
     // get dcp destination directory
     path = QFileDialog::getExistingDirectory(this, tr("Choose destination folder"), lastDir);
 
@@ -123,11 +121,11 @@ void MainWindow::startDcp()
     dcp_log_init(xmlContext->log_level, ".log");
 
     // set XML attribues
-    strcpy(xmlContext->xml.title, ui->cplTitleEdit->text().toUtf8().constData());
-    strcpy(xmlContext->xml.annotation, ui->cplAnnotationEdit->text().toUtf8().constData());
-    strcpy(xmlContext->xml.issuer, ui->cplIssuerEdit->text().toUtf8().constData());
-    strcpy(xmlContext->xml.kind, ui->cplKindComboBox->currentText().toUtf8().constData());
-    strcpy(xmlContext->xml.rating, ui->cplRatingComboBox->currentText().toUtf8().constData());
+    strcpy(xmlContext->dcp.title, ui->cplTitleEdit->text().toUtf8().constData());
+    strcpy(xmlContext->dcp.annotation, ui->cplAnnotationEdit->text().toUtf8().constData());
+    strcpy(xmlContext->dcp.issuer, ui->cplIssuerEdit->text().toUtf8().constData());
+    strcpy(xmlContext->dcp.kind, ui->cplKindComboBox->currentText().toUtf8().constData());
+    strcpy(xmlContext->dcp.rating, ui->cplRatingComboBox->currentText().toUtf8().constData());
 
     // check picture track is supplied
     if (ui->reelPictureEdit->text().isEmpty()) {
@@ -144,63 +142,70 @@ void MainWindow::startDcp()
         goto Done;
     }
 
-    // set asset filenames
-    reelList->asset_count = 0;
-    if (!ui->reelPictureEdit->text().isEmpty()) {
-        strcpy(reelList[0].asset_list[PICTURE].filename, ui->reelPictureEdit->text().toUtf8().constData());
-        reelList->asset_count++;
-    }
-    if (!ui->reelSoundEdit->text().isEmpty()) {
-        strcpy(reelList[0].asset_list[SOUND].filename, ui->reelSoundEdit->text().toUtf8().constData());
-        reelList->asset_count++;
-    }
-    if (!ui->reelSubtitleEdit->text().isEmpty()) {
-        strcpy(reelList[0].asset_list[SUBTITLE].filename, ui->reelSubtitleEdit->text().toUtf8().constData());
-        reelList->asset_count++;
-    }
-
     // add pkl to the DCP (only one PKL currently support)
-    add_pkl(xmlContext);
+    pkl_t pkl;
+    create_pkl(xmlContext->dcp, &pkl);
+    add_pkl_to_dcp(&xmlContext->dcp, pkl);
 
     // add cpl to the DCP/PKL (only one CPL currently support)
-    add_cpl(xmlContext, &xmlContext->pkl[0]);
+    cpl_t cpl;
+    create_cpl(xmlContext->dcp, &cpl);
+    add_cpl_to_pkl(&xmlContext->dcp.pkl[0], cpl);
 
-    if (add_reel(xmlContext, &xmlContext->pkl[0].cpl[0],reelList[0]) != OPENDCP_NO_ERROR) {
-        QMessageBox::critical(this, DCP_FAIL_MSG,
-                              tr("Could not add reel to CPL."));
-        goto Done;
+    // add reel
+    reel_t reel;
+    create_reel(xmlContext->dcp, &reel);
+    add_reel_to_cpl(&xmlContext->dcp.pkl[0].cpl[0], reel);
+
+    // add assets
+    if (!ui->reelPictureEdit->text().isEmpty()) {
+        asset_t asset;
+        add_asset(xmlContext, &asset, ui->reelPictureEdit->text().toUtf8().data());
+        add_asset_to_reel(xmlContext, &xmlContext->dcp.pkl[0].cpl[0].reel[0], asset);
+    }
+
+    if (!ui->reelSoundEdit->text().isEmpty()) {
+        asset_t asset;
+        add_asset(xmlContext, &asset, ui->reelSoundEdit->text().toUtf8().data());
+        add_asset_to_reel(xmlContext, &xmlContext->dcp.pkl[0].cpl[0].reel[0], asset);
+    }
+
+    if (!ui->reelSubtitleEdit->text().isEmpty()) {
+        asset_t asset;
+        add_asset(xmlContext, &asset, ui->reelSubtitleEdit->text().toUtf8().data());
+        add_asset_to_reel(xmlContext, &xmlContext->dcp.pkl[0].cpl[0].reel[0], asset);
     }
 
     // adjust durations
-    xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].duration     = ui->reelPictureDurationSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].entry_point  = ui->reelPictureOffsetSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].duration       = ui->reelSoundDurationSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].entry_point    = ui->reelSoundOffsetSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[SUBTITLE].duration    = ui->reelSubtitleDurationSpinBox->value();
-    xmlContext->pkl[0].cpl[0].reel[0].asset[SUBTITLE].entry_point = ui->reelSubtitleOffsetSpinBox->value();
+    xmlContext->dcp.pkl[0].cpl[0].reel[0].main_picture.duration     = ui->reelPictureDurationSpinBox->value();
+    xmlContext->dcp.pkl[0].cpl[0].reel[0].main_picture.entry_point  = ui->reelPictureOffsetSpinBox->value();
+    xmlContext->dcp.pkl[0].cpl[0].reel[0].main_sound.duration       = ui->reelSoundDurationSpinBox->value();
+    xmlContext->dcp.pkl[0].cpl[0].reel[0].main_sound.entry_point    = ui->reelSoundOffsetSpinBox->value();
+    xmlContext->dcp.pkl[0].cpl[0].reel[0].main_subtitle.duration    = ui->reelSubtitleDurationSpinBox->value();
+    xmlContext->dcp.pkl[0].cpl[0].reel[0].main_subtitle.entry_point = ui->reelSubtitleOffsetSpinBox->value();
 
-    if (validate_reel(xmlContext,&xmlContext->pkl[0].cpl[0],0) != OPENDCP_NO_ERROR) {
+    if (validate_reel(xmlContext, xmlContext->dcp.pkl[0].cpl[0].reel[0], 0) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG, tr("Could not valiate reel."));
         goto Done;
     }
 
-    sprintf(xmlContext->pkl[0].cpl[0].filename,"%s/%s_cpl.xml", path.toUtf8().constData(), xmlContext->pkl[0].cpl[0].uuid);
-    sprintf(xmlContext->pkl[0].filename,"%s/%s_pkl.xml", path.toUtf8().constData(), xmlContext->pkl[0].uuid);
+    sprintf(xmlContext->dcp.pkl[0].cpl[0].filename,"%s/%s_cpl.xml", path.toUtf8().constData(), xmlContext->dcp.pkl[0].cpl[0].uuid);
+    sprintf(xmlContext->dcp.pkl[0].filename,"%s/%s_pkl.xml", path.toUtf8().constData(), xmlContext->dcp.pkl[0].uuid);
 
     if (xmlContext->ns == XML_NS_SMPTE) {
-        sprintf(xmlContext->assetmap.filename,"%s/ASSETMAP.xml",path.toUtf8().constData());
-        sprintf(xmlContext->volindex.filename,"%s/VOLINDEX.xml",path.toUtf8().constData());
+        sprintf(xmlContext->dcp.assetmap.filename,"%s/ASSETMAP.xml",path.toUtf8().constData());
+        sprintf(xmlContext->dcp.volindex.filename,"%s/VOLINDEX.xml",path.toUtf8().constData());
     } else {
-        sprintf(xmlContext->assetmap.filename,"%s/ASSETMAP",path.toUtf8().constData());
-        sprintf(xmlContext->volindex.filename,"%s/VOLINDEX",path.toUtf8().constData());
+        sprintf(xmlContext->dcp.assetmap.filename,"%s/ASSETMAP",path.toUtf8().constData());
+        sprintf(xmlContext->dcp.volindex.filename,"%s/VOLINDEX",path.toUtf8().constData());
     }
 
     // write XML Files
-    if (write_cpl(xmlContext,&xmlContext->pkl[0].cpl[0]) != OPENDCP_NO_ERROR) {
+    if (write_cpl(xmlContext,&xmlContext->dcp.pkl[0].cpl[0]) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG, tr("Failed to create composition playlist."));
         goto Done;
     }
-    if (write_pkl(xmlContext,&xmlContext->pkl[0]) != OPENDCP_NO_ERROR) {
+    if (write_pkl(xmlContext,&xmlContext->dcp.pkl[0]) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG, tr("Failed to create packaging list."));
         goto Done;
     }
@@ -214,13 +219,13 @@ void MainWindow::startDcp()
     }
 
     // copy picture mxf
-    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[PICTURE].filename), path);
+    mxfCopy(QString::fromUtf8(xmlContext->dcp.pkl[0].cpl[0].reel[0].main_picture.filename), path);
 
     // copy audio mxf
-    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[SOUND].filename), path);
+    mxfCopy(QString::fromUtf8(xmlContext->dcp.pkl[0].cpl[0].reel[0].main_sound.filename), path);
 
     // copy subtitle mxf
-    mxfCopy(QString::fromUtf8(xmlContext->pkl[0].cpl[0].reel[0].asset[SUBTITLE].filename), path);
+    mxfCopy(QString::fromUtf8(xmlContext->dcp.pkl[0].cpl[0].reel[0].main_subtitle.filename), path);
 
     msgBox.setText("DCP Created successfully");
     msgBox.exec();

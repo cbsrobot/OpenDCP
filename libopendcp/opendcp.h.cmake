@@ -29,15 +29,15 @@ extern "C" {
 #define MAX_REELS           30   /* Soft limit */
 #define MAX_PKL             1    /* Soft limit */
 #define MAX_CPL             5    /* Soft limit */
-#define MAX_PATH_LENGTH     4095 
-#define MAX_FILENAME_LENGTH 254 
+#define MAX_PATH_LENGTH     4095
+#define MAX_FILENAME_LENGTH 254
 #define MAX_AUDIO_CHANNELS  16   /* maximum allowed audio channels */
 
 #define MAX_DCP_JPEG_BITRATE 250000000  /* Maximum DCI compliant bit rate for JPEG2000 */
 #define MAX_DCP_MPEG_BITRATE  80000000  /* Maximum DCI compliant bit rate for MPEG */
 
-#define MAX_WIDTH_2K        2048 
-#define MAX_HEIGHT_2K       1080 
+#define MAX_WIDTH_2K        2048
+#define MAX_HEIGHT_2K       1080
 
 /* library information */
 #define OPENDCP_NAME       "${OPENDCP_NAME}"
@@ -73,6 +73,7 @@ extern "C" {
         OPENDCP_ERROR_MSG(OPENDCP_INVALID_TRACK_TYPE,      "Invalid MXF track type") \
         OPENDCP_ERROR_MSG(OPENDCP_UNKNOWN_TRACK_TYPE,      "Unknown MXF track type") \
         OPENDCP_ERROR_MSG(OPENDCP_INVALID_WAV_BITDEPTH,    "WAV is not 24-bit") \
+        OPENDCP_ERROR_MSG(OPENDCP_INVALID_WAV_CHANNELS,    "WAV has an incorrect number of channels") \
         OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_MPEG2,          "Could not open MPEG2 file") \
         OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_J2K,            "Could not open JPEG200 file") \
         OPENDCP_ERROR_MSG(OPENDCP_FILEOPEN_WAV,            "Could not open wav file") \
@@ -83,7 +84,7 @@ extern "C" {
         OPENDCP_ERROR_MSG(OPENDCP_STRING_LENGTH,           "Input files have differing file lengths") \
         OPENDCP_ERROR_MSG(OPENDCP_STRING_NOTSEQUENTIAL ,   "Input files are not sequential") \
         OPENDCP_ERROR_MSG(OPENDCP_MAX_ERROR,               "Maximum error string")
- 
+
 #define GENERATE_ENUM(ERROR, STRING) ERROR,
 #define GENERATE_STRING(ERROR, STRING) STRING,
 #define GENERATE_NAME(ERROR, STRING) #ERROR,
@@ -122,7 +123,7 @@ typedef struct {
 
 extern const opendcp_error_t OPENDCP_ERROR_T[];
 
-typedef unsigned char byte_t; 
+typedef unsigned char byte_t;
 
 enum LOG_LEVEL {
     LOG_NONE = 0,
@@ -172,13 +173,18 @@ enum DPX_MODE {
 };
 
 typedef struct {
-    int (*callback)(void *);
+    int  (*callback)(void *);
     void  *argument;
 } opendcp_cb_t;
 
 typedef struct {
-    char           **files;
-    int              nfiles;
+    void   *data;
+    struct node_t *next;
+} opendcp_node_t;
+
+typedef struct {
+    char **files;
+    int  nfiles;
 } filelist_t;
 
 typedef struct {
@@ -222,15 +228,12 @@ typedef struct {
 } asset_t;
 
 typedef struct {
-    asset_t        asset_list[3];
-    int            asset_count;
-} asset_list_t;
-
-typedef struct {
     char           uuid[40];
     char           annotation[128];
-    int            asset_count; 
-    asset_t        asset[MAX_ASSETS];
+    int            asset_count;
+    asset_t        main_picture;
+    asset_t        main_sound;
+    asset_t        main_subtitle;
 } reel_t;
 
 typedef struct {
@@ -248,7 +251,7 @@ typedef struct {
     char           rating[5];
     char           filename[MAX_FILENAME_LENGTH];
     int            reel_count;
-    reel_t         reel[MAX_REELS]; 
+    reel_t         reel[MAX_REELS];
 } cpl_t;
 
 typedef struct {
@@ -260,7 +263,7 @@ typedef struct {
     char           timestamp[30];
     char           filename[MAX_FILENAME_LENGTH];
     int            cpl_count;
-    cpl_t          cpl[MAX_CPL]; 
+    cpl_t          cpl[MAX_CPL];
 } pkl_t;
 
 typedef struct {
@@ -303,7 +306,11 @@ typedef struct {
     char           rating[5];
     char           aspect_ratio[20];
     int            digest_flag;
-} xml_t;
+    int            pkl_count;
+    pkl_t          pkl[MAX_PKL];
+    assetmap_t     assetmap;
+    volindex_t     volindex;
+} dcp_t;
 
 typedef struct {
     int  sign;
@@ -326,11 +333,7 @@ typedef struct {
     char            dcp_path[MAX_FILENAME_LENGTH];
     j2k_t           j2k;
     mxf_t           mxf;
-    xml_t           xml;
-    assetmap_t      assetmap;
-    volindex_t      volindex;
-    int             pkl_count;
-    pkl_t           pkl[MAX_PKL];
+    dcp_t           dcp;
     xml_signature_t xml_signature;
 } opendcp_t;
 
@@ -340,10 +343,15 @@ void  dcp_fatal(opendcp_t *opendcp, char *error, ...);
 void  get_timestamp(char *timestamp);
 int   get_asset_type(asset_t asset);
 int   get_file_essence_class(char *filename);
-int   validate_reel(opendcp_t *opendcp, cpl_t *cpl, int reel);
-int   add_reel(opendcp_t *opendcp, cpl_t *cpl, asset_list_t reel);
-int   add_cpl(opendcp_t *opendcp, pkl_t *pkl);
-int   add_pkl(opendcp_t *opendcp);
+int   validate_reel(opendcp_t *opendcp, reel_t reel, int reel_number);
+int   add_asset(opendcp_t *opendcp, asset_t *asset, char *filename);
+int   add_asset_to_reel(opendcp_t *opendcp, reel_t *reel, asset_t asset);
+void  add_reel_to_cpl(cpl_t *cpl, reel_t reel);
+void  add_cpl_to_pkl(pkl_t *pkl, cpl_t cpl);
+void  add_pkl_to_dcp(dcp_t *dcp, pkl_t pkl);
+void  create_pkl(dcp_t dcp, pkl_t *pkl);
+void  create_cpl(dcp_t dcp, cpl_t *cpl);
+void create_reel(dcp_t dcp, reel_t *reel);
 void  dcp_set_log_level(int log_level);
 void  dcp_log_init(int level, const char *file);
 
@@ -363,7 +371,7 @@ int check_image_compliance(int profile, odcp_image_t *image, char *file);
 /* ASDCPLIB functions */
 int read_asset_info(asset_t *asset);
 void uuid_random(char *uuid);
-int calculate_digest(const char *filename, char *digest);
+int calculate_digest(opendcp_t *opendcp, const char *filename, char *digest);
 int get_wav_duration(const char *filename, int frame_rate);
 int get_wav_info(const char *filename, int frame_rate, wav_info_t *wav);
 int get_file_essence_type(char *in_path);

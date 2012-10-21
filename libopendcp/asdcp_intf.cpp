@@ -48,7 +48,7 @@ extern "C" void uuid_random(char *uuid) {
 }
 
 /* calcuate the SHA1 digest of a file */
-extern "C" int calculate_digest(const char *filename, char *digest) {
+extern "C" int calculate_digest(opendcp_t *opendcp, const char *filename, char *digest) {
     using namespace Kumu;
 
     FileReader    reader;
@@ -69,6 +69,11 @@ extern "C" int calculate_digest(const char *filename, char *digest) {
 
         if (ASDCP_SUCCESS(result)) {
             SHA1_Update(&sha_context, read_buffer.Data(), read_length);
+        }
+
+        /* update done callback (also check for interrupt) */
+        if (opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument)) {
+            return OPENDCP_NO_ERROR;
         }
     }
 
@@ -101,7 +106,7 @@ extern "C" int get_wav_duration(const char *filename, int frame_rate) {
 
     if (ASDCP_SUCCESS(result)) {
         pcm_parser.FillAudioDescriptor(audio_desc);
-        duration = audio_desc.ContainerDuration; 
+        duration = audio_desc.ContainerDuration;
     }
 
     return duration;
@@ -209,7 +214,7 @@ extern "C" int read_asset_info(asset_t *asset) {
     Result_t result = RESULT_OK;
     Kumu::UUID uuid;
     char uuid_buffer[64];
-    
+
     result = ASDCP::EssenceType(asset->filename, essence_type);
 
     if (ASDCP_FAILURE(result)) {
@@ -227,7 +232,7 @@ extern "C" int read_asset_info(asset_t *asset) {
                 return OPENDCP_FILEOPEN_MPEG2;
             }
 
-	    reader.FillVideoDescriptor(desc);
+            reader.FillVideoDescriptor(desc);
             reader.FillWriterInfo(info);
 
             asset->essence_type       = essence_type;
@@ -244,7 +249,7 @@ extern "C" int read_asset_info(asset_t *asset) {
             break;
         }
         case ESS_JPEG_2000_S:
-        {        
+        {
             JP2K::MXFSReader reader;
             JP2K::PictureDescriptor desc;
             result = reader.OpenRead(asset->filename);
@@ -330,7 +335,7 @@ extern "C" int read_asset_info(asset_t *asset) {
             break;
         }
         case ESS_TIMED_TEXT:
-        { 
+        {
             TimedText::MXFReader reader;
             TimedText::TimedTextDescriptor desc;
             result = reader.OpenRead(asset->filename);
@@ -338,10 +343,10 @@ extern "C" int read_asset_info(asset_t *asset) {
             if (ASDCP_FAILURE(result)) {
                 return OPENDCP_FILEOPEN_TT;
             }
-  
+
             reader.FillTimedTextDescriptor(desc);
             reader.FillWriterInfo(info);
-  
+
             asset->essence_type       = essence_type;
             asset->essence_class      = ACT_TIMED_TEXT;
             asset->duration           = desc.ContainerDuration;
@@ -355,16 +360,16 @@ extern "C" int read_asset_info(asset_t *asset) {
         default:
         {
             return OPENDCP_UNKNOWN_TRACK_TYPE;
-            break; 
+            break;
         }
     }
- 
+
     return OPENDCP_NO_ERROR;
 }
 
 /* write the asset to an mxf file */
 extern "C" int write_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
-    Result_t      result = RESULT_OK; 
+    Result_t      result = RESULT_OK;
     EssenceType_t essence_type;
 
     result = ASDCP::RawEssenceType(filelist->files[0], essence_type);
@@ -402,7 +407,7 @@ extern "C" int write_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_
             break;
     }
 
-    return OPENDCP_UNKNOWN_TRACK_TYPE; 
+    return OPENDCP_UNKNOWN_TRACK_TYPE;
 }
 
 typedef struct {
@@ -414,7 +419,7 @@ typedef struct {
 Result_t fill_writer_info(opendcp_t *opendcp, writer_info_t *writer_info) {
     Kumu::FortunaRNG        rng;
     byte_t                  iv_buf[CBC_BLOCK_SIZE];
-    Result_t                result = RESULT_OK; 
+    Result_t                result = RESULT_OK;
 
     writer_info->info.ProductVersion = OPENDCP_VERSION;
     writer_info->info.CompanyName = OPENDCP_NAME;
@@ -477,7 +482,7 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     JP2K::CodestreamParser  j2k_parser;
     JP2K::FrameBuffer       frame_buffer(FRAME_BUFFER_SIZE);
     writer_info_t           writer_info;
-    Result_t                result = RESULT_OK; 
+    Result_t                result = RESULT_OK;
     ui32_t                  start_frame;
     ui32_t                  mxf_duration;
     ui32_t                  slide_duration = 0;
@@ -497,7 +502,7 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
 
     Rational edit_rate(opendcp->frame_rate,1);
     j2k_parser.FillPictureDescriptor(picture_desc);
-    picture_desc.EditRate = edit_rate; 
+    picture_desc.EditRate = edit_rate;
 
     fill_writer_info(opendcp, &writer_info);
 
@@ -516,7 +521,7 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     } else {
         mxf_duration = filelist->nfiles;
     }
-   
+
     ui32_t read  = 1;
     ui32_t i = start_frame;
     /* read each input frame and write to the output mxf until duration is reached */
@@ -549,7 +554,7 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
         } else {
             i++;
         }
- 
+
         /* write the frame */
         result = mxf_writer.WriteFrame(frame_buffer, writer_info.aes_context, writer_info.hmac_context);
 
@@ -623,7 +628,7 @@ int write_j2k_s_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file)
     if (ASDCP_FAILURE(result)) {
         return OPENDCP_FILEWRITE_MXF;
     }
-     
+
     /* set the duration of the output mxf, set to half the filecount since it is 3D */
     if ((filelist->nfiles/2) < opendcp->duration || !opendcp->duration) {
         mxf_duration = filelist->nfiles/2;
@@ -638,7 +643,7 @@ int write_j2k_s_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file)
     } else if (opendcp->mxf.duration && (filelist->nfiles / 2 >= opendcp->mxf.duration)) {
         mxf_duration = opendcp->mxf.duration;
     } else {
-        mxf_duration = filelist->nfiles / 2; 
+        mxf_duration = filelist->nfiles / 2;
     }
 
     ui32_t read = 1;
@@ -689,7 +694,7 @@ int write_j2k_s_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file)
         } else {
             i++;
         }
-     
+
         /* write the frame */
         result = mxf_writer.WriteFrame(frame_buffer_left, JP2K::SP_LEFT, writer_info.aes_context, writer_info.hmac_context);
 
@@ -728,7 +733,7 @@ int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     PCM::AudioDescriptor audio_desc;
     PCM::MXFWriter       mxf_writer;
     writer_info_t        writer_info;
-    Result_t             result = RESULT_OK; 
+    Result_t             result = RESULT_OK;
     ui32_t               mxf_duration;
     i32_t                file_index = 0;
 
@@ -783,7 +788,7 @@ int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     }
 
     audio_desc.EditRate = edit_rate;
-    audio_desc.AvgBps   = audio_desc.AvgBps * filelist->nfiles; 
+    audio_desc.AvgBps   = audio_desc.AvgBps * filelist->nfiles;
 
     /* set total frame buffer size */
     frame_buffer.Capacity(PCM::CalcFrameBufferSize(audio_desc));
@@ -861,7 +866,7 @@ int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     if (ASDCP_FAILURE(result)) {
         return OPENDCP_FINALIZE_MXF;
     }
- 
+
     return OPENDCP_NO_ERROR;
 }
 
@@ -877,7 +882,7 @@ int write_tt_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     Result_t                       result = RESULT_OK;
 
     result = tt_parser.OpenRead(filelist->files[0]);
- 
+
     if (ASDCP_FAILURE(result)) {
         return OPENDCP_FILEOPEN_TT;
     }
@@ -935,7 +940,7 @@ int write_mpeg2_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file)
     MPEG2::MXFWriter       mxf_writer;
     MPEG2::VideoDescriptor video_desc;
     writer_info_t          writer_info;
-    Result_t               result = RESULT_OK; 
+    Result_t               result = RESULT_OK;
     ui32_t                 mxf_duration;
 
     result = mpeg2_parser.OpenRead(filelist->files[0]);
@@ -955,7 +960,7 @@ int write_mpeg2_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file)
     }
 
     result = mpeg2_parser.Reset();
-  
+
     if (ASDCP_FAILURE(result)) {
         return OPENDCP_PARSER_RESET;
     }

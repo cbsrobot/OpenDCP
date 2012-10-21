@@ -92,7 +92,7 @@ protected:
     void connectXmlSlots();
     void showImage(QImage image);
     int  checkFileSequence(QFileInfoList list);
-    int  checkSequential(const char str1[], const char str2[]); 
+    int  checkSequential(const char str1[], const char str2[]);
 
 protected slots:
 
@@ -113,7 +113,7 @@ private:
     int  mxfCopy(QString source, QString destination);
 
     filelist_t *QStringToFilelist(QFileInfoList list);
-    int checkWavInfo(opendcp_t *opendcp, QFileInfoList filelist);
+    int checkWavInfo(QFileInfoList filelist, int frameRate);
 
     Ui::MainWindow      *ui;
     Settings            *settings;
