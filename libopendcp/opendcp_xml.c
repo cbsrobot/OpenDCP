@@ -245,14 +245,16 @@ int write_cpl(opendcp_t *opendcp, cpl_t *cpl) {
         xmlTextWriterWriteFormatElement(xml, BAD_CAST "Id","%s%s","urn:uuid:",reel.uuid);
         xmlTextWriterStartElement(xml, BAD_CAST "AssetList");
 
-        /* write picture */
-        write_cpl_asset(opendcp, xml, cpl->reel[r].main_picture);
-
-        /* write sound */
-        write_cpl_asset(opendcp, xml, cpl->reel[r].main_sound);
-
-        /* write subtitle */
-        write_cpl_asset(opendcp, xml, cpl->reel[r].main_subtitle);
+        /* write picture first, unless stereoscopic */
+        if (cpl->reel[r].main_picture.stereoscopic) {
+            write_cpl_asset(opendcp, xml, cpl->reel[r].main_sound);
+            write_cpl_asset(opendcp, xml, cpl->reel[r].main_subtitle);
+            write_cpl_asset(opendcp, xml, cpl->reel[r].main_picture);
+        } else {
+            write_cpl_asset(opendcp, xml, cpl->reel[r].main_picture);
+            write_cpl_asset(opendcp, xml, cpl->reel[r].main_sound);
+            write_cpl_asset(opendcp, xml, cpl->reel[r].main_subtitle);
+        }
 
         xmlTextWriterEndElement(xml);     /* end assetlist */
         xmlTextWriterEndElement(xml);     /* end reel */

@@ -184,7 +184,7 @@ void MainWindow::startDcp()
     xmlContext->dcp.pkl[0].cpl[0].reel[0].main_subtitle.duration    = ui->reelSubtitleDurationSpinBox->value();
     xmlContext->dcp.pkl[0].cpl[0].reel[0].main_subtitle.entry_point = ui->reelSubtitleOffsetSpinBox->value();
 
-    if (validate_reel(xmlContext, xmlContext->dcp.pkl[0].cpl[0].reel[0], 0) != OPENDCP_NO_ERROR) {
+    if (validate_reel(xmlContext, &xmlContext->dcp.pkl[0].cpl[0].reel[0], 0) != OPENDCP_NO_ERROR) {
         QMessageBox::critical(this, DCP_FAIL_MSG, tr("Could not valiate reel."));
         goto Done;
     }
