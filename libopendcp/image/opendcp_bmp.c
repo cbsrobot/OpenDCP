@@ -113,7 +113,8 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
     FILE            *bmp_fp;
     odcp_image_t    *image = 00;
     int             pixels = 0;
-    int i,w,h;
+    int             i,w,h;
+    size_t          readsize;
 
     /* open bmp using filename or file descriptor */
     dcp_log(LOG_DEBUG,"%-15.15s: opening bmp file %s","read_bmp",infile);
@@ -129,19 +130,18 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
         return OPENDCP_FATAL;
     }
 
-    if (fread(&magic,sizeof(bmp_magic_num_t),1,bmp_fp) < sizeof(bmp_magic_num_t)) {
-        dcp_log(LOG_ERROR,"%-15.15s: failed to read magic number","read_bmp");
-        return OPENDCP_FATAL;
+    readsize = fread(&magic, 1, sizeof(bmp_magic_num_t), bmp_fp);
+    if (readsize != sizeof(bmp_magic_num_t)) {
+        dcp_log(LOG_ERROR,"%-15.15s: failed to read magic number expected %d read %d","read_bmp", sizeof(bmp_magic_num_t), readsize);
     }
-    
-    if (fread(&bmp,sizeof(bmp_image_t),1,bmp_fp) <= sizeof(bmp_image_t)) {
-        dcp_log(LOG_ERROR,"%-15.15s: failed to header","read_bmp");
-        return OPENDCP_FATAL;
+
+    readsize = fread(&bmp, 1, sizeof(bmp_image_t), bmp_fp);
+    if (readsize != sizeof(bmp_image_t)) {
+        dcp_log(LOG_ERROR,"%-15.15s: failed to header expected %d read %d","read_bmp", sizeof(bmp_image_t), readsize);
     }
 
     if (magic.magic_num != MAGIC_NUMBER) {
          dcp_log(LOG_ERROR,"%s is not a valid BMP file", infile);
-         return OPENDCP_FATAL;
     }
 
     if (bmp.image.height < 0) {
@@ -155,7 +155,7 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
     pixels = w * h;
 
     print_bmp_header(&bmp);
-    
+
     switch (bmp.image.compression) {
         case BMP_RGB:
             break;
@@ -165,13 +165,14 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
         case BMP_JPEG:
         case BMP_PNG:
         default:
-            dcp_log(LOG_ERROR, "Unsupported image compression: %d\n", bmp.image.compression);
+            dcp_log(LOG_ERROR, "Unsupported image compression: %d", bmp.image.compression);
             return OPENDCP_FATAL;
             break;
     }
 
     /* apparently, some applications don't fill in the image size */
     if (bmp.image.image_size == 0) {
+        dcp_log(LOG_WARN, "BMP missing file size field, will attempt to calculate");
         bmp.image.image_size = bmp.file.size - sizeof(bmp_magic_num_t) - sizeof(bmp_image_t);
     }
 
@@ -179,10 +180,10 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
         dcp_log(LOG_ERROR, "%d-bit depth is not supported.",bmp.image.bpp);
         return OPENDCP_FATAL;
     }
-  
+
     /* create the image */
     dcp_log(LOG_DEBUG,"%-15.15s: allocating odcp image","read_bmp");
-    image = odcp_image_create(3,w,h);
+    image = odcp_image_create(3, w, h);
     dcp_log(LOG_DEBUG,"%-15.15s: image allocated","read_bmp");
 
     fseek(bmp_fp, bmp.file.offset, SEEK_SET);
@@ -192,7 +193,7 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
         /* 16-bits per pixel */
         if (bmp.image.bpp == 16 ) {
             uint8_t data[2];
-            for (i=0; i<pixels; i++) { 
+            for (i=0; i<pixels; i++) {
                 fread(&data,sizeof(data),1,bmp_fp);
                 int p = invert_row(bmp, i);
                 image->component[BMP_B].data[p] = data[0] << 2;
@@ -202,7 +203,7 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
         /* 24-bits per pixel */
         } else if (bmp.image.bpp == 24 ) {
             uint8_t data[3];
-            for (i=0; i<pixels; i++) { 
+            for (i=0; i<pixels; i++) {
                 fread(&data,sizeof(data),1,bmp_fp);
                 int p = invert_row(bmp, i);
                 image->component[BMP_B].data[p] = data[0] << 4;
@@ -212,7 +213,7 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
         /* 32-bits per pixel */
         } else if (bmp.image.bpp == 32 ) {
             uint8_t data[4];
-            for (i=0; i<pixels; i++) { 
+            for (i=0; i<pixels; i++) {
                 fread(&data,sizeof(data),1,bmp_fp);
                 int p = invert_row(bmp, i);
                 image->component[BMP_B].data[p] = data[0] << 4;
