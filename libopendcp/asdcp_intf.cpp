@@ -71,8 +71,8 @@ extern "C" int calculate_digest(opendcp_t *opendcp, const char *filename, char *
             SHA1_Update(&sha_context, read_buffer.Data(), read_length);
         }
 
-        /* update done callback (also check for interrupt) */
-        if (opendcp->mxf.frame_done.callback(opendcp->mxf.frame_done.argument)) {
+        /* update callback (also check for interrupt) */
+        if (opendcp->dcp.sha1_update.callback(opendcp->dcp.sha1_update.argument)) {
             return OPENDCP_NO_ERROR;
         }
     }

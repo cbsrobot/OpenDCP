@@ -1,7 +1,7 @@
-/* 
+/*
      OpenDCP: Builds Digital Cinema Packages
      Copyright (c) 2010-2011 Terrence Meiczinger, All Rights Reserved
- 
+
      This program is free software: you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
      the Free Software Foundation, either version 3 of the License, or
@@ -30,18 +30,18 @@
 #include "opendcp.h"
 
 int encode_kakadu(opendcp_t *opendcp, char *in_file, char *out_file);
-int encode_openjpeg(opendcp_t *opendcp, opj_image_t *opj_image, char *out_file); 
+int encode_openjpeg(opendcp_t *opendcp, opj_image_t *opj_image, char *out_file);
 
 static int initialize_4K_poc(opj_poc_t *POC, int numres){
-    POC[0].tile  = 1; 
-    POC[0].resno0  = 0; 
+    POC[0].tile  = 1;
+    POC[0].resno0  = 0;
     POC[0].compno0 = 0;
     POC[0].layno1  = 1;
     POC[0].resno1  = numres-1;
     POC[0].compno1 = 3;
     POC[0].prg1 = CPRL;
     POC[1].tile  = 1;
-    POC[1].resno0  = numres-1; 
+    POC[1].resno0  = numres-1;
     POC[1].compno0 = 0;
     POC[1].layno1  = 1;
     POC[1].resno1  = numres;
@@ -145,12 +145,12 @@ int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_
         tmp_path = "./";
     }
     dcp_log(LOG_DEBUG,"%-15.15s: reading input file %s","convert_to_j2k",in_file);
-     
+
     #ifdef OPENMP
     #pragma omp critical
     #endif
     {
-    result = read_image(&odcp_image,in_file); 
+    result = read_image(&odcp_image,in_file);
     }
 
     if (result != OPENDCP_NO_ERROR) {
@@ -178,10 +178,10 @@ int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_
             return OPENDCP_ERROR;
         }
     }
-    
+
     if (opendcp->j2k.xyz) {
         dcp_log(LOG_INFO,"RGB->XYZ color conversion %s",in_file);
-        if (rgb_to_xyz(odcp_image,opendcp->j2k.lut,opendcp->j2k.xyz_method)) {
+        if (rgb_to_xyz(odcp_image, opendcp->j2k.lut, opendcp->j2k.xyz_method)) {
             dcp_log(LOG_ERROR,"Color conversion failed %s",in_file);
             odcp_image_free(odcp_image);
             return OPENDCP_ERROR;
@@ -190,11 +190,11 @@ int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_
 
     if ( opendcp->j2k.encoder == J2K_KAKADU ) {
         char tempfile[255];
-        sprintf(tempfile,"%s/tmp_%s",tmp_path,basename(in_file));
+        sprintf(tempfile,i "%s/tmp_%s", tmp_path,basename(in_file));
         dcp_log(LOG_DEBUG,"%-15.15s: Writing temporary tif %s","convert_to_j2k",tempfile);
-        result = write_tif(odcp_image,tempfile,0);
+        result = write_tif(odcp_image, tempfile, 0);
         odcp_image_free(odcp_image);
-        
+
         if (result != OPENDCP_NO_ERROR) {
             dcp_log(LOG_ERROR,"Writing temporary tif failed");
             return OPENDCP_ERROR;
@@ -209,13 +209,13 @@ int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_
         remove(tempfile);
     } else {
         opj_image_t *opj_image;
-        odcp_to_opj(odcp_image, &opj_image); 
+        odcp_to_opj(odcp_image, &opj_image);
         odcp_image_free(odcp_image);
         if (encode_openjpeg(opendcp,opj_image,out_file) != OPENDCP_NO_ERROR) {
             dcp_log(LOG_ERROR,"OpenJPEG JPEG2000 conversion failed %s",in_file);
             opj_image_destroy(opj_image);
             return OPENDCP_ERROR;
-        }        
+        }
         opj_image_destroy(opj_image);
     }
 
@@ -239,11 +239,11 @@ int encode_kakadu(opendcp_t *opendcp, char *in_file, char *out_file) {
 
     /* set the max image and component sizes based on frame_rate */
     max_cs_len = ((float)bw)/8/opendcp->frame_rate;
-    
+
     /* adjust cs for 3D */
     if (opendcp->stereoscopic) {
         max_cs_len = max_cs_len/2;
-    } 
+    }
 
     max_comp_size = ((float)max_cs_len)/1.25;
 
@@ -251,12 +251,12 @@ int encode_kakadu(opendcp_t *opendcp, char *in_file, char *out_file) {
 
     if (opendcp->cinema_profile == DCP_CINEMA2K) {
         sprintf(cmd,"kdu_compress -i \"%s\" -o \"%s\" Sprofile=CINEMA2K %s -quiet",in_file,out_file,k_lengths);
-    } else { 
+    } else {
         sprintf(cmd,"kdu_compress -i \"%s\" -o \"%s\" Sprofile=CINEMA4K %s -quiet",in_file,out_file,k_lengths);
     }
     cmdfp=popen(cmd,"r");
     result=pclose(cmdfp);
-    
+
     if (result) {
             return OPENDCP_ERROR;
     }
@@ -272,9 +272,9 @@ int encode_openjpeg(opendcp_t *opendcp, opj_image_t *opj_image, char *out_file) 
     opj_cparameters_t parameters;
     opj_cio_t *cio = NULL;
     opj_cinfo_t *cinfo = NULL;
-    FILE *f = NULL; 
+    FILE *f = NULL;
     int bw;
-   
+
     if (opendcp->j2k.bw) {
         bw = opendcp->j2k.bw;
     } else {
@@ -283,12 +283,12 @@ int encode_openjpeg(opendcp_t *opendcp, opj_image_t *opj_image, char *out_file) 
 
     /* set the max image and component sizes based on frame_rate */
     max_cs_len = ((float)bw)/8/opendcp->frame_rate;
- 
+
     /* adjust cs for 3D */
     if (opendcp->stereoscopic) {
         max_cs_len = max_cs_len/2;
-    } 
- 
+    }
+
     max_comp_size = ((float)max_cs_len)/1.25;
 
     /* set encoding parameters to default values */
@@ -341,7 +341,7 @@ int encode_openjpeg(opendcp_t *opendcp, opj_image_t *opj_image, char *out_file) 
         opj_destroy_compress(cinfo);
         return OPENDCP_ERROR;
     }
-      
+
     codestream_length = cio_tell(cio);
 
     f = fopen(out_file, "wb");

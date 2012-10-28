@@ -310,6 +310,7 @@ typedef struct {
     pkl_t          pkl[MAX_PKL];
     assetmap_t     assetmap;
     volindex_t     volindex;
+    opendcp_cb_t   sha1_update;
 } dcp_t;
 
 typedef struct {

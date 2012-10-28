@@ -19,6 +19,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "generatetitle.h"
+#include "conversion_dialog.h"
 #include <QtGui>
 #include <QDir>
 #include <stdio.h>

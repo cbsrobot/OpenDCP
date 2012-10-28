@@ -25,6 +25,8 @@
 
 #include "opendcp.h"
 
+void progress_bar();
+
 typedef struct {
     char filename[FILENAME_MAX];
 } asset_list_t;
@@ -89,8 +91,46 @@ void dcp_usage() {
     exit(0);
 }
 
+/* gross globals, but... quicker than implementing callback arguments */
+int  total = 0;
+int  val   = 0;
+char progress_string[80];
+int  read_size = 16384;
+
+int sha1_update_done_cb(void *p) {
+    val++;
+    UNUSED(p);
+    progress_bar();
+
+    return 0;
+}
+
+int sha1_digest_done_cb(void *p) {
+    UNUSED(p);
+    printf("\n  Digest Complete\n");
+
+    return 0;
+}
+
+void progress_bar() {
+    int x;
+    int step = 20;
+    float c = (float)step/total * (float)val;
+
+    printf("%-50s [", progress_string);
+    for (x=0;x<step;x++) {
+        if (c>x) {
+            printf("=");
+        } else {
+            printf(" ");
+        }
+    }
+    printf("] 100%%\r");
+    fflush(stdout);
+}
+
 int main (int argc, char **argv) {
-    int c,j;
+    int c, j;
     int reel_count=0;
     int height = 0;
     int width  = 0;
@@ -211,7 +251,6 @@ int main (int argc, char **argv) {
 #ifdef XMLSEC
             case 's':
                 opendcp->xml_signature.sign = 1;
-
             break;
 #endif
 
@@ -260,7 +299,7 @@ int main (int argc, char **argv) {
     dcp_set_log_level(opendcp->log_level);
 
     if (opendcp->log_level > 0) {
-        printf("\nOpenDCP XML %s %s\n\n",OPENDCP_VERSION,OPENDCP_COPYRIGHT);
+        printf("\nOpenDCP XML %s %s\n",OPENDCP_VERSION,OPENDCP_COPYRIGHT);
     }
 
     if (reel_count < 1) {
@@ -335,6 +374,11 @@ int main (int argc, char **argv) {
     create_cpl(opendcp->dcp, &cpl);
     add_cpl_to_pkl(&opendcp->dcp.pkl[0], cpl);
 
+    /* set the callbacks (optional) for the digest generator */
+    if (opendcp->log_level>0 && opendcp->log_level<3) {
+        opendcp->dcp.sha1_update.callback = sha1_update_done_cb;
+    }
+
     /* Add and validate reels */
     for (c = 0; c<reel_count; c++) {
         int a;
@@ -342,9 +386,17 @@ int main (int argc, char **argv) {
         create_reel(opendcp->dcp, &reel);
 
         for (a = 0; a < reel_list[c].asset_count; a++) {
+            val   = 0;
             asset_t asset;
             add_asset(opendcp, &asset, reel_list[c].asset_list[a].filename);
             add_asset_to_reel(opendcp, &reel, asset);
+            sprintf(progress_string, "%-.25s %.25s", asset.filename, "Digest Calculation");
+            total = atoi(asset.size) / read_size;
+            if (opendcp->log_level>0 && opendcp->log_level<3) {
+                printf("\n");
+                progress_bar();
+            }
+            calculate_digest(opendcp, asset.filename, asset.digest);
         }
 
         if (validate_reel(opendcp, &reel, c) == OPENDCP_NO_ERROR) {
@@ -364,20 +416,44 @@ int main (int argc, char **argv) {
         sprintf(opendcp->dcp.volindex.filename,"%s","VOLINDEX");
     }
 
-    /* Write XML Files */
+    /* Write CPL File */
+    if (opendcp->log_level>0 && opendcp->log_level<3) {
+        printf("\n");
+        sprintf(progress_string, "%-.50s", opendcp->dcp.pkl[0].cpl[0].filename);
+        progress_bar();
+    }
     if (write_cpl(opendcp, &opendcp->dcp.pkl[0].cpl[0]) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing composition playlist failed");
+
+    /* Write PKL File */
+    if (opendcp->log_level>0 && opendcp->log_level<3) {
+        printf("\n");
+        sprintf(progress_string, "%-.50s", opendcp->dcp.pkl[0].filename);
+        progress_bar();
+    }
     if (write_pkl(opendcp, &opendcp->dcp.pkl[0]) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing packing list failed");
+
+    if (opendcp->log_level>0 && opendcp->log_level<3) {
+        printf("\n");
+        sprintf(progress_string, "%-.50s", opendcp->dcp.assetmap.filename);
+        progress_bar();
+    }
     if (write_volumeindex(opendcp) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing volume index failed");
+
+    if (opendcp->log_level>0 && opendcp->log_level<3) {
+        printf("\n");
+        sprintf(progress_string, "%-.50s", opendcp->dcp.volindex.filename);
+        progress_bar();
+    }
     if (write_assetmap(opendcp) != OPENDCP_NO_ERROR)
         dcp_fatal(opendcp,"Writing asset map failed");
 
     dcp_log(LOG_INFO,"DCP Complete");
 
     if (opendcp->log_level > 0) {
-        printf("\n");
+        printf("\nDCP Creation Done\n");
     }
 
     opendcp_delete(opendcp);

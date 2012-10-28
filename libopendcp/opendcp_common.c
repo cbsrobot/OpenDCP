@@ -366,6 +366,8 @@ opendcp_t *opendcp_create() {
     opendcp->mxf.frame_done.argument  = NULL;
     opendcp->mxf.file_done.callback   = opendcp_callback_null;
     opendcp->mxf.file_done.argument   = NULL;
+    opendcp->dcp.sha1_update.callback = opendcp_callback_null;
+    opendcp->dcp.sha1_update.argument = NULL;
 
     return opendcp;
 }
@@ -612,7 +614,7 @@ int add_asset(opendcp_t *opendcp, asset_t *asset, char *filename) {
     }
 
     /* calculate digest */
-    calculate_digest(opendcp, filename, asset->digest);
+    // calculate_digest(opendcp, filename, asset->digest);
 
     return OPENDCP_NO_ERROR;
 }

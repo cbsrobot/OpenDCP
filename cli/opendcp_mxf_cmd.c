@@ -58,13 +58,13 @@ void dcp_usage() {
     fprintf(fp,"       -h | --help                    - show help\n");
     fprintf(fp,"       -v | --version                 - show version\n");
     fprintf(fp,"\n\n");
-    
+
     fclose(fp);
     exit(0);
 }
 
 filelist_t *get_filelist_3d(char *in_path_left, char *in_path_right) {
-    int x = 0; 
+    int x = 0;
     int y = 0;
     filelist_t *left, *right, *filelist;
 
@@ -75,7 +75,7 @@ filelist_t *get_filelist_3d(char *in_path_left, char *in_path_right) {
         dcp_log(LOG_ERROR,"Mismatching file count for 3D images left: %d right: %d",left->nfiles,right->nfiles);
         filelist_free(left);
         filelist_free(right);
-        return NULL; 
+        return NULL;
     }
 
     filelist = filelist_alloc(left->nfiles + right->nfiles);
@@ -105,7 +105,7 @@ int frame_done_cb(void *p) {
 int write_done_cb(void *p) {
     UNUSED(p);
     printf("\n  MXF Complete\n");
-   
+
     return 0;
 }
 
@@ -113,7 +113,7 @@ void progress_bar() {
     int x;
     int step = 20;
     float c = (float)step/total * (float)val;
-  
+
     printf("  MXF Creation [");
     for (x=0;x<step;x++) {
         if (c>x) {
@@ -169,14 +169,14 @@ int main (int argc, char **argv) {
 
         /* getopt_long stores the option index here. */
         int option_index = 0;
-     
+
         c = getopt_long (argc, argv, "1:2:d:i:n:o:r:s:p:l:3hv",
                          long_options, &option_index);
-     
+
         /* Detect the end of the options. */
         if (c == -1)
             break;
-     
+
         switch (c)
         {
             case 0:
@@ -292,7 +292,7 @@ int main (int argc, char **argv) {
     if (filelist->nfiles < 1) {
         dcp_fatal(opendcp,"No input files located");
     }
-  
+
     if (opendcp->mxf.end_frame) {
         if (opendcp->mxf.end_frame > filelist->nfiles) {
             dcp_fatal(opendcp,"End frame is greater than the actual frame count");
@@ -309,12 +309,12 @@ int main (int argc, char **argv) {
         opendcp->mxf.start_frame = 1;
     }
 
-    opendcp->mxf.duration = opendcp->mxf.end_frame - (opendcp->mxf.start_frame-1);  
+    opendcp->mxf.duration = opendcp->mxf.end_frame - (opendcp->mxf.start_frame-1);
 
     if (opendcp->mxf.duration < 1) {
         dcp_fatal(opendcp,"Duration must be at least 1 frame");
     }
-   
+
     /* set the callbacks (optional) for the mxf writer */
     opendcp->mxf.frame_done.callback = frame_done_cb;
     opendcp->mxf.file_done.callback  = write_done_cb;
@@ -328,7 +328,7 @@ int main (int argc, char **argv) {
         total = get_wav_duration(filelist->files[0], opendcp->frame_rate);
     } else {
         total = filelist->nfiles;
-    } 
+    }
 
     if (write_mxf(opendcp, filelist, out_path) != 0 )  {
         printf("Error!\n");
