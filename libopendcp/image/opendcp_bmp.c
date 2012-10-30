@@ -186,6 +186,10 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
     image = odcp_image_create(3, w, h);
     dcp_log(LOG_DEBUG,"%-15.15s: image allocated","read_bmp");
 
+    int row_size = ((bmp.image.bpp * w + 31) / 32) * 4;
+    uint8_t data[4];
+    dcp_log(LOG_INFO, "%-15,15s: row size %d data size %d", "read_bmp", row_size, sizeof(uint8_t));
+
     fseek(bmp_fp, bmp.file.offset, SEEK_SET);
 
     /* RGB(A) */
@@ -204,17 +208,17 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
         } else if (bmp.image.bpp == 24 ) {
             uint8_t data[3];
             for (i=0; i<pixels; i++) {
-                fread(&data,sizeof(data),1,bmp_fp);
+                fread(&data, sizeof(uint8_t), sizeof(data), bmp_fp);
                 int p = invert_row(bmp, i);
                 image->component[BMP_B].data[p] = data[0] << 4;
                 image->component[BMP_G].data[p] = data[1] << 4;
-                image->component[BMP_R].data[p] = data[2] << 4;
+                image->component[BMP_R].data[p] = data[2] << 4;;
             }
         /* 32-bits per pixel */
         } else if (bmp.image.bpp == 32 ) {
             uint8_t data[4];
             for (i=0; i<pixels; i++) {
-                fread(&data,sizeof(data),1,bmp_fp);
+                fread(&data, sizeof(uint8_t), sizeof(data), bmp_fp);
                 int p = invert_row(bmp, i);
                 image->component[BMP_B].data[p] = data[0] << 4;
                 image->component[BMP_G].data[p] = data[1] << 4;

@@ -40,7 +40,6 @@ int foo(void *p)
 
 QString MainWindow::calculateDigest(opendcp_t *opendcp, QString text, QString filename)
 {
-    int pg = 0;
     char assetDigest[40];
 
     QFileInfo file(filename);
@@ -60,22 +59,6 @@ QString MainWindow::calculateDigest(opendcp_t *opendcp, QString text, QString fi
     }
 
     progress->hide();
-    //qApp->processEvents();
 
-    /*
-    while (!src.atEnd()) {
-        QByteArray bytearray = src.read(4096);
-        dst.write(bytearray);
-        qint64 act = bytearray.length();
-        pg = pg + act;
-        progress->setValue(pg);
-        if (progress->wasCanceled()) {
-            progress->hide();
-            break;
-        }
-
-    }
-    */
-
-   return assetDigest;
+    return assetDigest;
 }

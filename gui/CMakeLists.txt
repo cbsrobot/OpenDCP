@@ -22,7 +22,7 @@ SET(OPENDCP_GUI_CXX_SRC
     mxf.cpp
     xml.cpp
     generatetitle.cpp
-    conversion_dialog.cpp
+    conversionDialog.cpp
     mxf-writer.cpp
     settings.cpp
     translator.cpp
@@ -33,7 +33,7 @@ SET(OPENDCP_GUI_CXX_SRC
 SET(OPENDCP_GUI_H_SRC
     mainwindow.h
     generatetitle.h
-    conversion_dialog.h
+    conversionDialog.h
     mxf-writer.h
     settings.h
     translator.h
