@@ -33,6 +33,8 @@ extern "C" {
 #define MAX_FILENAME_LENGTH 254
 #define MAX_AUDIO_CHANNELS  16   /* maximum allowed audio channels */
 
+#define FILE_READ_SIZE      16384
+
 #define MAX_DCP_JPEG_BITRATE 250000000  /* Maximum DCI compliant bit rate for JPEG2000 */
 #define MAX_DCP_MPEG_BITRATE  80000000  /* Maximum DCI compliant bit rate for MPEG */
 

@@ -22,7 +22,7 @@
 enum CONVERSION_STATE {
     IDLE  = 0,
     START,
-    STOP, 
+    STOP,
     RUN
 };
 
@@ -65,7 +65,7 @@ void ConversionDialog::stop()
 void ConversionDialog::update()
 {
     QString labelText;
-  
+
     if (m_canceled == true) {
         return;
     }

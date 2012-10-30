@@ -100,6 +100,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void fileCopy(QString source, QString destination);
+    QString calculateDigest(opendcp_t *opendcp, QString text, QString filename);
 
 private:
     void createActions();

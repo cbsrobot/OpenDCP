@@ -53,7 +53,7 @@ extern "C" int calculate_digest(opendcp_t *opendcp, const char *filename, char *
 
     FileReader    reader;
     SHA_CTX       sha_context;
-    ByteString    read_buffer(16384);
+    ByteString    read_buffer(FILE_READ_SIZE);
     ui32_t        read_length;
     const ui32_t  sha_length = 20;
     byte_t        byte_buffer[sha_length];
@@ -69,11 +69,10 @@ extern "C" int calculate_digest(opendcp_t *opendcp, const char *filename, char *
 
         if (ASDCP_SUCCESS(result)) {
             SHA1_Update(&sha_context, read_buffer.Data(), read_length);
-        }
-
-        /* update callback (also check for interrupt) */
-        if (opendcp->dcp.sha1_update.callback(opendcp->dcp.sha1_update.argument)) {
-            return OPENDCP_NO_ERROR;
+            /* update callback (also check for interrupt) */
+            if (opendcp->dcp.sha1_update.callback(opendcp->dcp.sha1_update.argument)) {
+                return OPENDCP_CALC_DIGEST;
+            }
         }
     }
 
@@ -574,7 +573,7 @@ int write_j2k_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
 
     result = mxf_writer.Finalize();
 
-    /* file done callback) */
+    /* file done callback */
     opendcp->mxf.file_done.callback(opendcp->mxf.file_done.argument);
 
     if (ASDCP_FAILURE(result)) {

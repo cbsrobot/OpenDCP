@@ -36,7 +36,7 @@ extern int rgb_to_xyz_lut(odcp_image_t *image, int index);
 /* create opendcp image structure */
 odcp_image_t *odcp_image_create(int n_components, int w, int h) {
     int x;
-    odcp_image_t *image = 00; 
+    odcp_image_t *image = 00;
 
     image = (odcp_image_t*) malloc(sizeof(odcp_image_t));
 
@@ -51,7 +51,7 @@ odcp_image_t *odcp_image_create(int n_components, int w, int h) {
         }
 
         memset(image->component,0,n_components * sizeof(odcp_image_component_t));
-       
+
         for (x=0;x<n_components;x++) {
             image->component[x].component_number = x;
             image->component[x].data = (int *)malloc((w*h)*sizeof(int));
@@ -315,9 +315,9 @@ static inline rgb_pixel_float_t get_pixel(odcp_image_t *image, int x, int y) {
     p.r = image->component[0].data[i];
     p.g = image->component[1].data[i];
     p.b = image->component[2].data[i];
-    
+
     return p;
-} 
+}
 
 int letterbox(odcp_image_t **image, int w, int h) {
     int num_components = 3;
@@ -346,7 +346,7 @@ int letterbox(odcp_image_t **image, int w, int h) {
     *image = d_image;
 
     return OPENDCP_NO_ERROR;
-} 
+}
 
 /* resize image */
 int resize(odcp_image_t **image, int profile, int method) {
@@ -355,7 +355,7 @@ int resize(odcp_image_t **image, int profile, int method) {
     rgb_pixel_float_t p;
     int w,h;
     float aspect;
-  
+
     /* aspect ratio */
     aspect = (float)ptr->w/(float)ptr->h;
 
@@ -404,7 +404,7 @@ int resize(odcp_image_t **image, int profile, int method) {
         ty = (float)ptr->h / h;
 
         for(y=0; y<h; y++) {
-            dy = y * ty; 
+            dy = y * ty;
             for(x=0; x<w; x++) {
                 dx = x * tx;
                 p = get_pixel(ptr, dx, dy);
@@ -417,7 +417,7 @@ int resize(odcp_image_t **image, int profile, int method) {
     }
 
     odcp_image_free(*image);
-    *image = d_image; 
+    *image = d_image;
 
     return OPENDCP_NO_ERROR;
 }

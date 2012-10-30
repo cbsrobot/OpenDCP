@@ -19,7 +19,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "generatetitle.h"
-#include "conversion_dialog.h"
 #include <QtGui>
 #include <QDir>
 #include <stdio.h>
@@ -162,18 +161,39 @@ void MainWindow::startDcp()
     if (!ui->reelPictureEdit->text().isEmpty()) {
         asset_t asset;
         add_asset(xmlContext, &asset, ui->reelPictureEdit->text().toUtf8().data());
+        QString digest = calculateDigest(xmlContext, "Picture", QString::fromStdString(asset.filename));
+        if (digest == NULL) {
+            QMessageBox::critical(this, DCP_FAIL_MSG,
+                                 tr("Calculate Digest Did Not Complete"));
+            goto Done;
+        }
+        //QString digest = xmlCalculateDigestStartThread(xmlContext, asset.filename);
+        sprintf(asset.digest, "%s", digest.toUtf8().data());
         add_asset_to_reel(xmlContext, &xmlContext->dcp.pkl[0].cpl[0].reel[0], asset);
     }
 
     if (!ui->reelSoundEdit->text().isEmpty()) {
         asset_t asset;
         add_asset(xmlContext, &asset, ui->reelSoundEdit->text().toUtf8().data());
+        QString digest = calculateDigest(xmlContext, "Sound", QString::fromStdString(asset.filename));
+        if (digest == NULL) {
+            QMessageBox::critical(this, DCP_FAIL_MSG,
+                                 tr("Calculate Digest Did Not Complete"));
+            goto Done;
+        }
+        sprintf(asset.digest, "%s", digest.toUtf8().data());
         add_asset_to_reel(xmlContext, &xmlContext->dcp.pkl[0].cpl[0].reel[0], asset);
     }
 
     if (!ui->reelSubtitleEdit->text().isEmpty()) {
         asset_t asset;
         add_asset(xmlContext, &asset, ui->reelSubtitleEdit->text().toUtf8().data());
+        QString digest = calculateDigest(xmlContext, "Subtitle", QString::fromStdString(asset.filename));
+        if (digest == NULL) {
+            QMessageBox::critical(this, DCP_FAIL_MSG,
+                                 tr("Calculate Digest Did Not Complete"));
+            goto Done;
+        }
         add_asset_to_reel(xmlContext, &xmlContext->dcp.pkl[0].cpl[0].reel[0], asset);
     }
 

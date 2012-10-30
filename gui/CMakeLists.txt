@@ -27,6 +27,7 @@ SET(OPENDCP_GUI_CXX_SRC
     settings.cpp
     translator.cpp
     filecopy.cpp
+    calculateDigest.cpp
 )
 
 SET(OPENDCP_GUI_H_SRC
