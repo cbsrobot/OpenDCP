@@ -18,7 +18,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "conversion_dialog.h"
+#include "conversionDialog.h"
 #include <QtGui>
 #include <QDir>
 #include <QPixmap>
@@ -35,7 +35,7 @@ void MainWindow::j2kConnectSlots()
     connect(ui->encodeButton,         SIGNAL(clicked()),                this, SLOT(j2kStart()));
     connect(ui->profileComboBox,      SIGNAL(currentIndexChanged(int)), this, SLOT(j2kCinemaProfileUpdate()));
 
-    // connect j2k input signals 
+    // connect j2k input signals
     j2kInSignalMapper->setMapping(ui->inImageLeftButton,  ui->inImageLeftEdit);
     j2kInSignalMapper->setMapping(ui->inImageRightButton, ui->inImageRightEdit);
 
@@ -140,7 +140,7 @@ int iterations = 0;
 void MainWindow::preview(QString filename)
 {
     QImage image;
-    
+
     if (!image.load(filename)) {
         ui->previewLabel->setText(tr("Image preview not supported for this file"));
     } else {
@@ -160,7 +160,7 @@ void MainWindow::j2kConvert() {
     QString detailText;
     QString inFile;
     QString outFile;
-    QList<QStringList> list; 
+    QList<QStringList> list;
     QFileInfoList inLeftList;
     QFileInfoList inRightList;
 
@@ -188,7 +188,7 @@ void MainWindow::j2kConvert() {
         inRightList = inDir.entryInfoList();
     }
 
-    // build conversion list 
+    // build conversion list
     for (int i = ui->startSpinBox->value() - 1; i < ui->endSpinBox->value(); i++) {
         QStringList pair;
 
@@ -338,7 +338,7 @@ void MainWindow::j2kStart() {
         if (ui->inImageLeftEdit->text().isEmpty()) {
             QMessageBox::warning(this, tr("Source Directory Needed"),tr("Please select a source directory"));
             goto Done;
-        } 
+        }
         if (ui->outJ2kLeftEdit->text().isEmpty()) {
             QMessageBox::warning(this, tr("Destination Directory Needed"),tr("Please select a destination directory"));
             goto Done;

@@ -17,7 +17,7 @@
 */
 
 #include <QDir>
-#include "conversion_dialog.h"
+#include "conversionDialog.h"
 
 enum CONVERSION_STATE {
     IDLE  = 0,

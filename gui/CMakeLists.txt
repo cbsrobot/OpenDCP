@@ -21,20 +21,20 @@ SET(OPENDCP_GUI_CXX_SRC
     j2k.cpp
     mxf.cpp
     xml.cpp
-    generatetitle.cpp
+    generateTitle.cpp
     conversionDialog.cpp
-    mxf-writer.cpp
+    mxfWriter.cpp
     settings.cpp
     translator.cpp
-    filecopy.cpp
+    fileCopy.cpp
     calculateDigest.cpp
 )
 
 SET(OPENDCP_GUI_H_SRC
     mainwindow.h
-    generatetitle.h
+    generateTitle.h
     conversionDialog.h
-    mxf-writer.h
+    mxfWriter.h
     settings.h
     translator.h
 )
