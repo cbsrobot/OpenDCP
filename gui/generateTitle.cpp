@@ -16,7 +16,7 @@
      along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "generatetitle.h"
+#include "generateTitle.h"
 #include "ui_generatetitle.h"
 #include <QtGui>
 #include <QFile>

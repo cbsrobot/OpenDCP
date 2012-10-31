@@ -18,7 +18,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "generatetitle.h"
+#include "generateTitle.h"
 #include "settings.h"
 #include "opendcp.h"
 #include <QtGui>
