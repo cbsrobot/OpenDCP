@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <opendcp.h>
 
-int foo(void *p)
+int calculateDigestCallback(void *p)
 {
     QProgressDialog *progress = static_cast<QProgressDialog *>(p);
     progress->setValue(progress->value()+1);
@@ -51,7 +51,7 @@ QString MainWindow::calculateDigest(opendcp_t *opendcp, QString text, QString fi
     QProgressDialog *progress = new QProgressDialog(msg, "Cancel", 0, len+1, this);
     progress->setWindowModality(Qt::WindowModal);
 
-    opendcp->dcp.sha1_update.callback = foo;
+    opendcp->dcp.sha1_update.callback = calculateDigestCallback;
     opendcp->dcp.sha1_update.argument = progress;
 
     if (calculate_digest(opendcp, filename.toUtf8().data(), assetDigest) == OPENDCP_CALC_DIGEST) {

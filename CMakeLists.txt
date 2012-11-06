@@ -254,11 +254,14 @@ ELSEIF(UNIX)
     INCLUDE_DIRECTORIES(${TIFF_INCLUDE_DIR})
     SET(LIBS ${LIBS} ${TIFF_LIBRARIES})
 
+    FIND_PACKAGE(OPENJPEG REQUIRED)
+    INCLUDE_DIRECTORIES(${OPENJPEG_INCLUDE_DIR})
+    SET(LIBS ${LIBS} ${OPENJPEG_LIBRARIES})
     #-- download and build openjpeg local because the versions
     #-- between linux distributions are not compatible
-    SET(COMPILE_OPENJPEG 1)
-    INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR}/contrib/include)
-    SET(LIBS ${LIBS} ${PREFIX}/lib/libopenjpeg.a)
+    #SET(COMPILE_OPENJPEG 0)
+    #INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR}/contrib/include)
+    #SET(LIBS ${LIBS} ${PREFIX}/lib/libopenjpeg.a)
 
     ADD_SUBDIRECTORY(contrib)
 
