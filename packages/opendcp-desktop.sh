@@ -1,13 +1,13 @@
 #!/bin/sh
 cat <<EOF
 [Desktop Entry]
-Version=0.20
+Version=1.0
 Type=Application
 Name=OpenDCP
 GenericName=OpenDCP
 Comment=OpenDCP Digital Cinema Package Creator
 tryExec=opendcp
-Exec=opendcp &
-Categories=Application;AudioVideo;Video;
+Exec=opendcp
+Categories=Application;AudioVideo;AudioVideoEditing
 Icon=opendcp.png
 EOF
