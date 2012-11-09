@@ -3,14 +3,19 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 INCLUDE(ExternalProject)
 
-IF (NOT WIN32)
+IF(NOT WIN32)
     SET(MAKE make)
     SET(CONFIGURE <SOURCE_DIR>/configure)
     SET(INSTALL make)
 ENDIF()
 
 SET(OPENDCP_CONTRIB_URL ${PROJECT_SOURCE_DIR}/contrib/tarballs)
-SET(URL ${OPENDCP_CONTRIB_URL})
+IF(EXISTS ${OPENDCP_CONTRIB_URL})
+    SET(DOWNLOAD 0)
+    SET(URL ${OPENDCP_CONTRIB_URL})
+ELSE()
+    SET(DOWNLOAD 1)
+ENDIF()
 
 IF(COMPILE_ZLIB)
     IF(DOWNLOAD)
@@ -181,7 +186,7 @@ ENDIF()
 
 IF(COMPILE_OPENJPEG)
     IF(DOWNLOAD)
-        SET(URL http://openjpeg.googlecode.com/files/)
+        SET(URL http://openjpeg.googlecode.com/files)
     ENDIF()
     EXTERNALPROJECT_ADD(09_OpenJPEG
         URL ${URL}/${OPENJPEG_URL}

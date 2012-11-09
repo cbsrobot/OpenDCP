@@ -32,6 +32,7 @@ IF(CMAKE_SIZEOF_VOID_P MATCHES "8")
 ELSE()
     SET(HOST_ARCH i686)
 ENDIF()
+SET(TARGET_ARCH ${HOST_ARCH})
 #-------------------------------------------------------------------------------
 
 #--set optional packages--------------------------------------------------------
