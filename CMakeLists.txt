@@ -79,7 +79,7 @@ IF (APPLE)
     INCLUDE("toolchains/osx.cmake")
 ELSEIF(WIN32)
     INCLUDE("toolchains/win32.cmake")
-ELSE
+ELSE()
     INCLUDE("toolchains/linux.cmake")
 ENDIF()
 #-------------------------------------------------------------------------------
