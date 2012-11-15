@@ -83,6 +83,10 @@ void Translator::loadLanguages(void)
     QDir dir(m_langPath);
     QStringList fileNames = dir.entryList(QStringList("opendcp_*.qm"));
 
+    // add default english
+    m_langHash.insert("English", "opendcp_en.qm");
+
+    // insert other languages
     for (int i = 0; i < fileNames.size(); ++i) {
         m_langHash.insert(filenameToLanguage(fileNames[i]), fileNames[i]);
     }
@@ -97,7 +101,7 @@ QString Translator::filenameToLanguage(const QString &filename)
     locale.remove(0, locale.indexOf('_') + 1);  // "xx"
 
     QString language = QLocale::languageToString(QLocale(locale).language());
- 
+
     return(language);
 }
 
