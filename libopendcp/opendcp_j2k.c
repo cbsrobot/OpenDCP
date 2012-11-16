@@ -150,7 +150,7 @@ int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_
     #pragma omp critical
     #endif
     {
-    result = read_image(&odcp_image,in_file);
+    result = read_image(&odcp_image, in_file);
     }
 
     if (result != OPENDCP_NO_ERROR) {
