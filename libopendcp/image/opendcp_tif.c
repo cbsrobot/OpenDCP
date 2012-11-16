@@ -26,7 +26,7 @@
 #include "opendcp_image.h"
 
 typedef struct {
-    TIFF       *fp; 
+    TIFF       *fp;
     tstrip_t   strip;
     tdata_t    strip_data;
     tsize_t    strip_size;
@@ -114,11 +114,11 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
         TIFFClose(tif.fp);
        return(OPENDCP_ERROR);
     }
-   
+
     /* create the image */
     dcp_log(LOG_DEBUG,"%-15.15s: allocating odcp image","read_tif");
     image = odcp_image_create(3,tif.w,tif.h);
-    
+
     if (!image) {
         TIFFClose(tif.fp);
         dcp_log(LOG_ERROR,"%-15.15s: failed to create image %s","read_tif",infile);
@@ -132,9 +132,9 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
         for (tif.strip = 0; tif.strip < tif.strip_num; tif.strip++) {
             tif.read_size = TIFFReadEncodedStrip(tif.fp, tif.strip, tif.strip_data, tif.strip_size);
             for (i=0; i<tif.image_size; i++) {
-                image->component[0].data[i] = data[i] << 4; // R 
-                image->component[1].data[i] = data[i] << 4; // G 
-                image->component[2].data[i] = data[i] << 4; // B 
+                image->component[0].data[i] = data[i] << 4; // R
+                image->component[1].data[i] = data[i] << 4; // G
+                image->component[2].data[i] = data[i] << 4; // B
             }
         }
         _TIFFfree(tif.strip_data);
@@ -182,9 +182,9 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
                 tif.read_size = TIFFReadEncodedStrip(tif.fp, tif.strip, tif.strip_data, tif.strip_size);
                 for (i=0; i<tif.read_size && index<tif.image_size; i+=tif.spp) {
                     /* rounded to 12 bits */
-                    image->component[0].data[index] = data[i+0] << 4; // R 
-                    image->component[1].data[index] = data[i+1] << 4; // G 
-                    image->component[2].data[index] = data[i+2] << 4; // B 
+                    image->component[0].data[index] = data[i+0] << 4; // R
+                    image->component[1].data[index] = data[i+1] << 4; // G
+                    image->component[2].data[index] = data[i+2] << 4; // B
                     index++;
                 }
             }
@@ -217,9 +217,9 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
                 tif.read_size = TIFFReadEncodedStrip(tif.fp, tif.strip, tif.strip_data, tif.strip_size);
                 for (i=0; i<tif.read_size && index<tif.image_size; i+=(2*tif.spp)) {
                     /* rounded to 12 bits */
-                    image->component[0].data[index] = ((data[i+1] << 8) | data[i+0]) >> 4; // R 
-                    image->component[1].data[index] = ((data[i+3] << 8) | data[i+2]) >> 4; // G 
-                    image->component[2].data[index] = ((data[i+5] << 8) | data[i+4]) >> 4; // B 
+                    image->component[0].data[index] = ((data[i+1] << 8) | data[i+0]) >> 4; // R
+                    image->component[1].data[index] = ((data[i+3] << 8) | data[i+2]) >> 4; // G
+                    image->component[2].data[index] = ((data[i+5] << 8) | data[i+4]) >> 4; // B
                     index++;
                 }
             }
