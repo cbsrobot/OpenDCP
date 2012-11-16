@@ -54,6 +54,7 @@ void dcp_usage() {
     fprintf(fp,"       -r | --rate <rate>             - frame rate (default 24)\n");
     fprintf(fp,"       -s | --start <frame>           - start frame\n");
     fprintf(fp,"       -d | --end  <frame>            - end frame\n");
+    fprintf(fp,"       -p | --slideshow  <duration>   - create slideshow with each image having duration specified (in seconds)\n");
     fprintf(fp,"       -l | --log_level <level>       - Sets the log level 0:Quiet, 1:Error, 2:Warn (default),  3:Info, 4:Debug\n");
     fprintf(fp,"       -h | --help                    - show help\n");
     fprintf(fp,"       -v | --version                 - show version\n");
@@ -161,7 +162,7 @@ int main (int argc, char **argv) {
             {"start",          required_argument, 0, 's'},
             {"end",            required_argument, 0, 'd'},
             {"rate",           required_argument, 0, 'r'},
-            {"profile",        required_argument, 0, 'p'},
+            {"slideshow",        required_argument, 0, 'p'},
             {"log_level",      required_argument, 0, 'l'},
             {"version",        no_argument,       0, 'v'},
             {0, 0, 0, 0}
@@ -197,6 +198,14 @@ int main (int argc, char **argv) {
                opendcp->mxf.end_frame = atoi(optarg);
                if (opendcp->mxf.end_frame < 1) {
                    dcp_fatal(opendcp,"End frame  must be greater than 0");
+               }
+            break;
+
+            case 'p':
+               opendcp->mxf.slide = 1;
+               opendcp->mxf.duration = atoi(optarg);
+               if (opendcp->mxf.duration < 1) {
+                   dcp_fatal(opendcp,"Slide duration  must be greater than 0");
                }
             break;
 
@@ -309,7 +318,11 @@ int main (int argc, char **argv) {
         opendcp->mxf.start_frame = 1;
     }
 
-    opendcp->mxf.duration = opendcp->mxf.end_frame - (opendcp->mxf.start_frame-1);
+    if (opendcp->mxf.slide) {
+        opendcp->mxf.duration = opendcp->mxf.duration * opendcp->frame_rate;
+    } else {
+        opendcp->mxf.duration = opendcp->mxf.end_frame - (opendcp->mxf.start_frame-1);
+    }
 
     if (opendcp->mxf.duration < 1) {
         dcp_fatal(opendcp,"Duration must be at least 1 frame");
@@ -327,7 +340,7 @@ int main (int argc, char **argv) {
     if (class == ACT_SOUND) {
         total = get_wav_duration(filelist->files[0], opendcp->frame_rate);
     } else {
-        total = filelist->nfiles;
+        total = opendcp->mxf.duration;
     }
 
     if (write_mxf(opendcp, filelist, out_path) != 0 )  {
