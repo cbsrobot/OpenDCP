@@ -18,8 +18,8 @@ SET(CPACK_PACKAGE_DESCRIPTION "This tool is used to created digital cinema packa
 SET(CPACK_PACKAGE_VENDOR "OpenDCP")
 sET(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README.txt)
 SET(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/COPYRIGHT.txt")
-SET(DOCUMENTATION_PATH share/doc/${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION})
-SET(SHARE_PATH         share/${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION})
+SET(DOCUMENTATION_PATH share/doc/${CPACK_PACKAGE_NAME})
+SET(SHARE_PATH         share/${CPACK_PACKAGE_NAME})
 #-----------------------------------------------------------------------------
 
 #--Win32 package--------------------------------------------------------------
