@@ -9,5 +9,5 @@ Comment=OpenDCP Digital Cinema Package Creator
 tryExec=opendcp
 Exec=opendcp
 Categories=Application;AudioVideo;AudioVideoEditing
-Icon=/usr/share/icon/opendcp.png
+Icon=/usr/share/icons/opendcp.png
 EOF
