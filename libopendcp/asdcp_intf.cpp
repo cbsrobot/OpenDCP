@@ -736,9 +736,9 @@ int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
     ui32_t               mxf_duration;
     i32_t                file_index = 0;
 
-    PCM::WAVParser       pcm_parser_channel[filelist->nfiles];
-    PCM::FrameBuffer     frame_buffer_channel[filelist->nfiles];
-    PCM::AudioDescriptor audio_desc_channel[filelist->nfiles];
+    PCM::WAVParser       pcm_parser_channel[MAX_AUDIO_CHANNELS];
+    PCM::FrameBuffer     frame_buffer_channel[MAX_AUDIO_CHANNELS];
+    PCM::AudioDescriptor audio_desc_channel[MAX_AUDIO_CHANNELS];
 
     Rational edit_rate(opendcp->frame_rate,1);
 
