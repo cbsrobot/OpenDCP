@@ -100,7 +100,7 @@ filelist_t *get_filelist(const char *path, const char *filter) {
         return filelist;
     }
 
-    i ((d = opendir(path)) == NULL) {
+    if ((d = opendir(path)) == NULL) {
         return(NULL);
     }
 
