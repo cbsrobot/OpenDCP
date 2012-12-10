@@ -235,12 +235,19 @@ void MainWindow::mxfSetHVState() {
 
 void MainWindow::mxfSetStereoscopicState() {
     int value = ui->mxfStereoscopicCheckBox->checkState();
+    QStringList stereoScopicFrameRates;
+    QStringList standardFrameRates;
+    stereoScopicFrameRates << "24" << "25" << "30" << "48";
+    standardFrameRates << "24" << "25" << "30" << "48" << "50" << "60" << "96";
 
     if (value) {
         ui->pictureLeftLabel->setText(tr("Left:"));
         ui->pictureRightLabel->show();
         ui->pictureRightEdit->show();
         ui->pictureRightButton->show();
+        ui->mxfFrameRateComboBox->clear();
+        ui->mxfFrameRateComboBox->insertItems(1, stereoScopicFrameRates);
+
     } else {
         if (ui->mxfSourceTypeComboBox->currentIndex() == JPEG2000) {
             ui->pictureLeftLabel->setText(tr("Directory:"));
@@ -250,6 +257,8 @@ void MainWindow::mxfSetStereoscopicState() {
         ui->pictureRightLabel->hide();
         ui->pictureRightEdit->hide();
         ui->pictureRightButton->hide();
+        ui->mxfFrameRateComboBox->clear();
+        ui->mxfFrameRateComboBox->insertItems(1, standardFrameRates);
     }
 }
 
@@ -412,13 +421,6 @@ void MainWindow::mxfStart() {
                 QMessageBox::critical(this, tr("Source content needed"),tr("Please select a source image directory."));
                 return;
              }
-        }
-        // check frame rate
-        if (ui->mxfStereoscopicCheckBox->checkState()) {
-            if (ui->mxfFrameRateComboBox->currentText().toInt() > 30) {
-                QMessageBox::critical(this, tr("Invalid frame rate"),tr("Stereoscopic MXF only supports 24, 25, or 30 fps."));
-                return;
-            }
         }
     }
 
