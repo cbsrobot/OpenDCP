@@ -78,7 +78,7 @@ int file_selector(const char *filename, const char *filter) {
 
     if (strstr(filter, extension) != NULL) {
         return 1;
-    } 
+    }
 
     return 0;
 }
@@ -100,8 +100,8 @@ filelist_t *get_filelist(const char *path, const char *filter) {
         return filelist;
     }
 
-	if ((d = opendir(path)) == NULL) {
-		return(NULL);
+    i ((d = opendir(path)) == NULL) {
+        return(NULL);
     }
 
     while ((de = readdir(d))) {
