@@ -91,14 +91,14 @@ void dcp_usage() {
     fprintf(fp,"^ Kakadu requires you to download and have the kdu_compress utility in your path.\n");
     fprintf(fp,"  You must agree to the Kakadu non-commerical licensing terms and assume all respsonsibility of its use.\n");
     fprintf(fp,"\n\n");
-    
+
     fclose(fp);
     exit(0);
 }
 
 char *substring(const char *str, size_t begin, size_t len) {
     char   *result;
- 
+
     if (str == 0 || strlen(str) == 0 || strlen(str) < begin || strlen(str) < (begin + len)) {
         return NULL;
     }
@@ -127,8 +127,8 @@ char *basename_noext(const char *str) {
 
     start = strlen(str)  - strlen(base);
     end   = strlen(base) - strlen(ext);
-   
-    char *substr = substring(str, start, end); 
+
+    char *substr = substring(str, start, end);
 
     return(substr);
 }
@@ -164,7 +164,7 @@ void progress_bar(int val, int total) {
     int step = 20;
     float c = (float)step/total * (float)val;
 #ifdef OPENMP
-    int nthreads = omp_get_num_threads(); 
+    int nthreads = omp_get_num_threads();
 #else
     int nthreads = 1;
 #endif
@@ -221,7 +221,7 @@ int main (int argc, char **argv) {
     openmp_flag              = 1;
     opendcp->threads         = omp_get_num_procs();
 #endif
- 
+
     /* parse options */
     while (1)
     {
@@ -252,14 +252,14 @@ int main (int argc, char **argv) {
 
         /* getopt_long stores the option index here. */
         int option_index = 0;
-     
+
         c = getopt_long (argc, argv, "b:c:d:e:g:i:l:m:o:p:r:s:t:w:3hnvxz",
                          long_options, &option_index);
-     
+
         /* Detect the end of the options. */
         if (c == -1)
             break;
-     
+
         switch (c)
         {
             case 0:
@@ -268,7 +268,7 @@ int main (int argc, char **argv) {
                     break;
                 }
                 break;
-            case '3': 
+            case '3':
                 opendcp->stereoscopic = 1;
                 break;
             case 'd':
@@ -415,7 +415,7 @@ int main (int argc, char **argv) {
 
     /* get file list */
     dcp_log(LOG_DEBUG,"%-15.15s: getting files in %s","opendcp_j2k_cmd",in_path);
-    filelist = get_filelist(in_path, "bmp,dpx,tif");
+    filelist = get_filelist(in_path, "bmp,dpx,tif,tiff");
 
     if (filelist->nfiles < 1) {
         dcp_fatal(opendcp,"No input files located");
@@ -429,7 +429,7 @@ int main (int argc, char **argv) {
     } else {
         opendcp->j2k.end_frame = filelist->nfiles;
     }
-   
+
     /* start frame check */
     if (opendcp->j2k.start_frame > opendcp->j2k.end_frame) {
         dcp_fatal(opendcp,"Start frame must be less than end frame");
@@ -439,10 +439,10 @@ int main (int argc, char **argv) {
 
     /* Sort files by index, and make sure they're sequential. */
     if (order_indexed_files(filelist->files, filelist->nfiles) != OPENDCP_NO_ERROR) {
-        dcp_fatal(opendcp,"Could not order image files"); 
+        dcp_fatal(opendcp,"Could not order image files");
     }
 
-    rc = ensure_sequential(filelist->files, filelist->nfiles); 
+    rc = ensure_sequential(filelist->files, filelist->nfiles);
     if (rc != OPENDCP_NO_ERROR) {
         dcp_log(LOG_WARN, "Filenames not sequential between %s and %s.",filelist->files[rc],filelist->files[rc+1]);
     }
@@ -457,7 +457,7 @@ int main (int argc, char **argv) {
     count = opendcp->j2k.start_frame;
 
     #pragma omp parallel for private(c)
-    for (c=opendcp->j2k.start_frame-1;c<opendcp->j2k.end_frame;c++) {    
+    for (c=opendcp->j2k.start_frame-1;c<opendcp->j2k.end_frame;c++) {
         #pragma omp flush(SIGINT_received)
         char out[MAX_FILENAME_LENGTH];
         build_j2k_filename(filelist->files[c], out_path, out);
