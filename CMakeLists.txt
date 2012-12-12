@@ -22,6 +22,7 @@ OPTION(OPENDCP_VERSION "Set version")
 OPTION(ENABLE_XMLSEC  "Enable XML digital singatures and security features" ON)
 OPTION(ENABLE_OPENMP  "Enable OPENMP multithreading" ON)
 OPTION(ENABLE_GUI     "Enable GUI compiling" ON)
+OPTION(ENABLE_DEBUG   "Enable debug symbols" OFF)
 OPTION(GENERATE_LANGUAGE_FILES "Generate Translation files" OFF)
 OPTION(RPM            "Create RPM package" OFF)
 OPTION(DEB            "Create DEB package" OFF)
@@ -57,7 +58,10 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 #-------------------------------------------------------------------------------
 
 #--set base compiler flags------------------------------------------------------
-SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -g -Wall -Wextra -O3 ${OPENMP}")
+IF(ENABLE_DEBUG)
+    SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -g}")
+ENDIF()
+SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -Wextra -O3 ${OPENMP}")
 SET(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS})
 #-------------------------------------------------------------------------------
 
@@ -88,7 +92,7 @@ ENDIF()
 
 MESSAGE(STATUS)
 MESSAGE(STATUS "================================================================================")
-MESSAGE(STATUS "OpenDCP Version ${OPENDCP_VERSION} CMake - ${CMAKE_SYSTEM_NAME} (${TARGET_ARCH}) ${OSX}")
+MESSAGE(STATUS "OpenDCP Version ${OPENDCP_VERSION} CMake - ${CMAKE_SYSTEM_NAME} (${TARGET_ARCH})")
 MESSAGE(STATUS "================================================================================")
 
 #--add source directories-------------------------------------------------------

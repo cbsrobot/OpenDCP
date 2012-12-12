@@ -61,7 +61,7 @@
          </rect>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="j2kTab">
          <attribute name="title">
@@ -2604,7 +2604,7 @@
             <x>80</x>
             <y>10</y>
             <width>600</width>
-            <height>211</height>
+            <height>231</height>
            </rect>
           </property>
           <property name="title">
@@ -2878,7 +2878,7 @@
           <property name="geometry">
            <rect>
             <x>80</x>
-            <y>230</y>
+            <y>250</y>
             <width>601</width>
             <height>331</height>
            </rect>
@@ -3403,7 +3403,7 @@
           <property name="geometry">
            <rect>
             <x>565</x>
-            <y>670</y>
+            <y>690</y>
             <width>115</width>
             <height>40</height>
            </rect>
@@ -3416,7 +3416,7 @@
           <property name="geometry">
            <rect>
             <x>80</x>
-            <y>570</y>
+            <y>590</y>
             <width>600</width>
             <height>85</height>
            </rect>
@@ -3520,7 +3520,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
