@@ -18,7 +18,7 @@ SET(OPENDCP_URL "http://www.opendcp.org")
 #-------------------------------------------------------------------------------
 
 #--options----------------------------------------------------------------------
-OPTION(OPENDCP_VERSION "Set version")
+OPTION(OPENDCP_VERSION "Set version" ${OPENDCP_VERSION})
 OPTION(ENABLE_XMLSEC  "Enable XML digital singatures and security features" ON)
 OPTION(ENABLE_OPENMP  "Enable OPENMP multithreading" ON)
 OPTION(ENABLE_GUI     "Enable GUI compiling" ON)
