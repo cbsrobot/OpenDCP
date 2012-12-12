@@ -47,5 +47,5 @@ ELSE()
 ENDIF()
 
  SET(CONFIGURE ${MING}-configure)
- SET(MAKE ${MINFG-make)
+ SET(MAKE ${MING}-make)
  SET(INSTALL sudo make)
