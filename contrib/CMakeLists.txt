@@ -179,9 +179,9 @@ ENDIF(COMPILE_TIFF)
 
 #-- temporary workaround
 IF(WIN32)
-    SET(OPENJPEG_URL openjpeg_v1_4_sources_r697.tar.gz)
+    SET(OPENJPEG_URL openjpeg_v1_4_sources_r697.tgz)
 ELSE()
-    SET(OPENJPEG_URL openjpeg-1.5.0.tar.gz)
+    SET(OPENJPEG_URL openjpeg-1.5.1.tar.gz)
 ENDIF()
 
 IF(COMPILE_OPENJPEG)
