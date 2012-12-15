@@ -117,6 +117,13 @@ void MainWindow::mxfConnectSlots() {
     connect(ui->sMxfOutButton,      SIGNAL(clicked()), &signalMapper, SLOT(map()));
 }
 
+void MainWindow::mxfSetInitialState() {
+    ui->mxfSoundTypeRadioMono->setChecked(true);
+    mxfSetHVState();
+    mxfSetSoundState();
+    mxfSetSlideState();
+}
+
 void MainWindow::mxfSoundOutputSlot() {
     QString path;
     QString filter;
@@ -159,8 +166,13 @@ void MainWindow::wavInputSlot(QWidget *w)
     rc = checkWavInfo(inputList, frameRate);
 
     if (rc == OPENDCP_INVALID_WAV_CHANNELS) {
-        QMessageBox::warning(this, tr("Invalid Wav"),
-                                   tr("The selected wav file is not Mono"));
+        if (ui->mxfSoundTypeRadioMono->isChecked()) {
+            QMessageBox::warning(this, tr("Invalid Wav"),
+                                       tr("The selected wav file is not Mono"));
+        } else {
+            QMessageBox::warning(this, tr("Invalid Wav"),
+                                       tr("The selected wav file is not Stereo, 5.1, or 7.1"));
+        }
         return;
     }
 
@@ -210,7 +222,7 @@ void MainWindow::mxfSourceTypeUpdate() {
     // WAV
     if (ui->mxfSourceTypeComboBox->currentIndex() == WAV) {
         ui->mxfInputStack->setCurrentIndex(SOUND);
-        ui->mxfSoundTypeRadioMono->setChecked(ENABLED);
+        mxfSetSoundInputTypeState();
     }
 
     // update
@@ -348,19 +360,20 @@ int MainWindow::checkWavInfo(QFileInfoList filelist, int frameRate) {
     QFileInfo  s;
     wav_info_t wav;
     int        rc;
-    int        expectedChannels;
 
     foreach(s, filelist) {
         rc = get_wav_info(s.absoluteFilePath().toUtf8().data(), frameRate, &wav);
 
         if (ui->mxfSoundTypeRadioMono->isChecked()) {
-            expectedChannels = 1;
+            if (wav.nchannels != 1) {
+                return OPENDCP_INVALID_WAV_CHANNELS;
+            }
         } else {
-            expectedChannels = wav.nchannels;
-        }
-
-        if (wav.nchannels != expectedChannels) {
-            return OPENDCP_INVALID_WAV_CHANNELS;
+            if (wav.nchannels != 2 &&
+                wav.nchannels != 6 &&
+                wav.nchannels != 8) {
+                return OPENDCP_INVALID_WAV_CHANNELS;
+            }
         }
 
         if (wav.bitdepth != 24) {
