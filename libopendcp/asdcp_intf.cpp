@@ -823,8 +823,8 @@ int write_pcm_mxf(opendcp_t *opendcp, filelist_t *filelist, char *output_file) {
                 continue;
             }
             if (frame_buffer_channel[file_index].Size() != frame_buffer_channel[file_index].Capacity()) {
-                dcp_log(LOG_INFO,"frame was short, expect size: %d actual size: %d. MXF Duration will be reduced by one frame",
-                                  frame_buffer_channel[file_index].Size(), frame_buffer_channel[file_index].Capacity());
+                dcp_log(LOG_INFO,"Frame size mismatch, expect size: %d did match actual size: %d",
+                                  frame_buffer_channel[file_index].Capacity(), frame_buffer_channel[file_index].Size());
                 result = RESULT_ENDOFFILE;
                 continue;
             }
