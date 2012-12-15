@@ -66,7 +66,7 @@ void dcp_usage() {
     fprintf(fp,"Usage:\n");
     fprintf(fp,"       opendcp_j2k -i <file> -o <file> [options ...]\n\n");
     fprintf(fp,"Required:\n");
-    fprintf(fp,"       -i | --input <file>            - input file or directory)\n");
+    fprintf(fp,"       -i | --input <file>            - input file or directory\n");
     fprintf(fp,"       -o | --output <file>           - output file or directory\n");
     fprintf(fp,"\n");
     fprintf(fp,"Options:\n");
