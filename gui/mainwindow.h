@@ -49,6 +49,7 @@ public slots:
     void j2kUpdateEndSpinBox();
     void j2kSetStereoscopicState();
 
+    void mxfSetInitialState();
     void mxfStart();
     void mxfSourceTypeUpdate();
     void mxfSetStereoscopicState();

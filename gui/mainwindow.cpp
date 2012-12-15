@@ -153,9 +153,7 @@ void MainWindow::setInitialUiState()
     // set initial screen indexes
     j2kSetStereoscopicState();
     mxfSetStereoscopicState();
-    mxfSetHVState();
-    mxfSetSoundState();
-    mxfSetSlideState();
+    mxfSetInitialState();
 
     // Check For Kakadu
     QProcess *kdu;
