@@ -400,10 +400,13 @@ from a dcp_t structure.
 void create_pkl(dcp_t dcp, pkl_t *pkl) {
     char uuid_s[40];
 
+    memset(pkl, 0, sizeof(pkl_t));
+
     strcpy(pkl->issuer,     dcp.issuer);
     strcpy(pkl->creator,    dcp.creator);
     strcpy(pkl->annotation, dcp.annotation);
     strcpy(pkl->timestamp,  dcp.timestamp);
+    pkl->cpl_count = 0;
 
     /* Generate UUIDs */
     uuid_random(uuid_s);
@@ -448,6 +451,8 @@ from a dcp_t structure.
 void create_cpl(dcp_t dcp, cpl_t *cpl) {
     char uuid_s[40];
 
+    memset(cpl, 0, sizeof(cpl_t));
+
     strcpy(cpl->annotation, dcp.annotation);
     strcpy(cpl->issuer,     dcp.issuer);
     strcpy(cpl->creator,    dcp.creator);
@@ -455,6 +460,7 @@ void create_cpl(dcp_t dcp, cpl_t *cpl) {
     strcpy(cpl->kind,       dcp.kind);
     strcpy(cpl->rating,     dcp.rating);
     strcpy(cpl->timestamp,  dcp.timestamp);
+    cpl->reel_count = 0;
 
     uuid_random(uuid_s);
     sprintf(cpl->uuid,"%.36s",uuid_s);
@@ -493,6 +499,8 @@ int init_asset(asset_t *asset) {
 
 void create_reel(dcp_t dcp, reel_t *reel) {
     char uuid_s[40];
+
+    memset(reel, 0, sizeof(reel_t));
 
     strcpy(reel->annotation, dcp.annotation);
 
