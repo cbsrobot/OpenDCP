@@ -389,7 +389,6 @@ int main (int argc, char **argv) {
             val   = 0;
             asset_t asset;
             add_asset(opendcp, &asset, reel_list[c].asset_list[a].filename);
-            add_asset_to_reel(opendcp, &reel, asset);
             sprintf(progress_string, "%-.25s %.25s", asset.filename, "Digest Calculation");
             total = atoi(asset.size) / read_size;
             if (opendcp->log_level>0 && opendcp->log_level<3) {
@@ -397,6 +396,7 @@ int main (int argc, char **argv) {
                 progress_bar();
             }
             calculate_digest(opendcp, asset.filename, asset.digest);
+            add_asset_to_reel(opendcp, &reel, asset);
         }
 
         if (validate_reel(opendcp, &reel, c) == OPENDCP_NO_ERROR) {
