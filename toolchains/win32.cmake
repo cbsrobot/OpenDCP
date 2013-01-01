@@ -37,7 +37,7 @@ SET(LIBS ${LIBS} ${LIB_DIR}/libopenjpeg.a)
 
 SET(LIBS ${LIBS} ${LIB_DIR}/libtiff.a ${LIB_DIR}/libjpeg.a)
 SET(LIBS ${LIBS} -L${LIB_DIR} -lcrypto -lssl)
-SET(LIBS ${LIBS} -L${LIB_DIR} -lz -lws2_32 -lmsvcr100)
+SET(LIBS ${LIBS} -L${LIB_DIR} -lz -lws2_32)
 #-------------------------------------------------------------------------------
 
 IF(TARGET_ARCH STREQUAL x86_64)
