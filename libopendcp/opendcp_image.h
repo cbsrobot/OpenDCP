@@ -11,7 +11,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -69,7 +69,7 @@ int  read_dpx(odcp_image_t **image_ptr, int dpx, const char *infile, int fd);
 int  read_bmp(odcp_image_t **image_ptr, const char *infile, int fd);
 odcp_image_t *odcp_image_create(int n_components, int w, int h);
 void odcp_image_free(odcp_image_t *image);
-int  odcp_image_readline(odcp_image_t *image, int y, unsigned char *data); 
+int  odcp_image_readline(odcp_image_t *image, int y, unsigned char *data);
 int  rgb_to_xyz(odcp_image_t *image, int gamma, int method);
 int  resize(odcp_image_t **image, int profile, int method);
 rgb_pixel_float_t yuv444toRGB888(int y, int cb, int cr);

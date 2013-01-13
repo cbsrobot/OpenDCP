@@ -48,7 +48,7 @@ void tif_set_strip(tiff_image_t *tif) {
     tif->strip_data = _TIFFmalloc(tif->strip_size);
 }
 
-int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
+int opendcp_decode_tif(odcp_image_t **image_ptr, const char *infile) {
     tiff_image_t tif;
     unsigned int i,index;
     odcp_image_t *image = 00;
@@ -57,11 +57,7 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
 
     /* open tiff using filename or file descriptor */
     dcp_log(LOG_DEBUG,"%-15.15s: opening tiff file %s","read_tif", infile);
-    if (fd == 0) {
-        tif.fp = TIFFOpen(infile, "r");
-    } else {
-        tif.fp = TIFFFdOpen(fd,infile,"r");
-    }
+    tif.fp = TIFFOpen(infile, "r");
 
     if (!tif.fp) {
         dcp_log(LOG_ERROR,"%-15.15s: failed to open %s for reading","read_tif", infile);
@@ -231,53 +227,6 @@ int read_tif(odcp_image_t **image_ptr, const char *infile, int fd) {
 
     dcp_log(LOG_DEBUG,"%-15.15s: tiff read complete","read_tif");
     *image_ptr = image;
-
-    return OPENDCP_NO_ERROR;
-}
-
-int write_tif(odcp_image_t *image, const char *outfile, int fd) {
-    int y;
-    TIFF *tif;
-    tdata_t data;
-
-    /* open tiff using filename or file descriptor */
-    if (fd == 0) {
-        tif = TIFFOpen(outfile, "wb");
-    } else {
-        tif = TIFFFdOpen(fd, outfile, "wb");
-    }
-
-    if (tif == NULL) {
-        dcp_log(LOG_ERROR, "%-15.15s: failed to open file %s for writing","write_tif", outfile);
-        return OPENDCP_ERROR;
-    }
-
-    /* Set tags */
-    TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, image->w);
-    TIFFSetField(tif, TIFFTAG_IMAGELENGTH, image->h);
-    TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, 3);
-    TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, image->precision);
-    TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
-    TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-    TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
-    TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, 1);
-
-    /* allocate memory for read line */
-    data = _TIFFmalloc(TIFFScanlineSize(tif));
-
-    if (data == NULL) {
-        dcp_log(LOG_ERROR, "%-15.15s: tiff memory allocation error: %s", "write_tif", outfile);
-        return OPENDCP_ERROR;
-    }
-
-    /* write each row */
-    for (y = 0; y<image->h; y++) {
-        odcp_image_readline(image, y, data);
-        TIFFWriteScanline(tif, data, y, 0);
-    }
-
-    _TIFFfree(data);
-    TIFFClose(tif);
 
     return OPENDCP_NO_ERROR;
 }

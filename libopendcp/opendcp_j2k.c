@@ -192,7 +192,7 @@ int convert_to_j2k(opendcp_t *opendcp, char *in_file, char *out_file, char *tmp_
         char tempfile[255];
         sprintf(tempfile, "%s/tmp_%s.tif", tmp_path, basename(in_file));
         dcp_log(LOG_DEBUG, "%-15.15s: Writing temporary tif %s", "convert_to_j2k", tempfile);
-        result = write_tif(odcp_image, tempfile, 0);
+        result = opendcp_encode_tif(odcp_image, tempfile);
         odcp_image_free(odcp_image);
 
         if (result != OPENDCP_NO_ERROR) {

@@ -68,7 +68,8 @@ SET(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS})
 #--build paths------------------------------------------------------------------
 INCLUDE_DIRECTORIES(${OPENDCP_INCLUDE_DIR}/libopendcp
                     ${PROJECT_BINARY_DIR}/libopendcp/include
-                    ${PROJECT_SOURCE_DIR}/libopendcp/image
+                    ${PROJECT_SOURCE_DIR}/libopendcp
+                    ${PROJECT_SOURCE_DIR}/libopendcp/codecs
                     ${PROJECT_SOURCE_DIR}/libasdcp
 )
 SET(OPENDCP_LIB opendcp-lib)

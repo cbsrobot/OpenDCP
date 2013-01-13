@@ -148,7 +148,6 @@ int is_dir(char *path) {
     struct stat st_in;
 
     if (stat(path, &st_in) != 0 ) {
-        dcp_log(LOG_ERROR,"Could not open input file %s",path);
         return 0;
     }
 

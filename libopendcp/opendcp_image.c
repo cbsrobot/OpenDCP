@@ -26,6 +26,7 @@
 #include "opendcp.h"
 #include "opendcp_image.h"
 #include "opendcp_xyz.h"
+#include "codecs/opendcp_decoder.h"
 
 #define CLIP(m,max)                                 \
   (m)<0?0:((m)>max?max:(m))
@@ -100,19 +101,21 @@ void odcp_image_free(odcp_image_t *odcp_image) {
 int read_image(odcp_image_t **image, char *file) {
     char *extension;
     int  result;
+    opendcp_decoder_t *decoder;;
 
     extension = strrchr(file,'.');
     extension++;
 
-    if (strncasecmp(extension,"tif",3) == 0) {
-        result = read_tif(image, file, 0);
-    } else if (strncasecmp(extension,"dpx",3) == 0) {
-        result = read_dpx(image, 0, file, 0);
-    } else if (strncasecmp(extension,"bmp",3) == 0) {
-        result = read_bmp(image, file, 0);
-    } else {
-        result = OPENDCP_ERROR;
+    decoder = opendcp_find_decoder(extension);
+
+    if (decoder->id == OPENDCP_DECODER_NONE) {
+        dcp_log(LOG_ERROR, "No Decoder found for image extension %s", extension);
+        return OPENDCP_ERROR;
     }
+
+    dcp_log(LOG_DEBUG, "Decoder %s found for image extension %s", decoder->name, extension);
+
+    result  = decoder->decode(image, file);
 
     if (result != OPENDCP_NO_ERROR) {
         return OPENDCP_ERROR;
@@ -147,6 +150,7 @@ int check_image_compliance(int profile, odcp_image_t *image, char *file) {
     odcp_image_t *odcp_image;
 
     if (image == NULL) {
+        dcp_log(LOG_DEBUG,"check_image_compliance: reading file %s", file);
         if (read_image(&odcp_image, file) == OPENDCP_NO_ERROR) {
             h = odcp_image->h;
             w = odcp_image->w;
@@ -159,6 +163,8 @@ int check_image_compliance(int profile, odcp_image_t *image, char *file) {
         h = image->h;
         w = image->w;
     }
+
+    dcp_log(LOG_DEBUG,"check_image_compliance: height: %d width: %d", h, w);
 
     switch (profile) {
         case DCP_CINEMA2K:

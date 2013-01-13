@@ -1,0 +1,25 @@
+ /* generate error message */
+#define FOREACH_OPENDCP_ENCODER(OPENDCP_ENCODER) \
+            OPENDCP_ENCODER(OPENDCP_ENCODER_TIFF, tif)  \
+            OPENDCP_ENCODER(OPENDCP_ENCODER_LAST, last)
+
+#define GENERATE_ENCODER_ENUM(ENCODER, NAME) ENCODER,
+#define GENERATE_ENCODER_STRING(ENCODER, NAME) #NAME,
+#define GENERATE_ENCODER_NAME(ENCODER, NAME) #ENCODER,
+#define GENERATE_ENCODER_STRUCT(ENCODER, NAME) { #NAME, opendcp_encoder_ ## NAME },
+#define GENERATE_ENCODER_EXTERN(ENCODER, NAME) extern void opendcp_encoder ## NAME (char *text);
+
+enum OPENDCP_ENCODERS {
+     FOREACH_OPENDCP_ENCODER(GENERATE_ENCODER_ENUM)
+};
+
+static const char *OPENDCP_ENCODER_NAME[] = {
+    FOREACH_OPENDCP_ENCODER(GENERATE_ENCODER_STRING)
+};
+
+FOREACH_OPENDCP_ENCODER(GENERATE_ENCODER_EXTERN)
+
+typedef struct {
+    char *name;
+    void (*encode) (char *text);
+} opendcp_encoder_t;

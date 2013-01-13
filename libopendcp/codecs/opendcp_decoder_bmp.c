@@ -107,7 +107,7 @@ void print_bmp_header(bmp_image_t *bmp) {
     dcp_log(LOG_DEBUG,"%-15.15s: row_order:    %d","read_bmp",bmp->row_order);
 }
 
-int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
+int opendcp_decode_bmp(odcp_image_t **image_ptr, const char *infile) {
     bmp_magic_num_t magic;
     bmp_image_t     bmp;
     FILE            *bmp_fp;
@@ -119,11 +119,7 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
     /* open bmp using filename or file descriptor */
     dcp_log(LOG_DEBUG,"%-15.15s: opening bmp file %s","read_bmp",infile);
 
-    if (fd == 0) {
-        bmp_fp = fopen(infile, "rb");
-    } else {
-        bmp_fp = (FILE *)infile;
-    }
+    bmp_fp = fopen(infile, "rb");
 
     if (!bmp_fp) {
         dcp_log(LOG_ERROR,"%-15.15s: opening bmp file %s","read_bmp",infile);
@@ -187,8 +183,7 @@ int read_bmp(odcp_image_t **image_ptr, const char *infile, int fd) {
     dcp_log(LOG_DEBUG,"%-15.15s: image allocated","read_bmp");
 
     int row_size = ((bmp.image.bpp * w + 31) / 32) * 4;
-    uint8_t data[4];
-    dcp_log(LOG_INFO, "%-15,15s: row size %d data size %d", "read_bmp", row_size, sizeof(uint8_t));
+    dcp_log(LOG_DEBUG, "%-15,15s: row size %d data size %d", "read_bmp", row_size, sizeof(uint8_t));
 
     fseek(bmp_fp, bmp.file.offset, SEEK_SET);
 
