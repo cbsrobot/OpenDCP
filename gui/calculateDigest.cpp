@@ -38,9 +38,18 @@ int calculateDigestCallback(void *p)
     return 0;
 }
 
+int calculateDigestDoneCallback(void *p)
+{
+    QProgressDialog *progress = static_cast<QProgressDialog *>(p);
+    progress->setValue(progress->maximum());
+
+    return 0;
+}
+
 QString MainWindow::calculateDigest(opendcp_t *opendcp, QString text, QString filename)
 {
     char assetDigest[40];
+    int  result;
 
     QFileInfo file(filename);
     qint64 len = file.size() / FILE_READ_SIZE;
@@ -54,11 +63,16 @@ QString MainWindow::calculateDigest(opendcp_t *opendcp, QString text, QString fi
     opendcp->dcp.sha1_update.callback = calculateDigestCallback;
     opendcp->dcp.sha1_update.argument = progress;
 
-    if (calculate_digest(opendcp, filename.toUtf8().data(), assetDigest) == OPENDCP_CALC_DIGEST) {
-        return NULL;
-    }
+    opendcp->dcp.sha1_done.callback = calculateDigestDoneCallback;
+    opendcp->dcp.sha1_done.argument = progress;
+
+    result = calculate_digest(opendcp, filename.toUtf8().data(), assetDigest);
 
     progress->hide();
 
-    return assetDigest;
+    if (result == OPENDCP_NO_ERROR) {
+        return assetDigest;
+    } else {
+        return NULL;
+    }
 }

@@ -85,6 +85,10 @@ extern "C" int calculate_digest(opendcp_t *opendcp, const char *filename, char *
         sprintf(digest,"%.36s",base64encode(byte_buffer, sha_length, sha_buffer, 64));
     }
 
+    if (opendcp->dcp.sha1_done.callback(opendcp->dcp.sha1_done.argument)) {
+        return OPENDCP_CALC_DIGEST;
+    }
+
     if (ASDCP_SUCCESS(result)) {
         return OPENDCP_NO_ERROR;
     } else {

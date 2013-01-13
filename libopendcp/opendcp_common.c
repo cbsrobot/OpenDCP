@@ -368,6 +368,8 @@ opendcp_t *opendcp_create() {
     opendcp->mxf.file_done.argument   = NULL;
     opendcp->dcp.sha1_update.callback = opendcp_callback_null;
     opendcp->dcp.sha1_update.argument = NULL;
+    opendcp->dcp.sha1_done.callback = opendcp_callback_null;
+    opendcp->dcp.sha1_done.argument = NULL;
 
     return opendcp;
 }

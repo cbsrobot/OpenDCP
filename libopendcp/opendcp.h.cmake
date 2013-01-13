@@ -313,6 +313,7 @@ typedef struct {
     assetmap_t     assetmap;
     volindex_t     volindex;
     opendcp_cb_t   sha1_update;
+    opendcp_cb_t   sha1_done;
 } dcp_t;
 
 typedef struct {
